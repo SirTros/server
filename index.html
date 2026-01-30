@@ -5,43 +5,52 @@
     <title>SirTros City Status</title>
     <style>
         body { margin:0; background:#111; color:white; font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; }
-        .card { background:#222; padding:30px; border-radius:15px; border:1px solid #00aaff; text-align:center; width:300px; }
-        .online { color:#2ecc71; font-weight:bold; font-size:24px; }
-        .offline { color:#e74c3c; font-weight:bold; font-size:24px; }
+        .card { background:#222; padding:30px; border-radius:15px; border:2px solid #00aaff; text-align:center; min-width:250px; box-shadow: 0 0 20px rgba(0,170,255,0.2); }
+        .online { color:#2ecc71; font-size:24px; font-weight:bold; }
+        .offline { color:#e74c3c; font-size:24px; font-weight:bold; }
         .val { font-size:20px; margin:10px 0; }
+        button { background:#00aaff; border:none; color:white; padding:10px; border-radius:5px; cursor:pointer; font-weight:bold; margin-top:10px; width:100%; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2 style="font-size:16px; color:#888;">SirTros-city.aternos.me</h2>
-        <div id="st" class="offline">NAČÍTÁNÍ...</div>
-        <div class="val">Hráči: <span id="pl">0/20</span></div>
-        <div class="val">Ping: <span id="pg">---</span></div>
-        <button onclick="navigator.clipboard.writeText('SirTros-city.aternos.me');alert('IP OK')" style="margin-top:15px;cursor:pointer;">Kopírovat IP</button>
+        <h2 style="font-size:14px; color:#888; margin-bottom:5px;">SirTros-city.aternos.me</h2>
+        <div id="stav" class="offline">NAČÍTÁNÍ...</div>
+        <div class="val">Hráči: <span id="hraci">0 / 20</span></div>
+        <div class="val">Odezva: <span id="ping">---</span></div>
+        <button onclick="navigator.clipboard.writeText('SirTros-city.aternos.me');alert('IP zkopírována!')">Kopírovat IP</button>
     </div>
 
     <script>
-        async function ck() {
+        async function update() {
             try {
-                // Přímý odkaz bez proměnných, aby se nic nepokazilo
+                // Používáme stabilní API MineTools
                 const r = await fetch('https://api.minetools.eu');
                 const d = await r.json();
                 
-                if(d.error) {
-                    document.getElementById('st').innerText = "OFFLINE";
-                    document.getElementById('st').className = "offline";
+                const s = document.getElementById('stav');
+                const h = document.getElementById('hraci');
+                const p = document.getElementById('ping');
+
+                if (d.error) {
+                    s.innerText = "OFFLINE";
+                    s.className = "offline";
+                    h.innerText = "0 / 20";
+                    p.innerText = "---";
                 } else {
-                    document.getElementById('st').innerText = "ONLINE";
-                    document.getElementById('st').className = "online";
-                    document.getElementById('pl').innerText = d.players.online + " / " + d.players.max;
-                    document.getElementById('pg').innerText = Math.round(data.latency) + " ms";
+                    s.innerText = "ONLINE";
+                    s.className = "online";
+                    h.innerText = d.players.online + " / " + d.players.max;
+                    // Tady byla ta chyba (d.latency), teď je to správně
+                    p.innerText = Math.round(d.latency) + " ms";
                 }
-            } catch(e) {
-                document.getElementById('st').innerText = "OFFLINE";
+            } catch (e) {
+                document.getElementById('stav').innerText = "OFFLINE";
+                console.log("Chyba spojení s API");
             }
         }
-        ck();
-        setInterval(ck, 45000);
+        update();
+        setInterval(update, 30000);
     </script>
 </body>
 </html>
