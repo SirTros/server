@@ -2,31 +2,49 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>SirTros-city | Status</title>
+    <title>SirTros-city</title>
     <style>
-        body { margin: 0; background: #0f0f0f; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .card { background: #1a1a1a; padding: 40px; border-radius: 20px; border: 1px solid #333; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .ip { font-size: 22px; color: #55cdff; margin-bottom: 20px; font-weight: bold; }
-        .status-badge { display: block; margin: 20px auto; filter: drop-shadow(0 0 10px rgba(85, 205, 255, 0.3)); transform: scale(1.5); }
-        button { background: #55cdff; border: none; color: black; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; margin-top: 15px; }
-        button:hover { background: #0099ff; transform: translateY(-2px); }
+        body { margin:0; background:#111; color:white; font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; }
+        .card { background:#222; padding:30px; border-radius:15px; border:2px solid #00aaff; text-align:center; min-width:280px; }
+        .stat { font-size:28px; font-weight:bold; margin:15px 0; }
+        .online { color:#2ecc71; }
+        .offline { color:#e74c3c; }
+        button { background:#00aaff; border:none; color:white; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold; }
     </style>
 </head>
 <body>
-
-<div class="card">
-    <!-- IP adresa s malým c -->
-    <div class="ip">SirTros-city.aternos.me</div>
-    
-    <!-- Štítek se stavem ze služby Lany.io -->
-    <img class="status-badge" src="https://lany.io" alt="Status">
-
-    <div style="color: #888; font-size: 14px; margin-top: 25px; margin-bottom: 10px;">
-        Stav se aktualizuje podle Aternosu.
+    <div class="card">
+        <div style="color:#888; margin-bottom:10px;">SirTros-city.aternos.me</div>
+        <div id="st" class="offline">NAČÍTÁNÍ...</div>
+        <div style="margin-bottom:20px;">Hráči: <span id="hr">0 / 20</span></div>
+        <button onclick="navigator.clipboard.writeText('SirTros-city.aternos.me');alert('IP OK')">Kopírovat IP</button>
     </div>
 
-    <button onclick="navigator.clipboard.writeText('SirTros-city.aternos.me');alert('IP zkopírována!')">Kopírovat IP</button>
-</div>
+    <script>
+        async function check() {
+            try {
+                // Přidali jsme náhodné číslo nakonec, aby se obešla mezipaměť (cache)
+                const r = await fetch('https://api.minetools.eu?' + Math.random());
+                const d = await r.json();
+                
+                const s = document.getElementById('st');
+                const h = document.getElementById('hr');
 
+                if (d.error) {
+                    s.innerText = "OFFLINE";
+                    s.className = "stat offline";
+                    h.innerText = "0 / 20";
+                } else {
+                    s.innerText = "ONLINE";
+                    s.className = "stat online";
+                    h.innerText = d.players.online + " / " + d.players.max;
+                }
+            } catch (e) {
+                document.getElementById('st').innerText = "OFFLINE";
+            }
+        }
+        check();
+        setInterval(check, 30000);
+    </script>
 </body>
 </html>
