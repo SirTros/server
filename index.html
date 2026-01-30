@@ -2,32 +2,30 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>SirTros City | Status</title>
+    <title>SirTros-city | Status</title>
     <style>
-        body { margin: 0; background: #111; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .card { background: #222; padding: 30px; border-radius: 15px; border: 2px solid #00aaff; text-align: center; width: 350px; }
-        .status-img { margin: 20px 0; max-width: 100%; }
-        .ip { color: #00aaff; font-weight: bold; font-size: 18px; margin-bottom: 10px; }
-        button { background: #00aaff; border: none; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        body { margin: 0; background: #0f0f0f; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .card { background: #1a1a1a; padding: 40px; border-radius: 20px; border: 1px solid #333; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .ip { font-size: 22px; color: #55cdff; margin-bottom: 20px; font-weight: bold; }
+        .status-badge { display: block; margin: 20px auto; filter: drop-shadow(0 0 10px rgba(85, 205, 255, 0.3)); transform: scale(1.5); }
+        button { background: #55cdff; border: none; color: black; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; margin-top: 15px; }
+        button:hover { background: #0099ff; transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
 <div class="card">
+    <!-- IP adresa s malým c -->
     <div class="ip">SirTros-city.aternos.me</div>
     
-    <!-- Tento obrázek se sám mění podle toho, jestli server jede -->
-    <img class="status-img" src="https://api.mcsrvstat.us" alt="Logo" width="64">
-    
-    <div id="status-text" style="font-size: 20px; margin-bottom: 20px;">
-        Zkontroluj stav přímo v Minecraftu
+    <!-- Štítek se stavem ze služby Lany.io -->
+    <img class="status-badge" src="https://lany.io" alt="Status">
+
+    <div style="color: #888; font-size: 14px; margin-top: 25px; margin-bottom: 10px;">
+        Stav se aktualizuje podle Aternosu.
     </div>
 
-    <!-- Druhý pokus o textový status přes jiný "most" -->
-    <iframe src="https://api.loohp.com" width="200" height="30" frameborder="0" scrolling="no"></iframe>
-
-    <br><br>
-    <button onclick="navigator.clipboard.writeText('SirTros-city.aternos.me');alert('IP OK')">Kopírovat IP</button>
+    <button onclick="navigator.clipboard.writeText('SirTros-city.aternos.me');alert('IP zkopírována!')">Kopírovat IP</button>
 </div>
 
 </body>
