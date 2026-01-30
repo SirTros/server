@@ -2,55 +2,33 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>SirTros City Status</title>
+    <title>SirTros City | Status</title>
     <style>
-        body { margin:0; background:#111; color:white; font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; }
-        .card { background:#222; padding:30px; border-radius:15px; border:2px solid #00aaff; text-align:center; min-width:250px; box-shadow: 0 0 20px rgba(0,170,255,0.2); }
-        .online { color:#2ecc71; font-size:24px; font-weight:bold; }
-        .offline { color:#e74c3c; font-size:24px; font-weight:bold; }
-        .val { font-size:20px; margin:10px 0; }
-        button { background:#00aaff; border:none; color:white; padding:10px; border-radius:5px; cursor:pointer; font-weight:bold; margin-top:10px; width:100%; }
+        body { margin: 0; background: #111; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .card { background: #222; padding: 30px; border-radius: 15px; border: 2px solid #00aaff; text-align: center; width: 350px; }
+        .status-img { margin: 20px 0; max-width: 100%; }
+        .ip { color: #00aaff; font-weight: bold; font-size: 18px; margin-bottom: 10px; }
+        button { background: #00aaff; border: none; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2 style="font-size:14px; color:#888; margin-bottom:5px;">SirTros-city.aternos.me</h2>
-        <div id="stav" class="offline">NAČÍTÁNÍ...</div>
-        <div class="val">Hráči: <span id="hraci">0 / 20</span></div>
-        <div class="val">Odezva: <span id="ping">---</span></div>
-        <button onclick="navigator.clipboard.writeText('SirTros-city.aternos.me');alert('IP zkopírována!')">Kopírovat IP</button>
+
+<div class="card">
+    <div class="ip">SirTros-city.aternos.me</div>
+    
+    <!-- Tento obrázek se sám mění podle toho, jestli server jede -->
+    <img class="status-img" src="https://api.mcsrvstat.us" alt="Logo" width="64">
+    
+    <div id="status-text" style="font-size: 20px; margin-bottom: 20px;">
+        Zkontroluj stav přímo v Minecraftu
     </div>
 
-    <script>
-        async function update() {
-            try {
-                // Používáme stabilní API MineTools
-                const r = await fetch('https://api.minetools.eu');
-                const d = await r.json();
-                
-                const s = document.getElementById('stav');
-                const h = document.getElementById('hraci');
-                const p = document.getElementById('ping');
+    <!-- Druhý pokus o textový status přes jiný "most" -->
+    <iframe src="https://api.loohp.com" width="200" height="30" frameborder="0" scrolling="no"></iframe>
 
-                if (d.error) {
-                    s.innerText = "OFFLINE";
-                    s.className = "offline";
-                    h.innerText = "0 / 20";
-                    p.innerText = "---";
-                } else {
-                    s.innerText = "ONLINE";
-                    s.className = "online";
-                    h.innerText = d.players.online + " / " + d.players.max;
-                    // Tady byla ta chyba (d.latency), teď je to správně
-                    p.innerText = Math.round(d.latency) + " ms";
-                }
-            } catch (e) {
-                document.getElementById('stav').innerText = "OFFLINE";
-                console.log("Chyba spojení s API");
-            }
-        }
-        update();
-        setInterval(update, 30000);
-    </script>
+    <br><br>
+    <button onclick="navigator.clipboard.writeText('SirTros-city.aternos.me');alert('IP OK')">Kopírovat IP</button>
+</div>
+
 </body>
 </html>
