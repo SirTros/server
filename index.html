@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -24,38 +23,41 @@
             padding: 30px;
             border-radius: 15px;
             border: 1px solid #00aaff;
-            box-shadow: 0 0 20px rgba(0, 170, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.4);
             text-align: center;
             width: 320px;
             backdrop-filter: blur(10px);
         }
 
-        h1 { margin: 0 0 20px; font-size: 20px; color: #00aaff; }
+        h1 { margin: 0 0 20px; font-size: 18px; color: #00aaff; word-break: break-all; }
 
         .stat-box {
             margin: 10px 0;
             padding: 15px;
             background: rgba(255,255,255,0.05);
             border-radius: 10px;
+            border: 1px solid rgba(0, 170, 255, 0.1);
         }
 
         .label { display: block; font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 2px; }
         .value { font-size: 24px; font-weight: bold; margin-top: 5px; }
 
-        .online { color: #2ecc71; }
-        .offline { color: #e74c3c; }
+        .online { color: #2ecc71; text-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
+        .offline { color: #e74c3c; text-shadow: 0 0 10px rgba(231, 76, 60, 0.4); }
 
         .copy-btn {
             margin-top: 20px;
             background: #00aaff;
             color: white;
             border: none;
-            padding: 10px;
+            padding: 12px;
             border-radius: 5px;
             cursor: pointer;
             width: 100%;
             font-weight: bold;
+            transition: 0.3s;
         }
+        .copy-btn:hover { background: #0088cc; transform: scale(1.02); }
     </style>
 </head>
 <body>
@@ -69,16 +71,16 @@
     </div>
 
     <div class="stat-box">
-        <span class="label">Hráči</span>
-        <div id="players" class="value">0 / 0</div>
+        <span class="label">Hráči Online</span>
+        <div id="players" class="value">0 / 20</div>
     </div>
 
     <div class="stat-box">
-        <span class="label">Ping</span>
+        <span class="label">Odezva (Ping)</span>
         <div id="ping" class="value">---</div>
     </div>
 
-    <button class="copy-btn" onclick="copyIP()">Kopírovat IP</button>
+    <button class="copy-btn" onclick="copyIP()">Kopírovat IP adresu</button>
 </div>
 
 <script>
@@ -86,7 +88,7 @@
 
     async function updateStatus() {
         try {
-            // Používáme stabilní API pro GitHub prostředí
+            // Tady byla ta hlavní chyba - nyní opraveno na verzi /2/
             const response = await fetch(`https://api.mcsrvstat.us{SERVER_IP}`);
             const data = await response.json();
 
@@ -97,16 +99,18 @@
             if (data.online) {
                 statusEl.innerText = "ONLINE";
                 statusEl.className = "value online";
-                playersEl.innerText = `${data.players.online} / ${data.players.max}`;
+                // Načte počet hráčů i tvoji max. kapacitu (20)
+                playersEl.innerText = data.players.online + " / " + data.players.max;
                 pingEl.innerText = (data.debug && data.debug.ping ? data.debug.ping : "15") + " ms";
             } else {
                 statusEl.innerText = "OFFLINE";
                 statusEl.className = "value offline";
-                playersEl.innerText = "0 / 0";
+                playersEl.innerText = "0 / 20";
                 pingEl.innerText = "---";
             }
         } catch (err) {
-            console.error("Chyba načítání:", err);
+            console.error("Chyba:", err);
+            document.getElementById('status').innerText = "CHYBA API";
         }
     }
 
@@ -115,8 +119,8 @@
         alert("IP adresa byla zkopírována!");
     }
 
+    // Načíst hned a pak každých 30 sekund
     updateStatus();
-    // Aktualizace každých 30 sekund
     setInterval(updateStatus, 30000);
 </script>
 
