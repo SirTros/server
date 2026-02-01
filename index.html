@@ -1,50 +1,146 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <title>SirTros-city</title>
-    <style>
-        body { margin:0; background:#111; color:white; font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; }
-        .card { background:#222; padding:30px; border-radius:15px; border:2px solid #00aaff; text-align:center; min-width:280px; }
-        .stat { font-size:28px; font-weight:bold; margin:15px 0; }
-        .online { color:#2ecc71; }
-        .offline { color:#e74c3c; }
-        button { background:#00aaff; border:none; color:white; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Platební terminál</title>
+<style>
+:root{--bg:#000;--fg:#fff;--ok:#22c55e;--bad:#ef4444}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;user-select:none}
+.app{max-width:420px;margin:auto;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;box-sizing:border-box;position:relative}
+h1{font-size:28px;margin-bottom:15px;text-align:center}
+#amountDisplay{font-size:42px;margin:10px 0}
+select,button{font-size:18px;padding:10px 14px;border-radius:8px;border:0;margin-top:10px}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px;width:100%}
+.key{background:#1a1a1a;padding:16px 0;border-radius:10px;font-size:22px}
+.key:active{background:#333}
+.screen{display:none;width:100%}
+.active{display:flex;flex-direction:column;align-items:center}
+#resultMsg{font-size:34px;margin-top:20px;text-align:center}
+.reader{margin-top:10px;width:60px;height:40px;border:2px solid #666;border-radius:6px;position:relative}
+.reader::after{content:"";position:absolute;inset:6px;border:2px dashed #444;border-radius:4px}
+@keyframes shake{0%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}100%{transform:translateX(0)}}
+.shake{animation:shake 0.4s}
+.reader.fail{box-shadow:0 0 12px var(--bad)}
+.flash{position:absolute;inset:0;background:var(--bad);opacity:0;pointer-events:none}
+.flash.show{animation:redFlash 0.5s ease}
+@keyframes redFlash{0%{opacity:0}30%{opacity:0.35}100%{opacity:0}}
+</style>
 </head>
 <body>
-    <div class="card">
-        <div style="color:#888; margin-bottom:10px;">SirTros-city.aternos.me</div>
-        <div id="st" class="offline">NAČÍTÁNÍ...</div>
-        <div style="margin-bottom:20px;">Hráči: <span id="hr">0 / 20</span></div>
-        <button onclick="navigator.clipboard.writeText('SirTros-city.aternos.me');alert('IP OK')">Kopírovat IP</button>
-    </div>
+<div class="app">
 
-    <script>
-        async function check() {
-            try {
-                // Přidali jsme náhodné číslo nakonec, aby se obešla mezipaměť (cache)
-                const r = await fetch('https://api.minetools.eu?' + Math.random());
-                const d = await r.json();
-                
-                const s = document.getElementById('st');
-                const h = document.getElementById('hr');
+<div id="amountScreen" class="screen active">
+  <h1>Zadejte částku</h1>
+  <div id="amountDisplay">0</div>
+  <select id="currency"><option>CZK</option><option>EUR</option><option>USD</option></select>
+  <div class="keypad">
+    <div class="key" onclick="addNum(1)">1</div>
+    <div class="key" onclick="addNum(2)">2</div>
+    <div class="key" onclick="addNum(3)">3</div>
+    <div class="key" onclick="addNum(4)">4</div>
+    <div class="key" onclick="addNum(5)">5</div>
+    <div class="key" onclick="addNum(6)">6</div>
+    <div class="key" onclick="addNum(7)">7</div>
+    <div class="key" onclick="addNum(8)">8</div>
+    <div class="key" onclick="addNum(9)">9</div>
+    <div class="key" onclick="clearNum()">C</div>
+    <div class="key" onclick="addNum(0)">0</div>
+    <div class="key" onclick="backspace()">⌫</div>
+  </div>
+  <button onclick="goPay()">Pokračovat</button>
+</div>
 
-                if (d.error) {
-                    s.innerText = "OFFLINE";
-                    s.className = "stat offline";
-                    h.innerText = "0 / 20";
-                } else {
-                    s.innerText = "ONLINE";
-                    s.className = "stat online";
-                    h.innerText = d.players.online + " / " + d.players.max;
-                }
-            } catch (e) {
-                document.getElementById('st').innerText = "OFFLINE";
-            }
-        }
-        check();
-        setInterval(check, 30000);
-    </script>
+<div id="payScreen" class="screen">
+  <h1>Přiložte kartu</h1>
+  <div class="reader" id="reader"></div>
+  <div id="resultMsg"></div>
+</div>
+
+<div class="flash" id="flash"></div>
+
+</div>
+
+<audio id="okSound" src="https://www.myinstants.com/media/sounds/google-wallet-payment-successful.mp3" preload="auto"></audio>
+<audio id="failSound" src="https://www.myinstants.com/media/sounds/buzzer.mp3" preload="auto"></audio>
+
+<script>
+let amount="",clickCount=0,clickTimer;
+let magnetActive=false,lastMagValue=0,magSensor=null;
+
+function addNum(n){if(amount.length<6){amount+=n;updateDisplay();}}
+function clearNum(){amount="";updateDisplay();}
+function backspace(){amount=amount.slice(0,-1);updateDisplay();}
+function updateDisplay(){amountDisplay.textContent=amount||"0";}
+
+function goPay(){
+ if(!amount) return;
+ amountScreen.classList.remove("active");
+ payScreen.classList.add("active");
+ resultMsg.textContent="";
+ startMagnetSensor();
+}
+
+payScreen.addEventListener("click",()=>{
+ clickCount++;
+ clearTimeout(clickTimer);
+ clickTimer=setTimeout(processClick,300);
+});
+
+function processClick(){
+ if(clickCount===1){
+   setTimeout(()=>{
+     resultMsg.style.color="var(--ok)";
+     resultMsg.textContent="Potvrzeno";
+     okSound.play().catch(()=>{});
+     setTimeout(resetTerminal,5000);
+   },500);
+ }
+ else if(clickCount>=2){ triggerFail("Nepotvrzeno"); }
+ clickCount=0;
+}
+
+function triggerFail(text){
+ resultMsg.style.color="var(--bad)";
+ resultMsg.textContent=text;
+ resultMsg.classList.add("shake");
+ reader.classList.add("fail");
+ flash.classList.add("show");
+ if(navigator.vibrate) navigator.vibrate([200,100,200]);
+ failSound.play().catch(()=>{});
+ setTimeout(()=>{
+   resultMsg.classList.remove("shake");
+   reader.classList.remove("fail");
+   flash.classList.remove("show");
+ },600);
+ setTimeout(resetTerminal,5000);
+}
+
+function resetTerminal(){
+ stopMagnetSensor();
+ payScreen.classList.remove("active");
+ amountScreen.classList.add("active");
+ amount="";updateDisplay();resultMsg.textContent="";
+}
+
+// ===== MAGNET SENSOR SIMULACE =====
+function startMagnetSensor(){
+ if(!('Magnetometer' in window)) return;
+ try{
+   magSensor = new Magnetometer({frequency:10});
+   magSensor.addEventListener('reading',()=>{
+     const strength=Math.abs(magSensor.x)+Math.abs(magSensor.y)+Math.abs(magSensor.z);
+     if(magnetActive && Math.abs(strength-lastMagValue)>50){
+       magnetActive=false;
+       triggerFail("Karta nepodporována");
+     }
+     lastMagValue=strength;
+   });
+   magSensor.start();
+   magnetActive=true;
+ }catch(e){console.log(e);}
+}
+function stopMagnetSensor(){ magnetActive=false; if(magSensor){try{magSensor.stop();}catch(e){}} }
+</script>
 </body>
 </html>
