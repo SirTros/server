@@ -83,13 +83,46 @@ button { cursor:pointer; font-weight:bold; transition:0.2s; border:none; padding
 
 <div id="zaplatitMessage">ZAPLACENO ✔</div>
 
-<script>
-/* DATABÁZE ZBOŽÍ */
+<script>   
+/* ZPROŠTĚNÁ DATABÁZE (JEN JISTÉ POLOŽKY) */
 const zbozi = {
-1: [15, "Malinovka 50ml"],
-2: [10, "Voda 50ml"],
-4: [18, "Sodovka Jemně Perlivá 50ml"],
+  1: [20, "Kubík Waterrr různé příchutě 500ml"], 
+  2: [25, "Relax Mango 330ml"],
+  3: [22, "Madeta trvanlivé mléko polotučné"],
+  4: [16, "Corny různé příchutě 50g"],
+  5: [18, "Opavia Florenta 112g"],
+  6: [99, "Otma Boloňská omáčka"],
+  7: [59, "Kitchin Brasilské pesto"],
+  8: [19, "Křehké plátky kukuřičné"],
+  9: [34, "Mátový čaj Bio"],
+  10: [98, "Nutella 350g"],
+  11: [19, "Orion Kofila"],
+  12: [19, "Orion želé bánánky"],
+  13: [42, "Bohemia vroubkované chipsy sůl"],
+  14: [179, "Hylak forte 100ml"],
+  15: [120, "Ocu flash 2ks 10ml"],
+  16: [90, "ViroStop 50ml"],
+  17: [60, "Dettol 50ml"],
+  18: [50, "Dettol ubrousky 15ks"],
+  19: [10, "Toaletní papír 1ks"],
+  20: [10, "Balíček ubrousků 10ks"],
+  21: [37, "Houbičky na nádobí 10ks"],
+  22: [30, "Vlhčený toaletní papír 70ks"],
+  23: [39, "Balíček vlhčených ubrousků 70-80ks"],
+  24: [3, "Banán ks"],
+  25: [5, "Jablko ks"],
+  26: [5, "Nashi ks],
+  27: [5, "Limetka ks"],
+  28: [7, "Citron ks"], 
+  29: [30, "Meloun mini vodní ks"],
+  30: [7, "Hruška ks"],
+  31: [1, "Rohlík ks"],
+  32: [3, "Houska ks"],
+  33: [10, "Chléb ks"],
+
+  // Sem si dopiš další ID podle potřeby...
 };
+
 
 let celkem = 0;
 const PIN = "153500";
