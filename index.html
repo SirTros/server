@@ -140,8 +140,7 @@ function pridatZbozi() {
         li.innerHTML = `<span>${item[1]} - ${item[0]} Kč</span> <button onclick="odebratZbozi(this, ${item[0]})">X</button>`;
         document.getElementById("zboziList").appendChild(li);
         aktualizovatCenu();
-    } else {
-        alert("Neznámý kód!");
+    
     }
     document.getElementById("productCode").value = "";
     document.getElementById("productCode").focus();
