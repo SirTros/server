@@ -5,20 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Pokladna OBCHOD</title>
 <style>
-    /* Zajištění, aby se prvky nepřekrývaly */
     body { font-family: Arial, sans-serif; background: #000; color: white; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
     
-    #fullscreenIntro, #loginScreen, #app { 
-        display: none; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center; 
-        width: 100%; 
-        height: 100%; 
-    }
-
-    /* Úvodní obrazovka musí být vidět jako první */
-    #fullscreenIntro { display: flex; }
+    /* Sekce se zobrazují jedna po druhé, aby se nemíchaly */
+    #fullscreenIntro, #loginScreen, #app { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; text-align: center; }
+    #fullscreenIntro { display: flex; } /* První viditelná obrazovka */
 
     #fullscreenButton { padding: 15px 30px; font-size: 20px; background: cyan; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; font-weight: bold; }
     
@@ -40,8 +31,8 @@
     .pro-button { background:cyan; color:black; margin-top: 10px; }
     .lock-button { position: absolute; top: 10px; right: 10px; background: white; color: black; padding: 8px 15px; font-size: 14px; }
     
-    #zboziList { list-style:none; padding:0; margin-top:25px; width:80%; max-width:600px; max-height: 40vh; overflow-y: auto; }
-    .addedItem { background:#111; padding:12px; margin-bottom:8px; border-radius:6px; border-left:4px solid cyan; display:flex; justify-content:space-between; align-items:center; text-align: left; }
+    #zboziList { list-style:none; padding:0; margin-top:25px; width:90%; max-width:600px; max-height: 45vh; overflow-y: auto; }
+    .addedItem { background:#111; padding:12px; margin-bottom:8px; border-radius:6px; border-left:4px solid cyan; display:flex; justify-content:space-between; align-items:center; text-align: left; font-size: 18px; }
     .addedItem button { background:red; color:white; padding:6px 10px; border-radius:4px; font-size: 14px; margin-left: 10px; }
     
     .payment-modal { display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#111; padding:25px; border-radius:10px; border:2px solid cyan; width:320px; text-align:center; z-index:1000; }
@@ -75,10 +66,10 @@
   <button class="pro-button" onclick="pridatZbozi()">PŘIDAT (Enter)</button>
   <ul id="zboziList"></ul>
   <h3 id="celkovaCena">CENA: 0 Kč</h3>
-  <button class="pro-button" style="background: lime;" onclick="openPaymentWindow()">ZAPLATIT</button>
+  <button class="pro-button" style="background: lime; width: 200px; font-size: 20px;" onclick="openPaymentWindow()">ZAPLATIT</button>
 </div>
 
-<!-- PLATEBNÍ MODÁLY -->
+<!-- PLATEBNÍ OKNA -->
 <div id="paymentWindow" class="payment-modal">
   <button class="close-button" onclick="closePaymentWindow()">X</button>
   <h3>Zvolte způsob platby:</h3>
@@ -109,18 +100,45 @@ const requestWakeLock = async () => {
       wakeLock = await navigator.wakeLock.request('screen');
     }
   } catch (err) {
-    console.log("WakeLock nelze aktivovat (pravděpodobně chybí HTTPS)");
+    console.log("WakeLock nelze aktivovat.");
   }
 };
 
+/* KOMPLETNÍ DATABÁZE VŠECH 33 POLOŽEK */
 const zbozi = {
   1: [20, "Kubík Waterrr 500ml"], 
   2: [25, "Relax Mango 330ml"],
-  3: [22, "Madeta mléko"],
+  3: [22, "Madeta trvanlivé mléko"],
   4: [16, "Corny 50g"],
-  5: [18, "Opavia Florenta"],
+  5: [18, "Opavia Florenta 112g"],
+  6: [99, "Otma Boloňská omáčka"],
+  7: [59, "Kitchin Brasilské pesto"],
+  8: [19, "Křehké plátky kukuřičné"],
+  9: [34, "Mátový čaj Bio"],
   10: [98, "Nutella 350g"],
-  31: [1, "Rohlík ks"]
+  11: [19, "Orion Kofila"],
+  12: [19, "Orion želé bánánky"],
+  13: [42, "Bohemia vroubkované chipsy"],
+  14: [179, "Hylak forte 100ml"],
+  15: [120, "Ocu flash 2ks 10ml"],
+  16: [90, "ViroStop 50ml"],
+  17: [60, "Dettol 50ml"],
+  18: [50, "Dettol ubrousky 15ks"],
+  19: [10, "Toaletní papír 1ks"],
+  20: [10, "Balíček ubrousků 10ks"],
+  21: [37, "Houbičky na nádobí 10ks"],
+  22: [30, "Vlhčený toaletní papír 70ks"],
+  23: [39, "Balíček vlhčených ubrousků"],
+  24: [3, "Banán ks"],
+  25: [5, "Jablko ks"],
+  26: [5, "Nashi ks"],
+  27: [5, "Limetka ks"],
+  28: [7, "Citron ks"], 
+  29: [30, "Meloun mini vodní ks"],
+  30: [7, "Hruška ks"],
+  31: [1, "Rohlík ks"],
+  32: [3, "Houska ks"],
+  33: [10, "Chléb ks"]
 };
 
 let celkem = 0;
@@ -158,15 +176,20 @@ function login(){
 
 function pridatZbozi() {
     const input = document.getElementById("productCode");
-    const item = zbozi[input.value];
+    const polozka = zbozi[input.value];
     
-    if (item) {
-        celkem += item[0]; // OPRAVA: přičítáme jen cenu (první prvek pole)
+    if (polozka) {
+        const cena = polozka[0];
+        const nazev = polozka[1];
+        
+        celkem += cena;
         const li = document.createElement("li");
         li.className = "addedItem";
-        li.innerHTML = `<span>${item[1]}</span> <span>${item[0]} Kč <button onclick="odebratZbozi(this, ${item[0]})">X</button></span>`;
+        li.innerHTML = `<span><strong>${nazev}</strong></span> <span>${cena} Kč <button onclick="odebratZbozi(this, ${cena})">X</button></span>`;
         document.getElementById("zboziList").appendChild(li);
+        
         aktualizovatCenu();
+        li.scrollIntoView(); // Automaticky posune seznam dolů
     } else if(input.value !== "") {
         alert("Kód nenalezen!");
     }
@@ -209,11 +232,11 @@ function openCashWindow() {
 function payCard() {
     closePaymentWindow();
     document.getElementById("cardWindow").style.display = "block";
-    document.getElementById("cardText").innerText = "Přiložte kartu...";
+    document.getElementById("cardText").innerText = "Přiložte kartu k terminálu...";
     setTimeout(() => {
         document.getElementById("cardText").innerText = "Platba schválena!";
         document.getElementById("cardDoneBtn").style.display = "inline-block";
-    }, 1500);
+    }, 2000);
 }
 
 function finishPayment() {
