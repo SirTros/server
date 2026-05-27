@@ -1,197 +1,463 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SirTros Minihry | Minecraft server</title>
-
-<link rel="icon" type="image/png" href="assets/images/logo.png">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pokladna OBCHOD</title>
 
 <style>
-:root {
-    --primary: #00d2ff;
-    --bg: #0f0f13;
-    --card-bg: rgba(255, 255, 255, 0.05);
-    --text: #ffffff;
-    --nav-bg: rgba(0, 0, 0, 0.95);
+body{
+    font-family:Arial,sans-serif;
+    background:#000;
+    color:white;
+    margin:0;
+    padding:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    overflow:hidden;
 }
 
-body {
-    overflow-y: scroll;
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary) rgba(255,255,255,0.1);
+#fullscreenIntro,
+#loginScreen,
+#app{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    height:100%;
+    text-align:center;
 }
 
-body::-webkit-scrollbar {
-    width: 10px;
+#fullscreenIntro{
+    display:flex;
 }
 
-body::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.05);
-    border-radius: 10px;
+#fullscreenButton{
+    padding:15px 30px;
+    font-size:20px;
+    background:cyan;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:20px;
+    font-weight:bold;
 }
 
-body::-webkit-scrollbar-thumb {
-    background-color: var(--primary);
-    border-radius: 10px;
-    border: 2px solid rgba(255,255,255,0.05);
+#loadingScreen{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:black;
+    color:white;
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    font-size:26px;
+    z-index:9999;
 }
 
-body::-webkit-scrollbar-thumb:hover {
-    background-color: #00f0ff;
+.loaderBar{
+    width:300px;
+    height:12px;
+    border:2px solid white;
+    margin-top:20px;
+    overflow:hidden;
+    border-radius:10px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; scroll-behavior: smooth; }
-body { background-color: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
-
-.bg-glow {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0f0f13 100%);
-    z-index: -1;
+.loaderFill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, cyan, royalblue);
 }
 
-header, section { scroll-margin-top: 100px; }
-
-nav {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 0 10%; background: var(--nav-bg);
-    backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 1000;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    height: 100px;
+@keyframes loadAnim{
+    100%{width:100%;}
 }
 
-.nav-brand { display: flex; align-items: center; gap: 20px; text-decoration: none; color: inherit; }
-.logo-img { height: 70px; border-radius: 5px; image-rendering: -webkit-optimize-contrast; }
-.logo-text { 
-    font-size: 1.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
-    -webkit-box-reflect: below -12px linear-gradient(transparent, rgba(255,255,255,0));
+#loginInput{
+    padding:12px;
+    font-size:20px;
+    background:#111;
+    border:1px solid cyan;
+    border-radius:6px;
+    color:white;
+    width:180px;
+    text-align:center;
 }
 
-nav ul { display: flex; list-style: none; gap: 30px; }
-nav ul li a { text-decoration: none; color: #aaa; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; transition: 0.3s; }
-nav ul li a:hover { color: var(--primary); }
-
-section { padding: 100px 10%; border-bottom: 1px solid rgba(255,255,255,0.05); }
-h2 { font-size: 2.5rem; text-align: center; margin-bottom: 50px; text-transform: uppercase; letter-spacing: 3px; color: var(--primary); }
-
-header { height: calc(100vh - 200px); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-.whitelist-status { background: rgba(0, 210, 255, 0.1); color: var(--primary); border: 1px solid var(--primary); padding: 6px 18px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; margin-bottom: 25px; }
-.ip-box { background: rgba(255,255,255,0.05); padding: 18px 35px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.3s; }
-.ip-box:hover { border-color: var(--primary); transform: scale(1.02); }
-
-.social-section {
-    text-align: center;
-    padding: 50px 20px;
+#loginButton{
+    margin-top:15px;
+    padding:12px 20px;
+    background:cyan;
+    border-radius:6px;
+    font-weight:bold;
+    cursor:pointer;
+    border:none;
 }
 
-.whatsapp-btn, .mclist-btn, .form-btn, .vid-btn {
-    display: inline-block;
-    padding: 14px 30px;
-    margin: 10px 15px;
-    border-radius: 12px;
-    font-weight: bold;
-    text-decoration: none;
-    font-size: 1.1rem;
-    transition: 0.3s;
-    color: #fff;
+#app{
+    position:relative;
 }
 
-.whatsapp-btn { background-color: #25D366; }
-.mclist-btn { background-color: #ff8018; }
-.form-btn { background-color: #3a17ff; }
-.vid-btn { background-color: #E1F000; color: #000; }
-
-.whatsapp-btn:hover, .mclist-btn:hover, .form-btn:hover, .vid-btn:hover {
-    transform: scale(1.05);
-    filter: brightness(1.1);
+h1{
+    margin-top:10px;
+    font-size:28px;
+    color:cyan;
 }
 
-.rules-list { max-width: 800px; margin: 0 auto; }
-.rule-item { background: var(--card-bg); padding: 20px; border-radius: 10px; margin-bottom: 15px; display: flex; gap: 20px; align-items: center; }
-.rule-num { font-size: 1.5rem; font-weight: 900; color: var(--primary); min-width: 40px; }
+button{
+    cursor:pointer;
+    font-weight:bold;
+    border:none;
+    padding:12px;
+    border-radius:6px;
+}
 
-#custom-alert { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--primary); color: #000; padding: 12px 25px; border-radius: 8px; font-weight: bold; z-index: 2000; transition: 0.5s; opacity: 0; box-shadow: 0 5px 20px rgba(0,210,255,0.4); }
-#custom-alert.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.pro-button{
+    background:cyan;
+    color:black;
+    margin-top:10px;
+}
 
-footer { text-align: center; padding: 60px 20px; background: #000; border-top: 2px solid rgba(255, 255, 255, 0.1); }
+.lock-button{
+    position:absolute;
+    top:10px;
+    right:10px;
+    background:white;
+    color:black;
+    padding:8px 15px;
+    font-size:14px;
+}
 
-@media (max-width: 768px) { 
-    nav { height: auto; flex-direction: column; padding: 20px; gap: 15px; } 
-    nav ul { gap: 15px; flex-wrap: wrap; justify-content: center; }
-    .logo-text { font-size: 1.2rem; }
+#produkty{
+    display:grid;
+    grid-template-columns:repeat(2, 220px);
+    gap:15px;
+    margin-top:20px;
+}
+
+.produktBtn{
+    background:#111;
+    color:white;
+    border:2px solid cyan;
+    border-radius:12px;
+    padding:20px;
+    font-size:20px;
+    transition:0.2s;
+}
+
+.produktBtn:hover{
+    background:cyan;
+    color:black;
+    transform:scale(1.05);
+}
+
+.produktBtn span{
+    display:block;
+    margin-top:10px;
+    font-size:16px;
+    color:#aaa;
+}
+
+.produktBtn:hover span{
+    color:black;
+}
+
+#zboziList{
+    list-style:none;
+    padding:0;
+    margin-top:20px;
+    width:90%;
+    max-width:500px;
+    max-height:220px;
+    overflow-y:auto;
+    border:1px solid #333;
+    border-radius:10px;
+}
+
+.addedItem{
+    background:#111;
+    padding:10px;
+    margin-bottom:5px;
+    border-radius:6px;
+    border-left:4px solid cyan;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.addedItem button{
+    background:red;
+    color:white;
+    padding:5px 10px;
+    font-size:12px;
+}
+
+.payment-modal{
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    background:#111;
+    padding:25px;
+    border-radius:10px;
+    border:2px solid cyan;
+    width:300px;
+    text-align:center;
+    z-index:1000;
+}
+
+#zaplatitMessage{
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:#0f0;
+    color:black;
+    padding:30px;
+    font-size:36px;
+    border-radius:15px;
+    font-weight:bold;
+    z-index:2000;
 }
 </style>
 </head>
+
 <body>
 
-<div class="bg-glow"></div>
+<div id="fullscreenIntro">
+    <h2>Kioskový systém</h2>
+    <button id="fullscreenButton" onclick="requestFullscreenAndLoad()">AKTIVOVAT POKLADNU</button>
+</div>
 
-<nav>
-    <a href="index.html" class="nav-brand">
-        <img src="assets/images/logo.png" alt="Logo" class="logo-img">
-        <div class="logo-text">SirTros Minihry</div>
-    </a>
-    <ul>
-        <li><a href="#domu">Domů</a></li>
-        <li><a href="#odkazy">Odkazy</a></li>
-        <li><a href="#pravidla">Pravidla</a></li>
-    </ul>
-</nav>
+<div id="loadingScreen">
+    Načítání...
+    <div class="loaderBar">
+        <div class="loaderFill"></div>
+    </div>
+</div>
 
-<div id="custom-alert">IP ADRESA ZKOPÍROVÁNA!</div>
+<div id="loginScreen">
+    <h1>Zadejte PIN</h1>
+    <input id="loginInput" type="password" placeholder="PIN">
+    <button id="loginButton" onclick="login()">VSTOUPIT</button>
+</div>
 
-<header id="domu">
-    <div class="whitelist-status">Soukromý server</div>
-    <h1 style="font-size: clamp(2.5rem, 8vw, 5rem); margin-bottom: 10px;">SirTros Minihry</h1>
-    <p style="font-size: 1.1rem; margin-bottom: 35px; color: #aaa; max-width: 600px; padding: 0 20px;">
-        Vítejte na oficiálním minihrovém serveru SirTros!
-    </p>
-    
-    <div class="ip-box" onclick="copyIP()">
-        <span id="server-ip" style="font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.2rem; color: var(--primary);">SirTros-city.aternos.me</span>
+<div id="app">
+
+    <button class="lock-button" onclick="logout()">ZAMKNOUT</button>
+
+    <h1>POKLADNA</h1>
+
+    <div id="produkty">
+
+        <button class="produktBtn" onclick="pridatProdukt('Tričko',149)">
+            Tričko
+            <span>149 Kč</span>
+        </button>
+
+        <button class="produktBtn" onclick="pridatProdukt('Kalhotky',100)">
+            Kalhotky
+            <span>100 Kč</span>
+        </button>
+
+        <button class="produktBtn" onclick="pridatProdukt('Malý polštářek',50)">
+            Malý polštářek
+            <span>50 Kč</span>
+        </button>
+
+        <button class="produktBtn" onclick="pridatProdukt('Velký polštářek',120)">
+            Velký polštářek
+            <span>120 Kč</span>
+        </button>
+
+        <button class="produktBtn" onclick="pridatProdukt('Čepička bambule',99)">
+            Čepička bambule
+            <span>99 Kč</span>
+        </button>
+
+        <button class="produktBtn" onclick="pridatProdukt('Peřinka',29)">
+            Peřinka
+            <span>29 Kč</span>
+        </button>
+
+        <button class="produktBtn" onclick="pridatProdukt('Taška',5)">
+            Taška
+            <span>5 Kč</span>
+        </button>
+
     </div>
 
-    <p style="margin-top: 15px; font-size: 0.8rem; color: #555; text-transform: uppercase;">Klikni pro kopii IP Adresy</p>
-</header>
+    <ul id="zboziList"></ul>
 
-<section id="odkazy" class="social-section">
-    <h2>Důležité odkazy</h2>
-    <a href="#" class="whatsapp-btn">WhatsApp</a>
-    <a href="#" class="mclist-btn">MC List</a>
-    <a href="#" class="form-btn">Přihláška</a>
-    <a href="#" class="vid-btn">Video</a>
-</section>
+    <h2 id="celkovaCena">CELKEM: 0 Kč</h2>
 
-<section id="pravidla">
-    <h2>Pravidla serveru</h2>
-    <div class="rules-list">
-        <div class="rule-item">
-            <div class="rule-num">01</div>
-            <div>Buďte k sobě slušní a respektujte ostatní hráče.</div>
-        </div>
-        <div class="rule-item">
-            <div class="rule-num">02</div>
-            <div>Zákaz používání jakýchkoliv cheatů a výhod.</div>
-        </div>
-        <div class="rule-item">
-            <div class="rule-num">03</div>
-            <div>Neničte cizí stavby a výtvory.</div>
-        </div>
-    </div>
-</section>
+    <button class="pro-button" style="background:lime;" onclick="openPaymentWindow()">
+        ZAPLATIT
+    </button>
 
-<footer>
-    <p>&copy; 2024 SirTros Minihry. Všechna práva vyhrazena.</p>
-</footer>
+</div>
+
+<div id="paymentWindow" class="payment-modal">
+    <h3>Celkem k úhradě: <span id="cashTotalDisplay">0 Kč</span></h3>
+
+    <button class="pro-button" onclick="finishPayment()">
+        ZAPLATIT
+    </button>
+
+    <button class="pro-button" style="background:#444;color:white;" onclick="closePaymentWindow()">
+        ZPĚT
+    </button>
+</div>
+
+<div id="zaplatitMessage">
+    ZAPLACENO ✔
+</div>
 
 <script>
-function copyIP() {
-    const ip = document.getElementById('server-ip').innerText;
-    navigator.clipboard.writeText(ip);
-    const alert = document.getElementById('custom-alert');
-    alert.classList.add('show');
-    setTimeout(() => alert.classList.remove('show'), 2000);
+
+const scanSound = new Audio();
+const paySound = new Audio();
+
+let wakeLock = null;
+let celkem = 0;
+
+document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement){
+        logout();
+    }
+});
+
+async function requestFullscreenAndLoad(){
+
+    if(document.documentElement.requestFullscreen){
+        document.documentElement.requestFullscreen();
+    }
+
+    try{
+        if('wakeLock' in navigator){
+            wakeLock = await navigator.wakeLock.request('screen');
+        }
+    }catch(e){}
+
+    document.getElementById("fullscreenIntro").style.display = "none";
+    document.getElementById("loadingScreen").style.display = "flex";
+
+    document.querySelector(".loaderFill").style.animation = "loadAnim 1s forwards";
+
+    setTimeout(()=>{
+        document.getElementById("loadingScreen").style.display = "none";
+        document.getElementById("loginScreen").style.display = "flex";
+    },1000);
 }
+
+function login(){
+
+    if(document.getElementById("loginInput").value === "153500"){
+
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("app").style.display = "flex";
+    }
+
+    document.getElementById("loginInput").value = "";
+}
+
+function pridatProdukt(nazev, cena){
+
+    scanSound.currentTime = 0;
+    scanSound.play();
+
+    celkem += cena;
+
+    const li = document.createElement("li");
+
+    li.className = "addedItem";
+
+    li.innerHTML = `
+        <span>${nazev}</span>
+        <span>
+            ${cena} Kč
+            <button onclick="odebratProdukt(this, ${cena})">X</button>
+        </span>
+    `;
+
+    document.getElementById("zboziList").prepend(li);
+
+    aktualizovat();
+}
+
+function odebratProdukt(btn, cena){
+
+    btn.parentElement.parentElement.remove();
+
+    celkem -= cena;
+
+    aktualizovat();
+}
+
+function aktualizovat(){
+
+    document.getElementById("celkovaCena").innerText =
+        `CELKEM: ${celkem} Kč`;
+
+    document.getElementById("cashTotalDisplay").innerText =
+        `${celkem} Kč`;
+}
+
+function openPaymentWindow(){
+
+    if(celkem > 0){
+        document.getElementById("paymentWindow").style.display = "block";
+    }
+}
+
+function closePaymentWindow(){
+
+    document.getElementById("paymentWindow").style.display = "none";
+}
+
+function finishPayment(){
+
+    paySound.currentTime = 0;
+    paySound.play();
+
+    closePaymentWindow();
+
+    document.getElementById("zaplatitMessage").style.display = "block";
+
+    setTimeout(()=>{
+
+        document.getElementById("zaplatitMessage").style.display = "none";
+
+        document.getElementById("zboziList").innerHTML = "";
+
+        celkem = 0;
+
+        aktualizovat();
+
+    },2500);
+}
+
+function logout(){
+
+    document.getElementById("app").style.display = "none";
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("fullscreenIntro").style.display = "flex";
+
+    if(document.exitFullscreen && document.fullscreenElement){
+        document.exitFullscreen();
+    }
+}
+
 </script>
 
 </body>
