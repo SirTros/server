@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Terminál</title>
+
+<style>
+
+html,body{
+    margin:0;
+    height:100%;
+    background:black;
+    color:white;
+    font-family:Arial;
+    overflow:hidden;
+    user-select:none;
+}
+
+/* START */
+#startScreen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+#startBtn{
+    padding:25px 50px;
+    font-size:32px;
+    border:none;
+    border-radius:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* TAP */
+#tapArea{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:50px;
+    font-weight:bold;
+    text-align:center;
+    z-index:1;
+}
+
+/* PIN */
+#pinScreen{
+    position:fixed;
+    inset:0;
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    z-index:10;
+}
+
+#pinDots{
+    font-size:60px;
+    letter-spacing:10px;
+    margin-bottom:20px;
+}
+
+.pinGrid{
+    display:grid;
+    grid-template-columns:repeat(3,100px);
+    gap:12px;
+}
+
+.pinGrid button{
+    height:90px;
+    border:none;
+    border-radius:18px;
+    background:#111;
+    color:white;
+    font-size:34px;
+    font-weight:bold;
+}
+
+.okBtn{ background:#22c55e !important; color:black !important; }
+.delBtn{ background:#ff3333 !important; }
+
+#flash{
+    position:fixed;
+    inset:0;
+    background:#22c55e;
+    opacity:0;
+    pointer-events:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="startScreen">
+    <button id="startBtn" onclick="start()">START</button>
+</div>
+
+<div id="tapArea">Přiložte kartu</div>
+
+<div id="pinScreen">
+
+    <div id="pinDots">----</div>
+
+    <div class="pinGrid">
+
+        <button onclick="add(1)">1</button>
+        <button onclick="add(2)">2</button>
+        <button onclick="add(3)">3</button>
+
+        <button onclick="add(4)">4</button>
+        <button onclick="add(5)">5</button>
+        <button onclick="add(6)">6</button>
+
+        <button onclick="add(7)">7</button>
+        <button onclick="add(8)">8</button>
+        <button onclick="add(9)">9</button>
+
+        <button class="delBtn" onclick="del()">⌫</button>
+        <button onclick="add(0)">0</button>
+        <button class="okBtn" onclick="ok()">OK</button>
+
+    </div>
+
+</div>
+
+<div id="flash"></div>
+
+<audio id="paySound"
+src="https://www.myinstants.com/media/sounds/google-wallet-payment-successful.mp3"></audio>
+
+<script>
+
+let pin = "";
+let stage = "idle";
+
+const tapArea = document.getElementById("tapArea");
+const pinScreen = document.getElementById("pinScreen");
+const dots = document.getElementById("pinDots");
+const flash = document.getElementById("flash");
+const paySound = document.getElementById("paySound");
+
+/* START FIX */
+function start(){
+
+    const startScreen = document.getElementById("startScreen");
+
+    startScreen.style.display = "none";
+    startScreen.style.pointerEvents = "none";
+    startScreen.style.visibility = "hidden";
+
+    const el = document.documentElement;
+    if (el.requestFullscreen) {
+        el.requestFullscreen().catch(()=>{});
+    }
+}
+
+/* TAP → PIN */
+tapArea.addEventListener("click",()=>{
+    if(stage !== "idle") return;
+
+    stage = "pin";
+    pinScreen.style.display = "flex";
+    tapArea.style.display = "none";
+
+    pin = "";
+    update();
+});
+
+/* BEEP */
+function beep(){
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "square";
+    osc.frequency.value = 900;
+    gain.gain.value = 0.05;
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.07);
+}
+
+/* PIN */
+function add(n){
+    if(pin.length >= 4) return;
+    pin += n;
+    beep();
+    update();
+}
+
+function del(){
+    pin = pin.slice(0,-1);
+    beep();
+    update();
+}
+
+function update(){
+    dots.innerText = "----".split("").map((_,i)=> i<pin.length ? "•" : "-").join("");
+}
+
+/* OK */
+async function ok(){
+
+    if(pin.length !== 4) return;
+
+    beep();
+    pinScreen.style.display = "none";
+    stage = "process";
+
+    tapArea.style.display = "flex";
+
+    tapArea.innerText = "Zpracováváme platbu…";
+    await wait(700);
+
+    tapArea.innerText = "Připojování ke službě…";
+    await wait(700);
+
+    tapArea.innerText = "Bezpečnostní kontrola…";
+    await wait(700);
+
+    tapArea.innerText = "Schváleno ✔";
+
+    paySound.currentTime = 0;
+    paySound.play();
+
+    flash.style.opacity = "0.2";
+    await wait(600);
+    flash.style.opacity = "0";
+
+    await wait(900);
+
+    stage = "idle";
+    pin = "";
+    update();
+
+    tapArea.innerText = "Přiložte kartu";
+}
+
+function wait(ms){
+    return new Promise(r=>setTimeout(r,ms));
+}
+
+</script>
+
+</body>
+</html>
