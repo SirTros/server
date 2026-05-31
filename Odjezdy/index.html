@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odjezdová tabule – Hlavní nádraží</title>
+
+<style>
+*{
+box-sizing:border-box;
+}
+
+html,body{
+height:100%;
+margin:0;
+padding:0;
+background:#050505;
+font-family:Segoe UI;
+color:#fff;
+overflow:hidden;
+}
+
+/* FULLSCREEN BUTTON */
+#fsBtn{
+position:fixed;
+top:10px;
+left:10px;
+z-index:9999;
+padding:10px 14px;
+background:#ffd400;
+color:#000;
+border:none;
+font-weight:800;
+cursor:pointer;
+border-radius:6px;
+}
+
+/* HEADER */
+.header{
+display:flex;
+justify-content:space-between;
+padding:15px;
+background:#111;
+border-bottom:3px solid #ffd400;
+}
+
+.logo{
+color:#ffd400;
+font-size:22px;
+font-weight:800;
+}
+
+.clock{
+color:#ffd400;
+font-size:20px;
+}
+
+/* TABLE */
+table{
+width:100%;
+border-collapse:collapse;
+background:#0a0a0a;
+}
+
+th{
+background:#ffd400;
+color:#000;
+padding:10px;
+}
+
+td{
+text-align:center;
+padding:10px;
+border-bottom:1px solid #222;
+}
+
+.wait{color:#888;}
+.ready{color:#ffd400;}
+.depart{color:#ff3b3b;font-weight:800;}
+</style>
+</head>
+
+<body>
+
+<!-- FULLSCREEN -->
+<button id="fsBtn" onclick="goFull()">Fullscreen</button>
+
+<div class="header">
+<div class="logo">🚌 Hlavní nádraží – odjezdová tabule</div>
+<div class="clock" id="clock"></div>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Linka</th>
+<th>Značka</th>
+<th>Odkud</th>
+<th>Kam</th>
+<th>Odjezd</th>
+<th>Stav</th>
+</tr>
+</thead>
+<tbody id="board"></tbody>
+</table>
+
+<script>
+
+/* FULLSCREEN */
+function goFull(){
+const el=document.documentElement;
+if(el.requestFullscreen){
+el.requestFullscreen();
+}
+document.getElementById("fsBtn").style.display="none";
+}
+
+/* LINKY */
+const lines={
+"001":{"to":"Park Náměstí","brand":"SOR"},
+"002":{"to":"Nemocnice","brand":"Karosa"},
+"003":{"to":"Letiště","brand":"Setra"}
+};
+
+/* JÍZDNÍ ŘÁD (1:30) */
+let scheduleStart=Date.now();
+
+/* BUSY */
+let buses=[
+createBus("001"),
+createBus("002"),
+createBus("003")
+];
+
+function createBus(line){
+scheduleStart += 90000; // 1 minuta 30 sekund
+return{
+line,
+departure:scheduleStart
+};
+}
+
+/* ČAS */
+function pad(n){return String(n).padStart(2,"0");}
+
+function time(ms){
+const d=new Date(ms);
+return pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+}
+
+/* HLÁŠENÍ */
+function play(line){
+
+const gong=new Audio("gong-hlas.wav");
+gong.play();
+
+gong.onended=()=>{
+
+setTimeout(()=>{
+
+let voice;
+
+if(line==="001") voice=new Audio("001.wav");
+if(line==="002") voice=new Audio("002.wav");
+if(line==="003") voice=new Audio("003.wav");
+
+voice.play();
+
+voice.onended=()=>{
+
+setTimeout(()=>{
+
+const finalV=new Audio("hlas.wav");
+finalV.play();
+
+},250);
+
+};
+
+},250);
+
+};
+}
+
+/* UPDATE */
+function update(){
+
+const now=Date.now();
+
+buses.forEach(b=>{
+
+const diff=b.departure-now;
+
+/* HLÁŠENÍ 60s před odjezdem */
+if(diff<=60000 && diff>59000 && !b.played){
+play(b.line);
+b.played=true;
+}
+
+/* nový cyklus */
+if(diff<-30000){
+scheduleStart += 90000;
+b.departure=scheduleStart;
+b.played=false;
+}
+
+});
+
+/* TABULE */
+const board=document.getElementById("board");
+board.innerHTML="";
+
+buses.forEach(b=>{
+
+const diff=b.departure-now;
+
+let status="Čeká";
+let cls="wait";
+
+if(diff<=60000){status="Připravuje se"; cls="ready";}
+if(diff<=15000){status="Odjíždí"; cls="depart";}
+
+board.innerHTML+=`
+<tr>
+<td>${b.line}</td>
+<td>${lines[b.line].brand}</td>
+<td>Hlavní nádraží</td>
+<td>${lines[b.line].to}</td>
+<td>${time(b.departure)}</td>
+<td class="${cls}">${status}</td>
+</tr>
+`;
+});
+
+}
+
+/* CLOCK */
+function clock(){
+const d=new Date();
+document.getElementById("clock").textContent=
+pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+}
+
+clock();
+update();
+
+setInterval(clock,1000);
+setInterval(update,1000);
+
+</script>
+
+</body>
+</html>
