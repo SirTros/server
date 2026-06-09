@@ -17,6 +17,7 @@ html, body {
     font-family: 'Montserrat', sans-serif;
 }
 
+/* KONTAINER */
 #container {
     position: absolute;
     top: 50%;
@@ -24,10 +25,15 @@ html, body {
     transform: translate(-50%, -50%);
     text-align: center;
     color: white;
-    text-shadow: 0 0 15px black;
+
+    /* lepší stabilita + méně blur */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    text-shadow: 0 4px 10px rgba(0,0,0,0.35);
 }
 
-/* čas */
+/* ČAS */
 #time {
     font-size: 140px;
     font-weight: 700;
@@ -37,42 +43,53 @@ html, body {
     align-items: center;
 }
 
+/* čísla */
 .digit {
     display: inline-flex;
     justify-content: center;
     align-items: center;
     min-width: 80px;
-    font-weight: 700;
+    height: 150px;
     position: relative;
     overflow: hidden;
+
+    font-feature-settings: "tnum";
+
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
-.colon {
-    width: 40px;
+/* vnitřní číslo */
+.inner {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
-/* SLIDE animace */
+/* animace */
 .slide-in {
-    animation: slideIn 0.2s forwards;
+    animation: slideIn 0.2s ease-out forwards;
 }
 
 .slide-out {
-    animation: slideOut 0.2s forwards;
+    animation: slideOut 0.2s ease-in forwards;
 }
 
 @keyframes slideOut {
     from { transform: translateY(0); opacity: 1; }
-    to   { transform: translateY(-35%); opacity: 0; }
+    to   { transform: translateY(-20px); opacity: 0; }
 }
 
 @keyframes slideIn {
-    from { transform: translateY(35%); opacity: 0; }
+    from { transform: translateY(20px); opacity: 0; }
     to   { transform: translateY(0); opacity: 1; }
 }
 
-/* datum */
+/* spodní text */
 #date, #weekday {
-    font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     letter-spacing: 1px;
 }
@@ -80,13 +97,11 @@ html, body {
 #date {
     font-size: 38px;
     margin-top: 15px;
-    opacity: 0.95;
 }
 
 #weekday {
     font-size: 28px;
     margin-top: 5px;
-    opacity: 0.85;
 }
 </style>
 </head>
@@ -94,14 +109,14 @@ html, body {
 <body>
 <div id="container">
     <div id="time">
-        <span id="h1" class="digit"></span>
-        <span id="h2" class="digit"></span>
-        <span class="colon">:</span>
-        <span id="m1" class="digit"></span>
-        <span id="m2" class="digit"></span>
-        <span class="colon">:</span>
-        <span id="s1" class="digit"></span>
-        <span id="s2" class="digit"></span>
+        <span class="digit"><span id="h1" class="inner"></span></span>
+        <span class="digit"><span id="h2" class="inner"></span></span>
+        <span>:</span>
+        <span class="digit"><span id="m1" class="inner"></span></span>
+        <span class="digit"><span id="m2" class="inner"></span></span>
+        <span>:</span>
+        <span class="digit"><span id="s1" class="inner"></span></span>
+        <span class="digit"><span id="s2" class="inner"></span></span>
     </div>
 
     <div id="weekday"></div>
@@ -109,16 +124,7 @@ html, body {
 </div>
 
 <script>
-const days = [
-    "neděle",
-    "pondělí",
-    "úterý",
-    "středa",
-    "čtvrtek",
-    "pátek",
-    "sobota"
-];
-
+const days = ["neděle","pondělí","úterý","středa","čtvrtek","pátek","sobota"];
 let last = {};
 
 function setDigit(id, val) {
@@ -132,7 +138,7 @@ function setDigit(id, val) {
             el.innerText = val;
             el.classList.remove("slide-out");
             el.classList.add("slide-in");
-        }, 100);
+        }, 90);
 
         last[id] = val;
     }
