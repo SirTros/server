@@ -17,6 +17,7 @@ html, body {
     font-family: 'Montserrat', sans-serif;
 }
 
+/* KONTAINER */
 #container {
     position: absolute;
     top: 50%;
@@ -24,9 +25,14 @@ html, body {
     transform: translate(-50%, -50%);
     text-align: center;
     color: white;
-    text-shadow: 0 0 15px black;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    text-shadow: 0 4px 10px rgba(0,0,0,0.35);
 }
 
+/* ČAS */
 #time {
     font-size: 140px;
     font-weight: 700;
@@ -36,46 +42,54 @@ html, body {
     align-items: center;
 }
 
-/* pevný box bez pohybu */
+/* čísla */
 .digit {
     display: inline-flex;
     justify-content: center;
     align-items: center;
+
     min-width: 80px;
-    height: 150px;
+    height: 170px;              /* 🔥 větší výška */
     position: relative;
-    overflow: hidden;
+
+    overflow: visible;         /* 🔥 důležité – žádné uřezávání */
+
+    font-feature-settings: "tnum";
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
-/* animovaný vnitřek */
+/* vnitřní číslo */
 .inner {
     position: absolute;
     width: 100%;
     text-align: center;
+
+    line-height: 170px;        /* 🔥 zarovnání doprostřed */
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
+/* animace */
 .slide-in {
-    animation: slideIn 0.2s forwards;
+    animation: slideIn 0.2s ease-out forwards;
 }
 
 .slide-out {
-    animation: slideOut 0.2s forwards;
+    animation: slideOut 0.2s ease-in forwards;
 }
 
 @keyframes slideOut {
     from { transform: translateY(0); opacity: 1; }
-    to   { transform: translateY(-40%); opacity: 0; }
+    to   { transform: translateY(-30px); opacity: 0; } /* trochu víc prostoru */
 }
 
 @keyframes slideIn {
-    from { transform: translateY(40%); opacity: 0; }
+    from { transform: translateY(30px); opacity: 0; }
     to   { transform: translateY(0); opacity: 1; }
 }
 
-.colon {
-    width: 40px;
-}
-
+/* datum */
 #date, #weekday {
     font-weight: 700;
     letter-spacing: 1px;
@@ -98,10 +112,10 @@ html, body {
     <div id="time">
         <span class="digit"><span id="h1" class="inner"></span></span>
         <span class="digit"><span id="h2" class="inner"></span></span>
-        <span class="colon">:</span>
+        <span>:</span>
         <span class="digit"><span id="m1" class="inner"></span></span>
         <span class="digit"><span id="m2" class="inner"></span></span>
-        <span class="colon">:</span>
+        <span>:</span>
         <span class="digit"><span id="s1" class="inner"></span></span>
         <span class="digit"><span id="s2" class="inner"></span></span>
     </div>
@@ -118,8 +132,6 @@ function setDigit(id, val) {
     const el = document.getElementById(id);
 
     if (last[id] !== val) {
-        const old = el.innerText;
-
         el.classList.remove("slide-in");
         el.classList.add("slide-out");
 
@@ -127,7 +139,7 @@ function setDigit(id, val) {
             el.innerText = val;
             el.classList.remove("slide-out");
             el.classList.add("slide-in");
-        }, 100);
+        }, 90);
 
         last[id] = val;
     }
