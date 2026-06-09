@@ -17,7 +17,6 @@ html, body {
     font-family: 'Montserrat', sans-serif;
 }
 
-/* KONTAINER */
 #container {
     position: absolute;
     top: 50%;
@@ -25,15 +24,9 @@ html, body {
     transform: translate(-50%, -50%);
     text-align: center;
     color: white;
-
-    /* lepší stabilita + méně blur */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
-    text-shadow: 0 4px 10px rgba(0,0,0,0.35);
+    text-shadow: 0 0 15px black;
 }
 
-/* ČAS */
 #time {
     font-size: 140px;
     font-weight: 700;
@@ -43,7 +36,7 @@ html, body {
     align-items: center;
 }
 
-/* čísla */
+/* pevný box bez pohybu */
 .digit {
     display: inline-flex;
     justify-content: center;
@@ -52,43 +45,37 @@ html, body {
     height: 150px;
     position: relative;
     overflow: hidden;
-
-    font-feature-settings: "tnum";
-
-    will-change: transform, opacity;
-    transform: translateZ(0);
 }
 
-/* vnitřní číslo */
+/* animovaný vnitřek */
 .inner {
     position: absolute;
     width: 100%;
     text-align: center;
-
-    will-change: transform, opacity;
-    transform: translateZ(0);
 }
 
-/* animace */
 .slide-in {
-    animation: slideIn 0.2s ease-out forwards;
+    animation: slideIn 0.2s forwards;
 }
 
 .slide-out {
-    animation: slideOut 0.2s ease-in forwards;
+    animation: slideOut 0.2s forwards;
 }
 
 @keyframes slideOut {
     from { transform: translateY(0); opacity: 1; }
-    to   { transform: translateY(-20px); opacity: 0; }
+    to   { transform: translateY(-40%); opacity: 0; }
 }
 
 @keyframes slideIn {
-    from { transform: translateY(20px); opacity: 0; }
+    from { transform: translateY(40%); opacity: 0; }
     to   { transform: translateY(0); opacity: 1; }
 }
 
-/* spodní text */
+.colon {
+    width: 40px;
+}
+
 #date, #weekday {
     font-weight: 700;
     letter-spacing: 1px;
@@ -111,10 +98,10 @@ html, body {
     <div id="time">
         <span class="digit"><span id="h1" class="inner"></span></span>
         <span class="digit"><span id="h2" class="inner"></span></span>
-        <span>:</span>
+        <span class="colon">:</span>
         <span class="digit"><span id="m1" class="inner"></span></span>
         <span class="digit"><span id="m2" class="inner"></span></span>
-        <span>:</span>
+        <span class="colon">:</span>
         <span class="digit"><span id="s1" class="inner"></span></span>
         <span class="digit"><span id="s2" class="inner"></span></span>
     </div>
@@ -131,6 +118,8 @@ function setDigit(id, val) {
     const el = document.getElementById(id);
 
     if (last[id] !== val) {
+        const old = el.innerText;
+
         el.classList.remove("slide-in");
         el.classList.add("slide-out");
 
@@ -138,7 +127,7 @@ function setDigit(id, val) {
             el.innerText = val;
             el.classList.remove("slide-out");
             el.classList.add("slide-in");
-        }, 90);
+        }, 100);
 
         last[id] = val;
     }
