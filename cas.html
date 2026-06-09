@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<title>TV Clock Pro</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+}
+
+#container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    text-shadow: 0 0 15px black;
+}
+
+/* čas */
+#time {
+    font-size: 140px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.digit {
+    display: inline-block;
+    min-width: 80px;
+    position: relative;
+    font-weight: 700;
+}
+
+.colon {
+    width: 40px;
+}
+
+/* animace */
+.slide-out {
+    animation: out 0.25s forwards;
+}
+
+.slide-in {
+    animation: in 0.25s forwards;
+}
+
+@keyframes out {
+    from { transform: translateY(0) scale(1); opacity: 1; filter: blur(0px); }
+    to   { transform: translateY(-35px) scale(0.9); opacity: 0; filter: blur(4px); }
+}
+
+@keyframes in {
+    from { transform: translateY(35px) scale(1.1); opacity: 0; filter: blur(4px); }
+    to   { transform: translateY(0) scale(1); opacity: 1; filter: blur(0px); }
+}
+
+/* dolní texty */
+#date, #weekday {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+#date {
+    font-size: 38px;
+    margin-top: 15px;
+    opacity: 0.95;
+}
+
+#weekday {
+    font-size: 28px;
+    margin-top: 5px;
+    opacity: 0.85;
+}
+</style>
+</head>
+
+<body>
+<div id="container">
+    <div id="time">
+        <span id="h1" class="digit"></span>
+        <span id="h2" class="digit"></span>
+        <span class="colon">:</span>
+        <span id="m1" class="digit"></span>
+        <span id="m2" class="digit"></span>
+        <span class="colon">:</span>
+        <span id="s1" class="digit"></span>
+        <span id="s2" class="digit"></span>
+    </div>
+
+    <div id="weekday"></div>
+    <div id="date"></div>
+</div>
+
+<script>
+const days = [
+    "neděle",
+    "pondělí",
+    "úterý",
+    "středa",
+    "čtvrtek",
+    "pátek",
+    "sobota"
+];
+
+let last = {};
+
+function setDigit(id, val) {
+    const el = document.getElementById(id);
+
+    if (last[id] !== val) {
+        el.classList.remove("slide-in");
+        el.classList.add("slide-out");
+
+        setTimeout(() => {
+            el.innerText = val;
+            el.classList.remove("slide-out");
+            el.classList.add("slide-in");
+        }, 150);
+
+        last[id] = val;
+    }
+}
+
+function update() {
+    const now = new Date();
+
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+
+    setDigit("h1", h[0]);
+    setDigit("h2", h[1]);
+    setDigit("m1", m[0]);
+    setDigit("m2", m[1]);
+    setDigit("s1", s[0]);
+    setDigit("s2", s[1]);
+
+    const d = String(now.getDate()).padStart(2,'0');
+    const mo = String(now.getMonth()+1).padStart(2,'0');
+    const y = now.getFullYear();
+
+    document.getElementById("date").innerText = `${d}.${mo}.${y}`;
+    document.getElementById("weekday").innerText = days[now.getDay()];
+}
+
+update();
+setInterval(update, 1000);
+</script>
+
+</body>
+</html>
