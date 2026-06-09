@@ -38,36 +38,39 @@ html, body {
 }
 
 .digit {
-    display: inline-block;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     min-width: 80px;
-    position: relative;
     font-weight: 700;
+    position: relative;
+    overflow: hidden;
 }
 
 .colon {
     width: 40px;
 }
 
-/* animace */
-.slide-out {
-    animation: out 0.25s forwards;
-}
-
+/* SLIDE animace */
 .slide-in {
-    animation: in 0.25s forwards;
+    animation: slideIn 0.2s forwards;
 }
 
-@keyframes out {
-    from { transform: translateY(0) scale(1); opacity: 1; filter: blur(0px); }
-    to   { transform: translateY(-35px) scale(0.9); opacity: 0; filter: blur(4px); }
+.slide-out {
+    animation: slideOut 0.2s forwards;
 }
 
-@keyframes in {
-    from { transform: translateY(35px) scale(1.1); opacity: 0; filter: blur(4px); }
-    to   { transform: translateY(0) scale(1); opacity: 1; filter: blur(0px); }
+@keyframes slideOut {
+    from { transform: translateY(0); opacity: 1; }
+    to   { transform: translateY(-35%); opacity: 0; }
 }
 
-/* dolní texty */
+@keyframes slideIn {
+    from { transform: translateY(35%); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+
+/* datum */
 #date, #weekday {
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
@@ -129,7 +132,7 @@ function setDigit(id, val) {
             el.innerText = val;
             el.classList.remove("slide-out");
             el.classList.add("slide-in");
-        }, 150);
+        }, 100);
 
         last[id] = val;
     }
