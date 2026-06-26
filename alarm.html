@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Real vs Stickman</title>
+
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  background:black;
+}
+
+#video{
+  position:fixed;
+  left:0;
+  top:0;
+  width:50vw;
+  height:100vh;
+  object-fit:cover;
+}
+
+#canvas{
+  position:fixed;
+  right:0;
+  top:0;
+  width:50vw;
+  height:100vh;
+  background:#111;
+}
+
+#ui{
+  position:fixed;
+  top:10px;
+  left:10px;
+  color:white;
+  font-family:sans-serif;
+  z-index:9999;
+}
+</style>
+</head>
+
+<body>
+
+<video id="video" autoplay playsinline></video>
+<canvas id="canvas"></canvas>
+<div id="ui">loading...</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+<script>
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const ui = document.getElementById("ui");
+
+canvas.width = window.innerWidth / 2;
+canvas.height = window.innerHeight;
+
+let landmarks = null;
+
+// ================= POSE =================
+const pose = new Pose({
+  locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}`
+});
+
+pose.setOptions({
+  modelComplexity: 1,
+  smoothLandmarks: true,
+  minDetectionConfidence: 0.6,
+  minTrackingConfidence: 0.6
+});
+
+pose.onResults(res => {
+  if(res.poseLandmarks){
+    landmarks = res.poseLandmarks;
+  }
+});
+
+// ================= DRAW STICKMAN =================
+function drawStickman(lm){
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  const w = canvas.width;
+  const h = canvas.height;
+
+  function p(i){
+    return {
+      x: lm[i].x * w,
+      y: lm[i].y * h
+    };
+  }
+
+  ctx.strokeStyle = "lime";
+  ctx.lineWidth = 4;
+
+  function line(a,b){
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y);
+    ctx.lineTo(b.x,b.y);
+    ctx.stroke();
+  }
+
+  // body parts
+  const nose = p(0);
+  const lShoulder = p(11);
+  const rShoulder = p(12);
+  const lElbow = p(13);
+  const rElbow = p(14);
+  const lWrist = p(15);
+  const rWrist = p(16);
+
+  const lHip = p(23);
+  const rHip = p(24);
+  const lKnee = p(25);
+  const rKnee = p(26);
+  const lAnkle = p(27);
+  const rAnkle = p(28);
+
+  // torso
+  line(lShoulder,rShoulder);
+  line(lShoulder,lHip);
+  line(rShoulder,rHip);
+  line(lHip,rHip);
+
+  // arms
+  line(lShoulder,lElbow);
+  line(lElbow,lWrist);
+
+  line(rShoulder,rElbow);
+  line(rElbow,rWrist);
+
+  // legs
+  line(lHip,lKnee);
+  line(lKnee,lAnkle);
+
+  line(rHip,rKnee);
+  line(rKnee,rAnkle);
+
+  // head
+  ctx.beginPath();
+  ctx.arc(nose.x,nose.y,10,0,Math.PI*2);
+  ctx.stroke();
+}
+
+// ================= CAMERA =================
+async function startCam(){
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video:true
+  });
+
+  video.srcObject = stream;
+  await video.play();
+
+  const cam = new Camera(video, {
+    onFrame: async () => {
+      await pose.send({image: video});
+    },
+    width:1280,
+    height:720
+  });
+
+  cam.start();
+}
+
+startCam();
+
+// ================= LOOP =================
+setInterval(() => {
+
+  if(landmarks){
+    drawStickman(landmarks);
+    ui.innerText = "OK - tracking body";
+  } else {
+    ui.innerText = "no body";
+  }
+
+}, 30);
+
+</script>
+
+</body>
+</html>
