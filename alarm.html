@@ -9,7 +9,14 @@
 
 <style>
 body { margin:0; background:black; overflow:hidden; }
-video { position:fixed; width:100vw; height:100vh; object-fit:cover; }
+
+video, canvas {
+  position:fixed;
+  width:100vw;
+  height:100vh;
+  object-fit:cover;
+}
+
 #ui {
   position:fixed;
   top:20px; left:20px;
@@ -18,6 +25,15 @@ video { position:fixed; width:100vw; height:100vh; object-fit:cover; }
   background:rgba(0,0,0,0.6);
   padding:10px;
   border-radius:10px;
+  z-index:10;
+}
+
+button{
+  margin-top:10px;
+  padding:8px 12px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -25,11 +41,20 @@ video { position:fixed; width:100vw; height:100vh; object-fit:cover; }
 <body>
 
 <video id="video" autoplay playsinline></video>
-<div id="ui">Loading AI...</div>
+<canvas id="canvas"></canvas>
+
+<div id="ui">
+  <div id="status">Loading AI...</div>
+  <button id="toggleBtn">START SCANNING</button>
+</div>
 
 <script>
 const video = document.getElementById("video");
-const ui = document.getElementById("ui");
+const canvas = document.getElementById("canvas");
+const ctx2 = canvas.getContext("2d");
+
+const statusEl = document.getElementById("status");
+const btn = document.getElementById("toggleBtn");
 
 let model;
 let stream;
@@ -38,19 +63,60 @@ let recorder;
 let chunks = [];
 let recording = false;
 
+let scanning = false;
 let lastPerson = 0;
+let recordStart = 0;
+
+function pad(n){ return n < 10 ? "0"+n : n; }
+
+function getTime(){
+  const d = new Date();
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function getDate(){
+  const d = new Date();
+  return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`;
+}
+
+// sound
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+function beep(freq=800, len=80, vol=0.05){
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+
+  o.frequency.value = freq;
+  g.gain.value = vol;
+
+  o.connect(g);
+  g.connect(ctx.destination);
+
+  o.start();
+  o.stop(ctx.currentTime + len/1000);
+}
 
 // camera
 async function startCam(){
   stream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
   video.srcObject = stream;
   await video.play();
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
 }
 
-// record
+// record canvas stream (NE video → canvas = timestamp included)
 function startRecord(){
+  if(!scanning) return;
+
+  const canvasStream = canvas.captureStream(30);
+  const audioTracks = stream.getAudioTracks();
+
+  audioTracks.forEach(t => canvasStream.addTrack(t));
+
   chunks = [];
-  recorder = new MediaRecorder(stream);
+  recorder = new MediaRecorder(canvasStream);
 
   recorder.ondataavailable = e => chunks.push(e.data);
 
@@ -64,6 +130,7 @@ function startRecord(){
 
   recorder.start();
   recording = true;
+  recordStart = Date.now();
 }
 
 function stopRecord(){
@@ -73,34 +140,83 @@ function stopRecord(){
   }
 }
 
-// AI loop
+// draw loop (video + timestamp)
+function draw(){
+  ctx2.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  const now = new Date();
+
+  const time = getTime();
+  const date = getDate();
+
+  let secs = recording ? Math.floor((Date.now() - recordStart)/1000) : 0;
+
+  ctx2.fillStyle = "rgba(0,0,0,0.6)";
+  ctx2.fillRect(10, 10, 300, 70);
+
+  ctx2.fillStyle = "white";
+  ctx2.font = "20px Arial";
+
+  ctx2.fillText("📅 " + date, 20, 35);
+  ctx2.fillText("⏰ " + time, 20, 60);
+  if(recording) ctx2.fillText("⏱ " + secs + "s REC", 180, 60);
+
+  requestAnimationFrame(draw);
+}
+
+// AI detect
 async function detect(){
   const preds = await model.detect(video);
 
   let person = preds.some(p => p.class === "person" && p.score > 0.6);
 
-  if(person){
-    lastPerson = Date.now();
-    ui.innerText = "VIDÍM ČLOVĚKA 🔴";
+  if(scanning){
+    if(person){
+      lastPerson = Date.now();
+      statusEl.innerText = "VIDÍM ČLOVĚKA 🔴";
+      beep(900, 60, 0.06);
 
-    if(!recording) startRecord();
+      if(!recording) startRecord();
+    } else {
+      statusEl.innerText = "NIC NEDETEKUJI ⚪";
+    }
+
+    if(recording && Date.now() - lastPerson > 3000){
+      statusEl.innerText = "STOP + DOWNLOAD ⛔";
+      stopRecord();
+    }
   } else {
-    ui.innerText = "NIC NEDETEKUJI ⚪";
-  }
-
-  if(recording && Date.now() - lastPerson > 3000){
-    ui.innerText = "STOP + DOWNLOAD ⛔";
-    stopRecord();
+    statusEl.innerText = "SCAN OFF 💤";
+    if(recording) stopRecord();
   }
 
   requestAnimationFrame(detect);
 }
 
+// button
+btn.onclick = () => {
+  scanning = !scanning;
+
+  if(scanning){
+    btn.innerText = "STOP SCANNING";
+    statusEl.innerText = "SCANNING...";
+    beep(1000, 100, 0.08);
+  } else {
+    btn.innerText = "START SCANNING";
+    statusEl.innerText = "SCAN OFF";
+    beep(200, 120, 0.05);
+    stopRecord();
+  }
+};
+
+// start
 async function main(){
   await startCam();
   model = await cocoSsd.load();
 
-  ui.innerText = "READY";
+  statusEl.innerText = "READY";
+
+  draw();
   detect();
 }
 
