@@ -2,31 +2,19 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>3s AI Recorder</title>
+<title>AI Person Recorder</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 
 <style>
-body{
-  margin:0;
-  overflow:hidden;
-  background:black;
-}
-
-video{
+body { margin:0; background:black; overflow:hidden; }
+video { position:fixed; width:100vw; height:100vh; object-fit:cover; }
+#ui {
   position:fixed;
-  top:0;
-  left:0;
-  width:100vw;
-  height:100vh;
-  object-fit:cover;
-}
-
-#ui{
-  position:fixed;
-  top:20px;
-  left:20px;
+  top:20px; left:20px;
   color:white;
   font-family:sans-serif;
-  font-size:18px;
   background:rgba(0,0,0,0.6);
   padding:10px;
   border-radius:10px;
@@ -37,43 +25,31 @@ video{
 <body>
 
 <video id="video" autoplay playsinline></video>
-<div id="ui">start...</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<div id="ui">Loading AI...</div>
 
 <script>
 const video = document.getElementById("video");
 const ui = document.getElementById("ui");
 
-let seen = false;
-let lastSeen = 0;
+let model;
+let stream;
 
 let recorder;
 let chunks = [];
 let recording = false;
 
-// 🔊 beep
-const ctx = new (window.AudioContext || window.webkitAudioContext)();
+let lastPerson = 0;
 
-function beep(){
-  const o = ctx.createOscillator();
-  const g = ctx.createGain();
-
-  o.frequency.value = 800;
-  g.gain.value = 0.04;
-
-  o.connect(g);
-  g.connect(ctx.destination);
-
-  o.start();
-  o.stop(ctx.currentTime + 0.08);
+// camera
+async function startCam(){
+  stream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+  video.srcObject = stream;
+  await video.play();
 }
 
-// 🎥 start record
-async function startRecord(stream){
+// record
+function startRecord(){
   chunks = [];
-
   recorder = new MediaRecorder(stream);
 
   recorder.ondataavailable = e => chunks.push(e.data);
@@ -82,7 +58,7 @@ async function startRecord(stream){
     const blob = new Blob(chunks, {type:"video/webm"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "ai_record.webm";
+    a.download = "record.webm";
     a.click();
   };
 
@@ -90,7 +66,6 @@ async function startRecord(stream){
   recording = true;
 }
 
-// stop record
 function stopRecord(){
   if(recorder && recording){
     recorder.stop();
@@ -98,74 +73,38 @@ function stopRecord(){
   }
 }
 
-// ================= POSE =================
-const pose = new Pose({
-  locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}`
-});
+// AI loop
+async function detect(){
+  const preds = await model.detect(video);
 
-pose.setOptions({
-  modelComplexity: 1,
-  smoothLandmarks: true,
-  minDetectionConfidence: 0.6,
-  minTrackingConfidence: 0.6
-});
+  let person = preds.some(p => p.class === "person" && p.score > 0.6);
 
-pose.onResults(res => {
-  if(res.poseLandmarks){
-    seen = true;
-    lastSeen = Date.now();
-  }
-});
-
-// ================= CAMERA =================
-let stream;
-
-async function startCam(){
-  stream = await navigator.mediaDevices.getUserMedia({
-    video:{ facingMode:"user" },
-    audio:true
-  });
-
-  video.srcObject = stream;
-  await video.play();
-
-  const cam = new Camera(video, {
-    onFrame: async () => {
-      await pose.send({image: video});
-    },
-    width:1280,
-    height:720
-  });
-
-  cam.start();
-}
-
-startCam();
-
-// ================= LOOP =================
-setInterval(() => {
-
-  const now = Date.now();
-
-  if(seen){
-    beep();
+  if(person){
+    lastPerson = Date.now();
     ui.innerText = "VIDÍM ČLOVĚKA 🔴";
 
-    if(!recording){
-      startRecord(stream);
-    }
+    if(!recording) startRecord();
+  } else {
+    ui.innerText = "NIC NEDETEKUJI ⚪";
   }
 
-  seen = false;
-
-  // ⛔ 3 sekundy bez člověka → stop + download
-  if(recording && now - lastSeen > 3000){
+  if(recording && Date.now() - lastPerson > 3000){
     ui.innerText = "STOP + DOWNLOAD ⛔";
     stopRecord();
   }
 
-}, 200);
+  requestAnimationFrame(detect);
+}
 
+async function main(){
+  await startCam();
+  model = await cocoSsd.load();
+
+  ui.innerText = "READY";
+  detect();
+}
+
+main();
 </script>
 
 </body>
