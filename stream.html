@@ -16,20 +16,18 @@ html, body{
     font-family:Arial;
 }
 
-/* virtuální Full HD obraz */
 #screen{
     width:1920px;
     height:1080px;
     position:absolute;
     left:50%;
     top:50%;
-    transform:translate(-50%, -50%) scale(1);
+    transform:translate(-50%, -50%);
     transform-origin:center;
     background:black;
     overflow:hidden;
 }
 
-/* video */
 #video{
     width:1920px;
     height:1080px;
@@ -37,7 +35,6 @@ html, body{
     display:none;
 }
 
-/* logo */
 #logo{
     position:absolute;
     top:15px;
@@ -49,8 +46,6 @@ html, body{
     user-select:none;
 }
 
-
-/* start */
 #startBtn{
     position:fixed;
     inset:0;
@@ -69,6 +64,7 @@ button{
     cursor:pointer;
 }
 </style>
+
 </head>
 
 <body>
@@ -92,7 +88,6 @@ button{
 </div>
 
 
-
 <script>
 
 const video = document.getElementById("video");
@@ -100,13 +95,14 @@ const startBtn = document.getElementById("startBtn");
 const screen = document.getElementById("screen");
 
 
-const streamUrl = "http:192.168.8.111:8888/live/stream/index.m3u8";
+const streamUrl = "http://192.168.8.111:8888/live/stream/index.m3u8";
 
 let hls;
 
 
 
-// automatické zmenšení 1920x1080 na obrazovku
+// přizpůsobení obrazovce
+
 function resizeScreen(){
 
     let scale = Math.min(
@@ -120,24 +116,20 @@ function resizeScreen(){
 
 
 window.addEventListener("resize", resizeScreen);
+
 resizeScreen();
 
 
 
 
 // fullscreen
+
 function goFullscreen(){
 
     const el=document.documentElement;
 
     if(el.requestFullscreen){
         el.requestFullscreen();
-    }
-    else if(el.webkitRequestFullscreen){
-        el.webkitRequestFullscreen();
-    }
-    else if(el.msRequestFullscreen){
-        el.msRequestFullscreen();
     }
 
 }
@@ -146,39 +138,77 @@ function goFullscreen(){
 
 
 // spuštění streamu
+
 function startStream(){
+
+    if(hls){
+        hls.destroy();
+    }
+
 
     if(Hls.isSupported()){
 
 
         hls = new Hls({
-            lowLatencyMode:true
+
+            // větší buffer = méně sekání
+            lowLatencyMode:false,
+
+            maxBufferLength:30,
+
+            maxMaxBufferLength:60,
+
+            backBufferLength:60,
+
+            enableWorker:true
+
         });
 
 
+
         hls.loadSource(streamUrl);
+
         hls.attachMedia(video);
 
 
 
-        hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+        hls.on(
+            Hls.Events.MANIFEST_PARSED,
+            ()=>{
 
-            video.style.display="block";
-            video.play();
+                video.style.display="block";
 
-        });
+                video.play();
 
-
-
-        hls.on(Hls.Events.ERROR,()=>{
-
-            setTimeout(startStream,3000);
-
-        });
+            }
+        );
 
 
 
-    }else{
+        hls.on(
+            Hls.Events.ERROR,
+            (event,data)=>{
+
+                if(data.fatal){
+
+                    console.log("Stream chyba, obnovuji...");
+
+                    hls.destroy();
+
+                    setTimeout(
+                        startStream,
+                        3000
+                    );
+
+                }
+
+            }
+        );
+
+
+
+    }
+    else{
 
 
         video.src=streamUrl;
@@ -187,14 +217,8 @@ function startStream(){
         video.onloadeddata=()=>{
 
             video.style.display="block";
+
             video.play();
-
-        };
-
-
-        video.onerror=()=>{
-
-            setTimeout(startStream,3000);
 
         };
 
@@ -219,8 +243,11 @@ function startTV(){
 
 
 
-// návrat na kartu
-document.addEventListener("visibilitychange",()=>{
+// když se vrátíš na kartu
+
+document.addEventListener(
+"visibilitychange",
+()=>{
 
     if(!document.hidden){
 
@@ -238,15 +265,21 @@ document.addEventListener("visibilitychange",()=>{
 
 
 // ochrana proti zastavení
+
 setInterval(()=>{
 
     if(video.paused && !document.hidden){
 
-        video.play().catch(()=>{});
+        video.play().catch(()=>{
+
+            startStream();
+
+        });
 
     }
 
-},3000);
+},5000);
+
 
 
 </script>
