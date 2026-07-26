@@ -1,464 +1,1158 @@
 <!DOCTYPE html>
 <html lang="cs">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Pokladna OBCHOD</title>
 
 <style>
-body{
-    font-family:Arial,sans-serif;
-    background:#000;
-    color:white;
-    margin:0;
-    padding:0;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    overflow:hidden;
+
+*{
+box-sizing:border-box;
+font-family:Arial,Segoe UI;
 }
+
+
+body{
+
+margin:0;
+background:#000;
+color:white;
+overflow:auto;
+
+}
+
+
 
 #fullscreenIntro,
 #loginScreen,
 #app{
-    display:none;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    width:100%;
-    height:100%;
-    text-align:center;
+
+display:none;
+width:100%;
+min-height:100vh;
+
+flex-direction:column;
+align-items:center;
+justify-content:center;
+
 }
+
+
 
 #fullscreenIntro{
-    display:flex;
+
+display:flex;
+
 }
+
+
+
 
 #fullscreenButton{
-    padding:15px 30px;
-    font-size:20px;
-    background:cyan;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    margin-top:20px;
-    font-weight:bold;
+
+padding:15px 30px;
+
+font-size:20px;
+
+font-weight:bold;
+
+background:cyan;
+
+color:black;
+
+border:0;
+
+border-radius:10px;
+
 }
+
+
+
+
 
 #loadingScreen{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:black;
-    color:white;
-    display:none;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    font-size:26px;
-    z-index:9999;
+
+display:none;
+
+position:fixed;
+
+inset:0;
+
+background:black;
+
+z-index:999;
+
+flex-direction:column;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:25px;
+
 }
+
+
+
 
 .loaderBar{
-    width:300px;
-    height:12px;
-    border:2px solid white;
-    margin-top:20px;
-    overflow:hidden;
-    border-radius:10px;
+
+width:300px;
+
+height:12px;
+
+border:2px solid white;
+
+border-radius:10px;
+
+overflow:hidden;
+
 }
+
+
 
 .loaderFill{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg, cyan, royalblue);
+
+height:100%;
+
+width:0%;
+
+background:cyan;
+
 }
 
-@keyframes loadAnim{
-    100%{width:100%;}
+
+
+@keyframes load{
+
+from{
+
+width:0%;
+
 }
 
-#loginInput{
-    padding:12px;
-    font-size:20px;
-    background:#111;
-    border:1px solid cyan;
-    border-radius:6px;
-    color:white;
-    width:180px;
-    text-align:center;
+to{
+
+width:100%;
+
 }
 
-#loginButton{
-    margin-top:15px;
-    padding:12px 20px;
-    background:cyan;
-    border-radius:6px;
-    font-weight:bold;
-    cursor:pointer;
-    border:none;
 }
 
-#app{
-    position:relative;
-}
+
+
+
 
 h1{
-    margin-top:10px;
-    font-size:28px;
-    color:cyan;
+
+color:cyan;
+
 }
+
+
+
+
+
+input{
+
+background:#111;
+
+color:white;
+
+border:2px solid cyan;
+
+border-radius:8px;
+
+padding:15px;
+
+font-size:20px;
+
+text-align:center;
+
+}
+
+
+
+
 
 button{
-    cursor:pointer;
-    font-weight:bold;
-    border:none;
-    padding:12px;
-    border-radius:6px;
+
+cursor:pointer;
+
+font-weight:bold;
+
+border:0;
+
+border-radius:8px;
+
 }
 
+
+
+
+
+#loginButton,
 .pro-button{
-    background:cyan;
-    color:black;
-    margin-top:10px;
+
+background:cyan;
+
+color:black;
+
+padding:12px 25px;
+
+margin:10px;
+
 }
+
+
+
+
+
+#app{
+
+display:none;
+
+justify-content:flex-start;
+
+padding:20px;
+
+position:relative;
+
+}
+
+
+
 
 .lock-button{
-    position:absolute;
-    top:10px;
-    right:10px;
-    background:white;
-    color:black;
-    padding:8px 15px;
-    font-size:14px;
+
+position:absolute;
+
+top:15px;
+
+right:15px;
+
+background:white;
+
+color:black;
+
+padding:10px;
+
 }
 
-#produkty{
-    display:grid;
-    grid-template-columns:repeat(2, 220px);
-    gap:15px;
-    margin-top:20px;
+
+
+
+#kodScanner{
+
+width:300px;
+
+margin:20px;
+
 }
 
-.produktBtn{
-    background:#111;
-    color:white;
-    border:2px solid cyan;
-    border-radius:12px;
-    padding:20px;
-    font-size:20px;
-    transition:0.2s;
-}
 
-.produktBtn:hover{
-    background:cyan;
-    color:black;
-    transform:scale(1.05);
-}
 
-.produktBtn span{
-    display:block;
-    margin-top:10px;
-    font-size:16px;
-    color:#aaa;
-}
 
-.produktBtn:hover span{
-    color:black;
-}
 
 #zboziList{
-    list-style:none;
-    padding:0;
-    margin-top:20px;
-    width:90%;
-    max-width:500px;
-    max-height:220px;
-    overflow-y:auto;
-    border:1px solid #333;
-    border-radius:10px;
+
+list-style:none;
+
+padding:0;
+
+width:95%;
+
+max-width:700px;
+
 }
+
+
+
+
 
 .addedItem{
-    background:#111;
-    padding:10px;
-    margin-bottom:5px;
-    border-radius:6px;
-    border-left:4px solid cyan;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+
+background:#111;
+
+border-left:4px solid cyan;
+
+padding:12px;
+
+margin:8px;
+
+border-radius:8px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
 }
 
-.addedItem button{
-    background:red;
-    color:white;
-    padding:5px 10px;
-    font-size:12px;
+
+
+
+.removeBtn{
+
+background:red;
+
+color:white;
+
+padding:8px;
+
 }
 
-.payment-modal{
-    display:none;
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%, -50%);
-    background:#111;
-    padding:25px;
-    border-radius:10px;
-    border:2px solid cyan;
-    width:300px;
-    text-align:center;
-    z-index:1000;
+
+
+
+
+#celkovaCena{
+
+color:cyan;
+
 }
+
+
+
+
+
+#paymentWindow{
+
+display:none;
+
+position:fixed;
+
+top:50%;
+
+left:50%;
+
+transform:translate(-50%,-50%);
+
+background:#111;
+
+border:2px solid cyan;
+
+padding:25px;
+
+border-radius:10px;
+
+z-index:2000;
+
+}
+
+
+
+
 
 #zaplatitMessage{
-    display:none;
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    background:#0f0;
-    color:black;
-    padding:30px;
-    font-size:36px;
-    border-radius:15px;
-    font-weight:bold;
-    z-index:2000;
+
+display:none;
+
+position:fixed;
+
+top:50%;
+
+left:50%;
+
+transform:translate(-50%,-50%);
+
+background:lime;
+
+color:black;
+
+padding:30px;
+
+font-size:30px;
+
+border-radius:15px;
+
+z-index:3000;
+
 }
+
+
+
 </style>
+
 </head>
+
 
 <body>
 
+
+
 <div id="fullscreenIntro">
-    <h2>Kioskový systém</h2>
-    <button id="fullscreenButton" onclick="requestFullscreenAndLoad()">AKTIVOVAT POKLADNU</button>
+
+<h2>Kioskový systém</h2>
+
+<button id="fullscreenButton" onclick="requestFullscreenAndLoad()">
+
+AKTIVOVAT POKLADNU
+
+</button>
+
 </div>
+
+
+
 
 <div id="loadingScreen">
-    Načítání...
-    <div class="loaderBar">
-        <div class="loaderFill"></div>
-    </div>
+
+Načítání...
+
+<div class="loaderBar">
+
+<div class="loaderFill"></div>
+
 </div>
 
-<div id="loginScreen">
-    <h1>Zadejte PIN</h1>
-    <input id="loginInput" type="password" placeholder="PIN">
-    <button id="loginButton" onclick="login()">VSTOUPIT</button>
 </div>
+
+
+
+
+
+<div id="loginScreen">
+
+<h1>Zadejte PIN</h1>
+
+
+<input 
+id="loginInput"
+type="password"
+placeholder="PIN">
+
+
+
+<button id="loginButton" onclick="login()">
+
+VSTOUPIT
+
+</button>
+
+
+</div>
+
+
+
+
+
+
 
 <div id="app">
 
-    <button class="lock-button" onclick="logout()">ZAMKNOUT</button>
 
-    <h1>POKLADNA</h1>
+<button class="lock-button" onclick="logout()">
 
-    <div id="produkty">
+🔒 ZAMKNOUT
 
-        <button class="produktBtn" onclick="pridatProdukt('Tričko',149)">
-            Tričko
-            <span>149 Kč</span>
-        </button>
+</button>
 
-        <button class="produktBtn" onclick="pridatProdukt('Kalhotky',100)">
-            Kalhotky
-            <span>100 Kč</span>
-        </button>
 
-        <button class="produktBtn" onclick="pridatProdukt('Malý polštářek',50)">
-            Malý polštářek
-            <span>50 Kč</span>
-        </button>
 
-        <button class="produktBtn" onclick="pridatProdukt('Velký polštářek',120)">
-            Velký polštářek
-            <span>120 Kč</span>
-        </button>
 
-        <button class="produktBtn" onclick="pridatProdukt('Čepička bambule',99)">
-            Čepička bambule
-            <span>99 Kč</span>
-        </button>
+<h1>🛒 POKLADNA</h1>
 
-        <button class="produktBtn" onclick="pridatProdukt('Peřinka',29)">
-            Peřinka
-            <span>29 Kč</span>
-        </button>
 
-        <button class="produktBtn" onclick="pridatProdukt('Taška',5)">
-            Taška
-            <span>5 Kč</span>
-        </button>
 
-    </div>
 
-    <ul id="zboziList"></ul>
+<input
 
-    <h2 id="celkovaCena">CELKEM: 0 Kč</h2>
+id="kodScanner"
 
-    <button class="pro-button" style="background:lime;" onclick="openPaymentWindow()">
-        ZAPLATIT
-    </button>
+placeholder="Zadej KÓD + ENTER"
+
+onkeydown="naskenovatKod(event)"
+
+>
+
+
+
+
+<ul id="zboziList">
+
+</ul>
+
+
+
+
+<h2 id="celkovaCena">
+
+CELKEM: 0 Kč
+
+</h2>
+
+
+
+
+
+<button class="pro-button"
+
+onclick="openPaymentWindow()">
+
+💳 ZAPLATIT
+
+</button>
+
+
+
+<button class="pro-button"
+
+style="background:red;color:white"
+
+onclick="vymazatKosik()">
+
+🗑 VYMAZAT KOŠÍK
+
+</button>
+
+
 
 </div>
 
-<div id="paymentWindow" class="payment-modal">
-    <h3>Celkem k úhradě: <span id="cashTotalDisplay">0 Kč</span></h3>
 
-    <button class="pro-button" onclick="finishPayment()">
-        ZAPLATIT
-    </button>
 
-    <button class="pro-button" style="background:#444;color:white;" onclick="closePaymentWindow()">
-        ZPĚT
-    </button>
+
+
+
+
+<div id="paymentWindow">
+
+
+<h2>
+
+Celkem:
+
+<span id="cashTotalDisplay">
+
+0 Kč
+
+</span>
+
+</h2>
+
+
+
+<button class="pro-button"
+
+onclick="finishPayment()">
+
+POTVRDIT PLATBU
+
+</button>
+
+
+
+<button class="pro-button"
+
+onclick="closePaymentWindow()">
+
+ZPĚT
+
+</button>
+
+
 </div>
+
+
+
+
+
 
 <div id="zaplatitMessage">
-    ZAPLACENO ✔
+
+ZAPLACENO ✔
+
 </div>
+
+
+
+
+
 
 <script>
 
-const scanSound = new Audio();
-const paySound = new Audio();
 
-let wakeLock = null;
-let celkem = 0;
 
-document.addEventListener('fullscreenchange', () => {
-    if (!document.fullscreenElement){
-        logout();
-    }
-});
+const produktyData=[
 
-async function requestFullscreenAndLoad(){
 
-    if(document.documentElement.requestFullscreen){
-        document.documentElement.requestFullscreen();
-    }
+{kod:1,nazev:"Clever pitná voda jemně perlivá 0,5l",cena:9.90},
 
-    try{
-        if('wakeLock' in navigator){
-            wakeLock = await navigator.wakeLock.request('screen');
-        }
-    }catch(e){}
+{kod:2,nazev:"Vincentka 250ml",cena:24.90},
 
-    document.getElementById("fullscreenIntro").style.display = "none";
-    document.getElementById("loadingScreen").style.display = "flex";
+{kod:3,nazev:"Vlhčené ubrousky antibakteriální",cena:34.90},
 
-    document.querySelector(".loaderFill").style.animation = "loadAnim 1s forwards";
+{kod:4,nazev:"Nástavec na mop",cena:169.90},
 
-    setTimeout(()=>{
-        document.getElementById("loadingScreen").style.display = "none";
-        document.getElementById("loginScreen").style.display = "flex";
-    },1000);
+{kod:5,nazev:"Toaletní papír 1ks",cena:8.90},
+
+{kod:6,nazev:"Balíček kapesníků 3 vrstvý 10ks",cena:29.90},
+
+{kod:7,nazev:"Krabice kapesníků",cena:34.90},
+
+{kod:8,nazev:"Rohlík Vita 4ks",cena:22.90},
+
+{kod:9,nazev:"Houska 4ks",cena:19.90},
+
+{kod:10,nazev:"Kubík Water Pomeranč Perlivý",cena:19.90},
+
+{kod:11,nazev:"Dupetky Rajče a Bylinky 70g",cena:24.90},
+
+{kod:12,nazev:"Okurka s obalem 1ks",cena:24.90},
+
+{kod:13,nazev:"Okurka nakládačka",cena:8.90},
+
+{kod:14,nazev:"Banán",cena:7.90},
+
+{kod:15,nazev:"Jablko",cena:8.90},
+
+{kod:16,nazev:"Orbit máta",cena:29.90},
+
+{kod:17,nazev:"Mentos rainbow",cena:21.90},
+
+{kod:18,nazev:"Birell světlý nealkoholický",cena:19.90},
+
+{kod:19,nazev:"Tatra plnotučné mléko",cena:29.90},
+
+{kod:20,nazev:"Křehké plátky různé příchutě",cena:34.90},
+
+{kod:21,nazev:"Mrkvový džus 100% šťáva Ovocňák",cena:39.90},
+
+{kod:22,nazev:"Nescafé crema 100g",cena:149.90}
+
+
+
+];
+
+
+let celkem=0;
+
+
+
+function naskenovatKod(event){
+
+
+if(event.key==="Enter"){
+
+
+let kod=document
+.getElementById("kodScanner")
+.value
+.trim();
+
+
+
+let produkt=produktyData.find(p=>
+
+String(p.kod)===kod
+
+);
+
+
+
+if(produkt){
+
+pridatProdukt(produkt);
+
+
+}else{
+
+
+alert("❌ Kód neexistuje");
+
+
 }
 
-function login(){
 
-    if(document.getElementById("loginInput").value === "153500"){
 
-        document.getElementById("loginScreen").style.display = "none";
-        document.getElementById("app").style.display = "flex";
-    }
+document
+.getElementById("kodScanner")
+.value="";
 
-    document.getElementById("loginInput").value = "";
+
 }
 
-function pridatProdukt(nazev, cena){
 
-    scanSound.currentTime = 0;
-    scanSound.play();
+}
 
-    celkem += cena;
 
-    const li = document.createElement("li");
+function pridatProdukt(produkt){
 
-    li.className = "addedItem";
 
-    li.innerHTML = `
-        <span>${nazev}</span>
+    let existuje = [...document.querySelectorAll(".addedItem")]
+    .find(item => item.dataset.kod == produkt.kod);
+
+
+
+    if(existuje){
+
+
+        let pocet = Number(existuje.dataset.pocet) + 1;
+
+
+        existuje.dataset.pocet = pocet;
+
+
+
+        existuje.querySelector(".kusy").innerText =
+        pocet + " ks";
+
+
+
+        existuje.querySelector(".cena").innerText =
+        (pocet * produkt.cena).toFixed(2) + " Kč";
+
+
+
+    }else{
+
+
+        let li=document.createElement("li");
+
+
+        li.className="addedItem";
+
+
+        li.dataset.kod=produkt.kod;
+
+
+        li.dataset.pocet=1;
+
+
+
+        li.innerHTML=`
+
         <span>
-            ${cena} Kč
-            <button onclick="odebratProdukt(this, ${cena})">X</button>
+
+        ${produkt.kod} - ${produkt.nazev}
+
         </span>
-    `;
 
-    document.getElementById("zboziList").prepend(li);
+
+
+        <span>
+
+
+        <b class="kusy">
+
+        1 ks
+
+        </b>
+
+
+        <br>
+
+
+        <b class="cena">
+
+        ${produkt.cena.toFixed(2)} Kč
+
+        </b>
+
+
+
+        <br>
+
+
+        <button
+
+        class="removeBtn"
+
+        onclick="odebratProdukt(this,${produkt.kod})">
+
+        SMAZAT
+
+        </button>
+
+
+
+        </span>
+
+
+        `;
+
+
+
+        document
+        .getElementById("zboziList")
+        .prepend(li);
+
+
+
+    }
+
+
+
+    celkem += produkt.cena;
+
 
     aktualizovat();
+
+
 }
 
-function odebratProdukt(btn, cena){
 
-    btn.parentElement.parentElement.remove();
 
-    celkem -= cena;
+
+
+
+
+function odebratProdukt(tlacitko,kod){
+
+
+
+    let item = tlacitko.parentElement.parentElement;
+
+
+
+    let produkt = produktyData.find(p =>
+
+    p.kod == kod
+
+    );
+
+
+
+    let pocet = Number(item.dataset.pocet);
+
+
+
+
+
+    if(pocet > 1){
+
+
+        pocet--;
+
+
+        item.dataset.pocet=pocet;
+
+
+
+        item.querySelector(".kusy").innerText =
+        pocet + " ks";
+
+
+
+        item.querySelector(".cena").innerText =
+        (pocet * produkt.cena).toFixed(2)+" Kč";
+
+
+
+        celkem -= produkt.cena;
+
+
+
+    }else{
+
+
+        item.remove();
+
+
+        celkem -= produkt.cena;
+
+
+    }
+
+
 
     aktualizovat();
+
+
 }
+
+
+
+
+
+
+
+function vymazatKosik(){
+
+
+
+    document
+    .getElementById("zboziList")
+    .innerHTML="";
+
+
+
+    celkem=0;
+
+
+
+    aktualizovat();
+
+
+
+}
+
+
+
+
+
+
 
 function aktualizovat(){
 
-    document.getElementById("celkovaCena").innerText =
-        `CELKEM: ${celkem} Kč`;
 
-    document.getElementById("cashTotalDisplay").innerText =
-        `${celkem} Kč`;
+
+    document
+    .getElementById("celkovaCena")
+    .innerText =
+
+    "CELKEM: " + celkem.toFixed(2) + " Kč";
+
+
+
+
+    document
+    .getElementById("cashTotalDisplay")
+    .innerText =
+
+    celkem.toFixed(2) + " Kč";
+
+
+
 }
 
-function openPaymentWindow(){
 
-    if(celkem > 0){
-        document.getElementById("paymentWindow").style.display = "block";
+// FULLSCREEN + LOADING
+
+async function requestFullscreenAndLoad(){
+
+
+    if(document.documentElement.requestFullscreen){
+
+        await document.documentElement.requestFullscreen();
+
     }
-}
 
-function closePaymentWindow(){
 
-    document.getElementById("paymentWindow").style.display = "none";
-}
 
-function finishPayment(){
+    document.getElementById("fullscreenIntro")
+    .style.display="none";
 
-    paySound.currentTime = 0;
-    paySound.play();
 
-    closePaymentWindow();
 
-    document.getElementById("zaplatitMessage").style.display = "block";
+    document.getElementById("loadingScreen")
+    .style.display="flex";
+
+
+
+    document.querySelector(".loaderFill")
+    .style.animation="load 1s forwards";
+
+
 
     setTimeout(()=>{
 
-        document.getElementById("zaplatitMessage").style.display = "none";
 
-        document.getElementById("zboziList").innerHTML = "";
+        document.getElementById("loadingScreen")
+        .style.display="none";
 
-        celkem = 0;
 
-        aktualizovat();
 
-    },2500);
+        document.getElementById("loginScreen")
+        .style.display="flex";
+
+
+
+    },1000);
+
+
 }
+
+
+
+
+
+
+
+// LOGIN PIN
+
+function login(){
+
+
+    let pin=document
+    .getElementById("loginInput")
+    .value;
+
+
+
+    if(pin==="153500"){
+
+
+        document.getElementById("loginScreen")
+        .style.display="none";
+
+
+
+        document.getElementById("app")
+        .style.display="flex";
+
+
+
+        document
+        .getElementById("kodScanner")
+        .focus();
+
+
+
+    }else{
+
+
+        alert("❌ Špatný PIN");
+
+
+    }
+
+
+
+    document
+    .getElementById("loginInput")
+    .value="";
+
+
+}
+
+
+
+
+
+
+
+
+// PLATBA
+
+
+function openPaymentWindow(){
+
+
+    if(celkem>0){
+
+
+        document
+        .getElementById("paymentWindow")
+        .style.display="block";
+
+
+    }else{
+
+
+        alert("Košík je prázdný");
+
+
+    }
+
+
+}
+
+
+
+
+
+
+function closePaymentWindow(){
+
+
+    document
+    .getElementById("paymentWindow")
+    .style.display="none";
+
+
+}
+
+
+
+
+
+
+function finishPayment(){
+
+
+
+    closePaymentWindow();
+
+
+
+    document
+    .getElementById("zaplatitMessage")
+    .style.display="block";
+
+
+
+
+    setTimeout(()=>{
+
+
+
+        document
+        .getElementById("zaplatitMessage")
+        .style.display="none";
+
+
+
+        vymazatKosik();
+
+
+
+    },2000);
+
+
+
+}
+
+
+
+
+
+
+
+// ZAMKNOUT
+
 
 function logout(){
 
-    document.getElementById("app").style.display = "none";
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("fullscreenIntro").style.display = "flex";
 
-    if(document.exitFullscreen && document.fullscreenElement){
+
+    document
+    .getElementById("app")
+    .style.display="none";
+
+
+
+    document
+    .getElementById("fullscreenIntro")
+    .style.display="flex";
+
+
+
+    if(document.fullscreenElement){
+
+
         document.exitFullscreen();
+
+
     }
+
+
 }
+
+
+
+
+
 
 </script>
 
+
 </body>
+
 </html>
