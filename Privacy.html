@@ -12,31 +12,25 @@ body {
     background:#000;
     color:white;
     font-family:Arial;
-    text-align:center;
+    overflow:hidden;
 }
 
-#video {
-    width:200px;
-    border-radius:20px;
-    margin-top:10px;
+#content {
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    transition:0.4s;
 }
 
-#screen {
-    margin:30px auto;
-    width:80%;
-    padding:40px;
-    background:#222;
-    border-radius:20px;
-    transition:.3s;
+.blur {
+    filter:blur(15px);
+    opacity:0.25;
 }
 
-.lock {
-    filter:blur(10px);
-}
-
-#warning {
-    color:red;
-    font-size:25px;
+video {
+    display:none;
 }
 </style>
 
@@ -44,110 +38,163 @@ body {
 
 <body>
 
-<h1>🔒 AI Privacy Display</h1>
+<video id="camera" autoplay muted playsinline></video>
 
-<video id="video" autoplay muted playsinline></video>
+<div id="content">
 
-<div id="screen">
-    <h2>SirTros</h2>
-    <p>Tajný obsah displeje</p>
-    <p>💳 Banka</p>
-    <p>🔑 Hesla</p>
+<h1>SirTros</h1>
+
+<h2>Privacy Display</h2>
+
+<p>
+🔒 Soukromý obsah
+</p>
+
 </div>
 
-<div id="warning"></div>
 
-
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
 
 
 <script>
 
-const video = document.getElementById("video");
-const screen = document.getElementById("screen");
-const warning = document.getElementById("warning");
+const video = document.getElementById("camera");
+const content = document.getElementById("content");
+
+let savedFace = localStorage.getItem("privacyFace");
 
 
-const faceDetection = new FaceDetection({
-    locateFile: file =>
-    `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`
+// kamera
+navigator.mediaDevices.getUserMedia({
+    video:{
+        facingMode:"user"
+    }
+})
+.then(stream=>{
+    video.srcObject = stream;
 });
 
 
-faceDetection.setOptions({
-    model: "short",
-    minDetectionConfidence:0.6
-});
+
+// načtení AI modelů
+
+async function start(){
+
+await faceapi.nets.tinyFaceDetector.loadFromUri(
+"https://justadudewhohacks.github.io/face-api.js/models"
+);
+
+await faceapi.nets.faceLandmark68Net.loadFromUri(
+"https://justadudewhohacks.github.io/face-api.js/models"
+);
+
+await faceapi.nets.faceRecognitionNet.loadFromUri(
+"https://justadudewhohacks.github.io/face-api.js/models"
+);
 
 
-faceDetection.onResults(results=>{
+setInterval(checkFace,1000);
 
-    let faces = results.detections;
-
-    if(!faces || faces.length === 0){
-        privacy(true,"⚠️ Obličej nenalezen");
-        return;
-    }
+}
 
 
-    if(faces.length > 1){
-        privacy(true,"⚠️ Někdo kouká");
-        return;
-    }
+async function checkFace(){
+
+if(video.readyState !== 4) return;
 
 
-    let box = faces[0].boundingBox;
-
-    let center =
-    box.xCenter;
-
-
-    if(center < 0.35 || center > 0.65){
-        privacy(true,"⚠️ Někdo kouká z boku");
-    }
-    else{
-        privacy(false,"");
-    }
-
-});
+let result =
+await faceapi
+.detectSingleFace(
+video,
+new faceapi.TinyFaceDetectorOptions()
+)
+.withFaceLandmarks()
+.withFaceDescriptor();
 
 
-function privacy(on,text){
 
-    if(on){
-        screen.classList.add("lock");
-        warning.innerHTML=text;
-    }
-    else{
-        screen.classList.remove("lock");
-        warning.innerHTML="";
-    }
+if(!result){
+
+privacy(true);
+return;
 
 }
 
 
 
-const camera = new Camera(video,{
-    onFrame: async()=>{
-        await faceDetection.send({image:video});
-    },
-    width:640,
-    height:480
-});
+let descriptor =
+Array.from(result.descriptor);
 
 
-camera.start();
+
+if(!savedFace){
+
+localStorage.setItem(
+"privacyFace",
+JSON.stringify(descriptor)
+);
+
+savedFace =
+JSON.stringify(descriptor);
+
+privacy(false);
+
+return;
+
+}
 
 
-navigator.mediaDevices.getUserMedia({
-    video:{
-        facingMode:"user"
-    }
-}).then(stream=>{
-    video.srcObject=stream;
-});
 
+let old =
+new Float32Array(
+JSON.parse(savedFace)
+);
+
+
+
+let distance =
+faceapi.euclideanDistance(
+old,
+result.descriptor
+);
+
+
+
+if(distance > 0.55){
+
+privacy(true);
+
+}
+else{
+
+privacy(false);
+
+}
+
+
+
+}
+
+
+
+function privacy(state){
+
+if(state){
+
+content.classList.add("blur");
+
+}
+else{
+
+content.classList.remove("blur");
+
+}
+
+}
+
+
+start();
 
 </script>
 
