@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Privacy Display</title>
+
+<style>
+body {
+    margin:0;
+    background:#000;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
+
+#video {
+    width:200px;
+    border-radius:20px;
+    margin-top:10px;
+}
+
+#screen {
+    margin:30px auto;
+    width:80%;
+    padding:40px;
+    background:#222;
+    border-radius:20px;
+    transition:.3s;
+}
+
+.lock {
+    filter:blur(10px);
+}
+
+#warning {
+    color:red;
+    font-size:25px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🔒 AI Privacy Display</h1>
+
+<video id="video" autoplay muted playsinline></video>
+
+<div id="screen">
+    <h2>SirTros</h2>
+    <p>Tajný obsah displeje</p>
+    <p>💳 Banka</p>
+    <p>🔑 Hesla</p>
+</div>
+
+<div id="warning"></div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+
+<script>
+
+const video = document.getElementById("video");
+const screen = document.getElementById("screen");
+const warning = document.getElementById("warning");
+
+
+const faceDetection = new FaceDetection({
+    locateFile: file =>
+    `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`
+});
+
+
+faceDetection.setOptions({
+    model: "short",
+    minDetectionConfidence:0.6
+});
+
+
+faceDetection.onResults(results=>{
+
+    let faces = results.detections;
+
+    if(!faces || faces.length === 0){
+        privacy(true,"⚠️ Obličej nenalezen");
+        return;
+    }
+
+
+    if(faces.length > 1){
+        privacy(true,"⚠️ Někdo kouká");
+        return;
+    }
+
+
+    let box = faces[0].boundingBox;
+
+    let center =
+    box.xCenter;
+
+
+    if(center < 0.35 || center > 0.65){
+        privacy(true,"⚠️ Někdo kouká z boku");
+    }
+    else{
+        privacy(false,"");
+    }
+
+});
+
+
+function privacy(on,text){
+
+    if(on){
+        screen.classList.add("lock");
+        warning.innerHTML=text;
+    }
+    else{
+        screen.classList.remove("lock");
+        warning.innerHTML="";
+    }
+
+}
+
+
+
+const camera = new Camera(video,{
+    onFrame: async()=>{
+        await faceDetection.send({image:video});
+    },
+    width:640,
+    height:480
+});
+
+
+camera.start();
+
+
+navigator.mediaDevices.getUserMedia({
+    video:{
+        facingMode:"user"
+    }
+}).then(stream=>{
+    video.srcObject=stream;
+});
+
+
+</script>
+
+</body>
+</html>
