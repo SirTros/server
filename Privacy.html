@@ -4,32 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AI Privacy Display</title>
+<title>Privacy Display AI</title>
 
 <style>
-body {
+body{
     margin:0;
     background:#000;
     color:white;
     font-family:Arial;
-    overflow:hidden;
+    height:100vh;
 }
 
-#content {
+#screen{
     height:100vh;
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
     flex-direction:column;
-    transition:0.4s;
+    transition:.4s;
 }
 
-.blur {
+.lock{
     filter:blur(15px);
-    opacity:0.25;
+    opacity:.2;
 }
 
-video {
+video{
     display:none;
 }
 </style>
@@ -38,163 +38,93 @@ video {
 
 <body>
 
-<video id="camera" autoplay muted playsinline></video>
+<video id="video" autoplay muted playsinline></video>
 
-<div id="content">
-
-<h1>SirTros</h1>
-
-<h2>Privacy Display</h2>
-
-<p>
-🔒 Soukromý obsah
-</p>
-
+<div id="screen">
+    <h1>🔒 Privacy Display</h1>
+    <h2>SirTros</h2>
+    <p>Soukromý obsah</p>
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
 
 <script>
 
-const video = document.getElementById("camera");
-const content = document.getElementById("content");
-
-let savedFace = localStorage.getItem("privacyFace");
+const video=document.getElementById("video");
+const screen=document.getElementById("screen");
 
 
-// kamera
+function privacy(on){
+    if(on){
+        screen.classList.add("lock");
+    }else{
+        screen.classList.remove("lock");
+    }
+}
+
+
+const detector=new FaceDetection({
+    locateFile:(file)=>{
+        return "https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/"+file;
+    }
+});
+
+
+detector.setOptions({
+    model:"short",
+    minDetectionConfidence:0.6
+});
+
+
+detector.onResults((result)=>{
+
+    let faces=result.detections;
+
+
+    if(!faces || faces.length!==1){
+        privacy(true);
+        return;
+    }
+
+
+    let face=faces[0].boundingBox;
+
+
+    if(face.xCenter>0.3 && face.xCenter<0.7){
+        privacy(false);
+    }
+    else{
+        privacy(true);
+    }
+
+});
+
+
+
 navigator.mediaDevices.getUserMedia({
     video:{
         facingMode:"user"
     }
 })
 .then(stream=>{
-    video.srcObject = stream;
+    video.srcObject=stream;
 });
 
 
 
-// načtení AI modelů
-
-async function start(){
-
-await faceapi.nets.tinyFaceDetector.loadFromUri(
-"https://justadudewhohacks.github.io/face-api.js/models"
-);
-
-await faceapi.nets.faceLandmark68Net.loadFromUri(
-"https://justadudewhohacks.github.io/face-api.js/models"
-);
-
-await faceapi.nets.faceRecognitionNet.loadFromUri(
-"https://justadudewhohacks.github.io/face-api.js/models"
-);
+const camera=new Camera(video,{
+    onFrame:async()=>{
+        await detector.send({image:video});
+    },
+    width:640,
+    height:480
+});
 
 
-setInterval(checkFace,1000);
-
-}
-
-
-async function checkFace(){
-
-if(video.readyState !== 4) return;
-
-
-let result =
-await faceapi
-.detectSingleFace(
-video,
-new faceapi.TinyFaceDetectorOptions()
-)
-.withFaceLandmarks()
-.withFaceDescriptor();
-
-
-
-if(!result){
-
-privacy(true);
-return;
-
-}
-
-
-
-let descriptor =
-Array.from(result.descriptor);
-
-
-
-if(!savedFace){
-
-localStorage.setItem(
-"privacyFace",
-JSON.stringify(descriptor)
-);
-
-savedFace =
-JSON.stringify(descriptor);
-
-privacy(false);
-
-return;
-
-}
-
-
-
-let old =
-new Float32Array(
-JSON.parse(savedFace)
-);
-
-
-
-let distance =
-faceapi.euclideanDistance(
-old,
-result.descriptor
-);
-
-
-
-if(distance > 0.55){
-
-privacy(true);
-
-}
-else{
-
-privacy(false);
-
-}
-
-
-
-}
-
-
-
-function privacy(state){
-
-if(state){
-
-content.classList.add("blur");
-
-}
-else{
-
-content.classList.remove("blur");
-
-}
-
-}
-
-
-start();
+camera.start();
 
 </script>
 
