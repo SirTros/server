@@ -850,7 +850,7 @@ color:white;
 
 <p>
 
-Otevři:
+Otevři na mobilu nebo jiném zařízení:
 
 </p>
 
@@ -858,7 +858,7 @@ Otevři:
 
 <h2 class="cyan">
 
-STCB Bank
+sirtros.github.io/Banka
 
 </h2>
 
@@ -1141,11 +1141,32 @@ document.getElementById("fullscreenButton")
 function addDrink(name,price){
 
 
+if(name==="Vincentka"){
+
+let voice = new SpeechSynthesisUtterance(
+"Vincentka se nedoporučuje dětem pod tři roky. Nad tři roky maximálně dvakrát denně padesát mili litrů. Normální režim od dvanácti let." 
+);
+
+voice.lang="cs-CZ";
+
+speechSynthesis.speak(voice);
+
+}
+
+
+let voice = new SpeechSynthesisUtterance(
+"Nápoj byl přidán do košíku."
+);
+
+voice.lang="cs-CZ";
+
+speechSynthesis.speak(voice);
+
 
 if(cart.length>=2){
 
 
-showAlert("❌ Maximumálně 2 položky na nákup");
+showAlert("❌ Maximálně 2 položky na nákup");
 
 
 return;
@@ -1237,6 +1258,15 @@ document.getElementById("total").innerHTML=
 function clearCart(){
 
 
+let voice = new SpeechSynthesisUtterance(
+"Košík byl vymazán."
+);
+
+voice.lang="cs-CZ";
+
+speechSynthesis.speak(voice);
+
+
 cart=[];
 
 
@@ -1267,6 +1297,15 @@ return;
 
 
 }
+
+
+let voice = new SpeechSynthesisUtterance(
+"Platba zahájena. Otevřete prosím na svém telefonu web sirtros tečka githab tečka ijo lomeno Banka. Přihlaste se ke svému účtu, vyberte možnost převod peněz a odešlete částku zobrazenou na obrazovce příjemci SirTros. Po dokončení platby vyčkejte na potvrzení."
+);
+
+voice.lang="cs-CZ";
+
+speechSynthesis.speak(voice);
 
 
 
