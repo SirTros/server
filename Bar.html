@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SirTros Bar</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    font-family:"Segoe UI",Arial,sans-serif;
+}
+
+
+html,body{
+
+    margin:0;
+    width:100%;
+    height:100%;
+
+    overflow:hidden;
+
+    background:#020202;
+    color:white;
+
+}
+
+
+/* VLASTNÍ ALERT */
+
+#alertBox{
+
+    position:fixed;
+
+    top:30px;
+    left:50%;
+
+    transform:translate(-50%,-120px);
+
+    background:#111;
+
+    border:2px solid cyan;
+
+    padding:18px 35px;
+
+    border-radius:20px;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    z-index:9999;
+
+    box-shadow:0 0 30px cyan;
+
+    opacity:0;
+
+    transition:.4s;
+
+}
+
+
+
+#alertBox.show{
+
+    opacity:1;
+
+    transform:translate(-50%,0);
+
+}
+
+
+
+
+/* START */
+
+#fullscreenIntro{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-direction:column;
+
+    background:
+    radial-gradient(circle,#004b5a,#000);
+
+    z-index:5000;
+
+}
+
+
+
+#fullscreenIntro h1{
+
+    font-size:60px;
+
+    color:cyan;
+
+    text-shadow:0 0 25px cyan;
+
+}
+
+
+
+#fullscreenButton{
+
+    padding:20px 45px;
+
+    border:0;
+
+    border-radius:20px;
+
+    background:cyan;
+
+    color:black;
+
+    font-size:25px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:0 0 30px cyan;
+
+    transition:.3s;
+
+}
+
+
+
+#fullscreenButton:hover{
+
+    transform:scale(1.1);
+
+}
+
+
+
+
+/* LOADING */
+
+
+#loadingScreen{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    background:black;
+
+    z-index:4000;
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-direction:column;
+
+    font-size:30px;
+
+}
+
+
+
+.loader{
+
+    width:350px;
+
+    height:15px;
+
+    border:2px solid white;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    margin-top:20px;
+
+}
+
+
+
+.loader div{
+
+    height:100%;
+
+    width:0;
+
+    background:cyan;
+
+    animation:load 1.5s forwards;
+
+}
+
+
+
+@keyframes load{
+
+    to{
+
+        width:100%;
+
+    }
+
+}
+
+
+
+
+/* APLIKACE */
+
+
+#app{
+
+    display:none;
+
+    height:100vh;
+
+    padding:20px;
+
+    gap:20px;
+
+    animation:show .5s;
+
+}
+
+
+
+@keyframes show{
+
+    from{
+
+        opacity:0;
+
+        transform:scale(.95);
+
+    }
+
+    to{
+
+        opacity:1;
+
+    }
+
+}
+
+
+
+/* PRODUKTY */
+
+
+#products{
+
+    flex:1;
+
+}
+
+
+
+.title{
+
+    text-align:center;
+
+    font-size:40px;
+
+    color:cyan;
+
+    text-shadow:0 0 20px cyan;
+
+}
+
+
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:20px;
+
+}
+
+
+.drink{
+
+    background:
+
+    linear-gradient(145deg,#151515,#050505);
+
+    border:2px solid cyan;
+
+    border-radius:25px;
+
+    padding:25px;
+
+    text-align:center;
+
+    transition:.3s;
+
+}
+
+
+
+.drink:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 0 35px cyan;
+
+}
+
+
+.price{
+
+    font-size:32px;
+
+    color:#00ff99;
+
+    font-weight:bold;
+
+}
+
+
+.add{
+
+    padding:15px 30px;
+
+    margin-top:15px;
+
+    border:0;
+
+    border-radius:15px;
+
+    background:cyan;
+
+    color:black;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+
+
+.add:hover{
+
+    transform:scale(1.05);
+
+}
+
+
+/* 1/4 konec */
+
+</style>
+
+</head>
+
+<body>
+
+
+<div id="alertBox"></div>
+
+
+
+<div id="fullscreenIntro">
+
+
+<h1>🍹 SirTros Bar</h1>
+
+
+<p>Samoobslužný nápojový systém</p>
+
+
+
+<button id="fullscreenButton">
+
+SPUSTIT BAR
+
+</button>
+
+
+</div>
+
+
+
+
+
+<div id="loadingScreen">
+
+
+Načítání baru...
+
+
+<div class="loader">
+
+<div></div>
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div id="app">
+
+
+
+
+
+<div id="products">
+
+
+<h1 class="title">
+
+🍹 Výběr nápojů
+
+</h1>
+
+
+
+
+
+<div class="grid">
+
+
+
+
+
+<div class="drink">
+
+
+<h2>💧 Voda</h2>
+
+
+<div class="price">
+
+10 Kč
+
+</div>
+
+
+
+<button class="add" onclick="addDrink('Voda',10)">
+
+PŘIDAT
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="drink">
+
+
+<h2>💦 Perlivá voda</h2>
+
+
+<div class="price">
+
+12 Kč
+
+</div>
+
+
+
+<button class="add" onclick="addDrink('Perlivá voda',12)">
+
+PŘIDAT
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="drink">
+
+
+<h2>🍓 Malinovka</h2>
+
+
+<div class="price">
+
+15 Kč
+
+</div>
+
+
+
+<button class="add" onclick="addDrink('Malinovka',15)">
+
+PŘIDAT
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="drink">
+
+
+<h2>🥤 Coca-Cola</h2>
+
+
+<div class="price">
+
+25 Kč
+
+</div>
+
+
+
+<button class="add" onclick="addDrink('Coca-Cola',25)">
+
+PŘIDAT
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="drink">
+
+
+<h2>🧴 Vincentka</h2>
+
+
+<div class="price">
+
+45 Kč
+
+</div>
+
+
+
+<button class="add" onclick="addDrink('Vincentka',45)">
+
+PŘIDAT
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- KOŠÍK -->
+
+
+<div id="cart">
+
+
+
+<h1>
+
+🛒 Košík
+
+</h1>
+
+
+
+
+<div id="items">
+
+Prázdný
+
+</div>
+
+
+
+
+
+
+<h2 id="total">
+
+CELKEM: 0 Kč
+
+</h2>
+
+
+
+
+
+
+<button class="main" onclick="openPayment()">
+
+💳 ZAPLATIT
+
+</button>
+
+
+
+
+
+
+
+<button class="main delete" onclick="clearCart()">
+
+🗑 VYMAZAT KOŠÍK
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+<style>
+
+
+#cart{
+
+width:380px;
+
+height:100%;
+
+background:rgba(20,20,20,.9);
+
+border:2px solid cyan;
+
+border-radius:30px;
+
+padding:25px;
+
+display:flex;
+
+flex-direction:column;
+
+box-shadow:0 0 40px cyan;
+
+}
+
+
+
+
+#items{
+
+flex:1;
+
+overflow:hidden;
+
+}
+
+
+
+.item{
+
+background:#222;
+
+padding:15px;
+
+margin:10px 0;
+
+border-radius:15px;
+
+display:flex;
+
+justify-content:space-between;
+
+animation:item .3s;
+
+}
+
+
+
+@keyframes item{
+
+from{
+
+opacity:0;
+
+transform:translateX(50px);
+
+}
+
+to{
+
+opacity:1;
+
+}
+
+}
+
+
+
+.main{
+
+width:100%;
+
+padding:18px;
+
+margin-top:10px;
+
+border:0;
+
+border-radius:15px;
+
+background:#00ff99;
+
+color:black;
+
+font-size:20px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+
+
+.delete{
+
+background:red;
+
+color:white;
+
+}
+
+
+
+</style>
+
+<!-- PLATEBNÍ OKNO -->
+
+
+<div id="paymentWindow">
+
+
+<h1>💳 Platba</h1>
+
+
+
+<h2 id="paymentPrice" class="green">
+
+0 Kč
+
+</h2>
+
+
+
+
+<p>
+
+Otevři:
+
+</p>
+
+
+
+<h2 class="cyan">
+
+STCB Bank
+
+</h2>
+
+
+
+
+<p>1️⃣ Přihlas se</p>
+
+<p>2️⃣ Vyber Převod</p>
+
+<p>3️⃣ Příjemce:</p>
+
+
+
+<h2>
+
+SirTros
+
+</h2>
+
+
+
+
+<p>
+
+4️⃣ Pošli částku:
+
+</p>
+
+
+
+<h2 id="sendAmount" class="green">
+
+0 Kč
+
+</h2>
+
+
+
+<h3>
+
+⏳ Čekám na platbu...
+
+</h3>
+
+
+
+
+<button class="main delete" onclick="cancelPayment()">
+
+❌ ZRUŠIT PLATBU
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div id="paidScreen">
+
+
+<h1>
+
+✅ ZAPLACENO
+
+</h1>
+
+
+<p>
+
+Děkujeme za nákup 🍹
+
+</p>
+
+
+
+<div id="timer">
+
+5
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<style>
+
+
+#paymentWindow{
+
+display:none;
+
+position:fixed;
+
+top:50%;
+
+left:50%;
+
+transform:translate(-50%,-50%);
+
+background:#111;
+
+border:2px solid cyan;
+
+border-radius:25px;
+
+padding:30px;
+
+width:90%;
+
+max-width:500px;
+
+text-align:center;
+
+z-index:3000;
+
+box-shadow:0 0 40px cyan;
+
+}
+
+
+
+
+#paidScreen{
+
+display:none;
+
+position:fixed;
+
+inset:0;
+
+background:#00ff99;
+
+color:black;
+
+z-index:4000;
+
+justify-content:center;
+
+align-items:center;
+
+flex-direction:column;
+
+font-size:45px;
+
+font-weight:bold;
+
+}
+
+
+
+
+.green{
+
+color:#00ff99;
+
+}
+
+
+
+.cyan{
+
+color:cyan;
+
+}
+
+
+</style>
+
+
+
+
+
+
+<script>
+
+
+let cart=[];
+
+let total=0;
+
+let paymentActive=false;
+
+
+
+function showAlert(text){
+
+
+let box=document.getElementById("alertBox");
+
+
+box.innerHTML=text;
+
+
+box.classList.add("show");
+
+
+
+setTimeout(()=>{
+
+
+box.classList.remove("show");
+
+
+},2500);
+
+
+
+}
+
+
+
+
+
+
+
+function startBar(){
+
+
+if(document.documentElement.requestFullscreen){
+
+document.documentElement.requestFullscreen();
+
+}
+
+
+
+document.getElementById("fullscreenIntro")
+.style.display="none";
+
+
+
+document.getElementById("loadingScreen")
+.style.display="flex";
+
+
+
+setTimeout(()=>{
+
+
+document.getElementById("loadingScreen")
+.style.display="none";
+
+
+document.getElementById("app")
+.style.display="flex";
+
+
+},1500);
+
+
+
+}
+
+
+
+
+document.getElementById("fullscreenButton")
+.onclick=startBar;
+
+
+
+
+
+
+
+
+
+function addDrink(name,price){
+
+
+
+if(cart.length>=2){
+
+
+showAlert("❌ Maximumálně 2 položky na nákup");
+
+
+return;
+
+
+}
+
+
+
+cart.push({
+
+name:name,
+
+price:price
+
+});
+
+
+
+total+=price;
+
+
+updateCart();
+
+
+}
+
+
+
+
+
+
+
+
+function updateCart(){
+
+
+
+let box=document.getElementById("items");
+
+
+
+if(cart.length===0){
+
+
+box.innerHTML="Prázdný";
+
+
+}else{
+
+
+
+box.innerHTML=cart.map(item=>`
+
+
+<div class="item">
+
+<span>${item.name}</span>
+
+<b>${item.price} Kč</b>
+
+</div>
+
+
+`).join("");
+
+
+
+}
+
+
+
+
+
+document.getElementById("total").innerHTML=
+
+"CELKEM: "+total+" Kč";
+
+
+
+}
+
+
+
+
+
+
+
+function clearCart(){
+
+
+cart=[];
+
+
+total=0;
+
+
+updateCart();
+
+
+}
+
+
+
+
+
+
+
+function openPayment(){
+
+
+if(total===0){
+
+
+showAlert("🛒 Košík je prázdný");
+
+
+return;
+
+
+}
+
+
+
+
+document.getElementById("paymentWindow")
+.style.display="block";
+
+
+
+document.getElementById("paymentPrice")
+.innerHTML=total+" Kč";
+
+
+
+document.getElementById("sendAmount")
+.innerHTML=total+" Kč";
+
+
+
+paymentActive=true;
+
+
+
+startPaymentCheck();
+
+
+
+}
+
+
+
+
+
+function cancelPayment(){
+
+
+paymentActive=false;
+
+
+document.getElementById("paymentWindow")
+.style.display="none";
+
+
+}
+
+
+</script>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+
+const SUPABASE_URL = "TVŮJ_SUPABASE_URL";
+
+const SUPABASE_KEY = "TVŮJ_SUPABASE_KEY";
+
+
+
+let db = null;
+
+
+
+try{
+
+
+db = supabase.createClient(
+"https://knpkaoddloxtzdtzwjle.supabase.co",
+"sb_publishable_6_Qh3KpwhahrywU2o2irDg_ffK-MP3z"
+);
+
+
+
+
+}catch(error){
+
+
+console.log(error);
+
+
+showAlert("❌ Supabase není nastavený");
+
+
+}
+
+
+
+
+
+
+
+let oldMoney = 0;
+
+
+
+
+
+
+
+
+
+async function startPaymentCheck(){
+
+
+
+if(!db){
+
+
+showAlert("❌ Banka není připojena");
+
+
+return;
+
+
+}
+
+
+
+
+
+const {data,error}=await db
+
+.from("clients")
+
+.select("money")
+
+.eq("name","SirTros")
+
+.single();
+
+
+
+
+
+if(error){
+
+
+console.log(error);
+
+
+showAlert("❌ Nelze načíst účet");
+
+
+return;
+
+
+}
+
+
+
+
+
+oldMoney = Number(data.money);
+console.log("Původní stav:", oldMoney);
+
+
+
+watchPayment();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function watchPayment(){
+
+
+
+if(!paymentActive){
+
+return;
+
+}
+
+
+
+
+
+
+const {data,error}=await db
+
+.from("clients")
+
+.select("money")
+
+.eq("name","SirTros")
+
+.single();
+
+
+
+
+
+if(error){
+
+
+console.log(error);
+
+
+setTimeout(watchPayment,3000);
+
+
+return;
+
+
+}
+
+
+
+
+
+
+let currentMoney = Number(data.money);
+
+
+
+
+
+if(currentMoney >= oldMoney + total){
+
+
+
+finishPayment();
+
+
+return;
+
+
+}
+
+
+
+
+
+
+setTimeout(watchPayment,3000);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function finishPayment(){
+
+saveOrder();
+
+
+
+paymentActive=false;
+
+
+
+document.getElementById("paymentWindow")
+.style.display="none";
+
+
+
+document.getElementById("paidScreen")
+.style.display="flex";
+
+
+
+
+
+
+let voice = new SpeechSynthesisUtterance(
+
+"Děkujeme za nákup v SirTros Baru. Nový nákup:"
+
+);
+
+
+
+voice.lang="cs-CZ";
+
+
+speechSynthesis.speak(voice);
+
+
+
+
+
+
+
+let time=5;
+
+
+document.getElementById("timer")
+.innerHTML=time;
+
+
+
+
+
+
+let countdown=setInterval(()=>{
+
+
+time--;
+
+
+document.getElementById("timer")
+.innerHTML=time;
+
+
+
+
+
+if(time<=0){
+
+
+clearInterval(countdown);
+
+
+
+document.getElementById("paidScreen")
+.style.display="none";
+
+
+
+clearCart();
+
+
+
+}
+
+
+
+},1000);
+
+
+
+}
+
+
+
+
+
+
+
+
+window.onload=function(){
+
+
+updateCart();
+
+
+};
+
+
+async function saveOrder(){
+
+let orderItems = cart.map(item => item.name).join(", ");
+
+
+const {data,error}=await db
+.from("bar_orders")
+.insert([
+{
+items: orderItems
+}
+]);
+
+
+if(error){
+
+console.log(error);
+
+showAlert("❌ Chyba uložení objednávky");
+
+return;
+
+}
+
+
+console.log("Objednávka uložena:", orderItems);
+
+}
+
+</script>
+
+
+
+</body>
+
+</html>
