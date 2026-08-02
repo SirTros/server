@@ -3,6 +3,9 @@
 
 <head>
 
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -361,6 +364,38 @@ html,body{
 .add:hover{
 
     transform:scale(1.05);
+
+}
+
+#privacyOverlay{
+
+position:fixed;
+inset:0;
+
+background:black;
+
+z-index:99999;
+
+opacity:1;
+
+transition:opacity 1.5s ease;
+
+pointer-events:none;
+
+}
+
+
+#privacyOverlay.hidden{
+
+opacity:0;
+
+}
+
+
+
+#cameraInput{
+
+display:none;
 
 }
 
@@ -1121,6 +1156,9 @@ document.getElementById("app")
 },1500);
 
 
+startCameraAI();
+
+
 
 }
 
@@ -1664,10 +1702,152 @@ console.log("Objednávka uložena:", orderItems);
 
 }
 
+let lastPersonSeen = Date.now();
+
+
+function personFound(){
+
+lastPersonSeen = Date.now();
+
+document
+.getElementById("privacyOverlay")
+.classList.add("hidden");
+
+}
+
+
+
+setInterval(()=>{
+
+
+if(Date.now()-lastPersonSeen > 60000){
+
+
+document
+.getElementById("privacyOverlay")
+.classList.remove("hidden");
+
+
+}
+
+
+},1000);
+
+
+
+
+
+async function startCameraAI(){
+
+
+try{
+
+
+let video=document.getElementById("cameraInput");
+
+
+let stream = await navigator.mediaDevices.getUserMedia({
+
+video:true,
+
+audio:false
+
+});
+
+
+video.srcObject=stream;
+
+
+
+const faceDetection = new FaceDetection({
+
+locateFile:(file)=>{
+
+return `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`;
+
+}
+
+});
+
+
+
+faceDetection.setOptions({
+
+model:"short",
+
+minDetectionConfidence:0.6
+
+});
+
+
+
+
+faceDetection.onResults(results=>{
+
+
+if(results.detections.length>0){
+
+
+personFound();
+
+
+}
+
+
+});
+
+
+
+
+
+const camera = new Camera(video,{
+
+onFrame: async()=>{
+
+
+await faceDetection.send({
+
+image:video
+
+});
+
+
+},
+
+
+width:640,
+
+height:480
+
+
+});
+
+
+
+camera.start();
+
+
+
+}catch(e){
+
+
+showAlert("❌ Kamera nebyla povolena");
+
+
+}
+
+
+}
+
+    
+
 </script>
 
 
+<div id="privacyOverlay"></div>
 
+<video id="cameraInput" autoplay playsinline muted></video>
+    
 </body>
 
 </html>
