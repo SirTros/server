@@ -1086,27 +1086,25 @@ box.classList.remove("show");
 
 
 
-async function startBar(){
+function startBar(){
 
-try{
 
-await document.documentElement.requestFullscreen();
+if(document.documentElement.requestFullscreen){
 
-}catch(error){
-
-console.log("Fullscreen chyba:", error);
-
-showAlert("❌ Nelze spustit fullscreen");
+document.documentElement.requestFullscreen();
 
 }
+
 
 
 document.getElementById("fullscreenIntro")
 .style.display="none";
 
 
+
 document.getElementById("loadingScreen")
 .style.display="flex";
+
 
 
 setTimeout(()=>{
@@ -1123,7 +1121,10 @@ document.getElementById("app")
 },1500);
 
 
+
 }
+
+
 
 
 document.getElementById("fullscreenButton")
