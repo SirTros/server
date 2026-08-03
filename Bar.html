@@ -1516,7 +1516,7 @@ if(error){
 console.log(error);
 
 
-setTimeout(watchPayment,3000);
+setTimeout(watchPayment,5000);
 
 
 return;
@@ -1591,7 +1591,7 @@ document.getElementById("paidScreen")
 
 let voice = new SpeechSynthesisUtterance(
 
-"Děkujeme za nákup v SirTros Baru. Vyčkejte prosím na připravení nápoje od obsluhy nalevo."
+"Děkujeme za nákup v SirTros Baru. Vyčkejte prosím na připravení nápoje od obsluhy nalevo. Můžete se posadit ke stolu."
 
 );
 
@@ -1608,7 +1608,7 @@ speechSynthesis.speak(voice);
 
 
 
-let time=5;
+let time=15;
 
 
 document.getElementById("timer")
