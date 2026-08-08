@@ -6,69 +6,116 @@
 <title>SirTros Subway 3D</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:Arial}
-#game{position:fixed;inset:0}
-canvas{display:block}
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+    font-family:Arial,sans-serif;
+}
+
+#game{
+    position:fixed;
+    inset:0;
+}
+
+canvas{
+    display:block;
+}
 
 #menu,#gameover{
- position:fixed;inset:0;z-index:20;
- display:flex;flex-direction:column;
- justify-content:center;align-items:center;
- color:white;text-align:center;
- background:radial-gradient(circle,#315b75,#091119 55%,#000);
+    position:fixed;
+    inset:0;
+    z-index:20;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    text-align:center;
+    background:radial-gradient(circle,#315b75,#091119 55%,#000);
 }
 
 #menu h1{
- font-size:clamp(40px,10vw,80px);
- text-shadow:0 0 30px #09f;
- margin-bottom:12px;
+    font-size:clamp(40px,10vw,80px);
+    text-shadow:0 0 30px #009cff;
+    margin-bottom:12px;
 }
 
-#menu p{margin-bottom:30px;color:#ccd8df}
+#menu p{
+    color:#d5e0e7;
+    margin-bottom:30px;
+}
 
 button{
- border:0;border-radius:16px;
- padding:17px 50px;
- color:white;
- background:linear-gradient(135deg,#00aaff,#0050ff);
- font-size:22px;font-weight:bold;
- box-shadow:0 8px 30px #0077ff66;
+    border:0;
+    border-radius:16px;
+    padding:17px 50px;
+    color:white;
+    background:linear-gradient(135deg,#00aaff,#0050ff);
+    font-size:22px;
+    font-weight:bold;
+    box-shadow:0 8px 30px #0077ff66;
 }
 
 #hud{
- position:fixed;z-index:10;
- top:15px;left:15px;right:15px;
- display:none;justify-content:space-between;
- pointer-events:none;
+    position:fixed;
+    z-index:10;
+    top:15px;
+    left:15px;
+    right:15px;
+    display:none;
+    justify-content:space-between;
+    pointer-events:none;
 }
 
 .hud{
- color:white;
- background:#0009;
- padding:10px 16px;
- border-radius:12px;
+    color:white;
+    background:#0009;
+    padding:10px 16px;
+    border-radius:12px;
 }
 
 #voice{
- position:fixed;z-index:15;
- top:75px;left:50%;
- transform:translateX(-50%);
- padding:12px 28px;
- border-radius:50px;
- background:#000d;
- color:white;
- font-size:25px;
- font-weight:bold;
- opacity:0;
- transition:.2s;
+    position:fixed;
+    z-index:15;
+    top:75px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:12px 28px;
+    border-radius:50px;
+    background:#000d;
+    color:white;
+    font-size:25px;
+    font-weight:bold;
+    opacity:0;
+    transition:.2s;
+    pointer-events:none;
 }
 
-#voice.show{opacity:1}
+#voice.show{
+    opacity:1;
+}
 
-#gameover{display:none}
-#gameover h2{font-size:60px;margin-bottom:15px}
-#gameover p{margin-bottom:25px;color:#ccc}
+#gameover{
+    display:none;
+}
+
+#gameover h2{
+    font-size:60px;
+    margin-bottom:15px;
+}
+
+#gameover p{
+    margin-bottom:25px;
+    color:#ccc;
+}
 </style>
 </head>
 
@@ -77,38 +124,51 @@ button{
 <div id="game"></div>
 
 <div id="menu">
-<h1>🚇 SIRTROS SUBWAY</h1>
-<p>Nekonečný automatický 3D svět</p>
-<button id="play">▶ PLAY</button>
+    <h1>🚇 SIRTROS SUBWAY</h1>
+    <p>Nekonečný automatický 3D svět</p>
+    <button id="play">▶ PLAY</button>
 </div>
 
 <div id="hud">
-<div class="hud">🚇 SIRTROS SUBWAY</div>
-<div class="hud">⭐ <span id="score">0</span></div>
+    <div class="hud">🚇 SIRTROS SUBWAY</div>
+    <div class="hud">⭐ <span id="score">0</span></div>
 </div>
 
 <div id="voice">ROVNĚ</div>
 
 <div id="gameover">
-<h2>💥 KONEC</h2>
-<p>Narazil jsi do kontejneru.</p>
-<button id="again">↻ HRÁT ZNOVU</button>
+    <h2>💥 KONEC</h2>
+    <p>Narazil jsi do kontejneru.</p>
+    <button id="again">↻ HRÁT ZNOVU</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
-let scene,camera,renderer;
+
+let scene;
+let camera;
+let renderer;
+
+let player;
+
 let playing=false;
-let speed=.30;
+
+let speed=0.32;
 let score=0;
+
+let currentLane=1;
 let targetLane=1;
+
 let obstacles=[];
 let worldObjects=[];
+
 let lastDecision=0;
-const decisionCooldown=850;
 
 const lanes=[-4,0,4];
+
+const decisionDistance=45;
+const decisionCooldown=700;
 
 const menu=document.getElementById("menu");
 const play=document.getElementById("play");
@@ -118,724 +178,1197 @@ const gameover=document.getElementById("gameover");
 const voice=document.getElementById("voice");
 const scoreEl=document.getElementById("score");
 
+
+/* ==============================
+   INIT
+============================== */
+
 function init(){
 
- scene=new THREE.Scene();
+    scene=new THREE.Scene();
 
- scene.background=new THREE.Color(0x07111d);
+    scene.background=new THREE.Color(0x07111d);
 
- scene.fog=new THREE.Fog(
-  0x07111d,
-  20,
-  190
- );
+    scene.fog=new THREE.Fog(
+        0x07111d,
+        15,
+        180
+    );
 
- camera=new THREE.PerspectiveCamera(
-  70,
-  innerWidth/innerHeight,
-  .1,
-  500
- );
+    camera=new THREE.PerspectiveCamera(
+        70,
+        innerWidth/innerHeight,
+        0.1,
+        500
+    );
 
- camera.position.set(0,3.1,8);
+    camera.position.set(
+        0,
+        3.4,
+        9
+    );
 
- renderer=new THREE.WebGLRenderer({
-  antialias:true
- });
+    renderer=new THREE.WebGLRenderer({
+        antialias:true
+    });
 
- renderer.setPixelRatio(
-  Math.min(devicePixelRatio,2)
- );
+    renderer.setPixelRatio(
+        Math.min(devicePixelRatio,2)
+    );
 
- renderer.setSize(
-  innerWidth,
-  innerHeight
- );
+    renderer.setSize(
+        innerWidth,
+        innerHeight
+    );
 
- renderer.shadowMap.enabled=true;
+    renderer.shadowMap.enabled=true;
 
- document.getElementById("game")
- .appendChild(renderer.domElement);
+    document
+        .getElementById("game")
+        .appendChild(renderer.domElement);
 
- const light=new THREE.HemisphereLight(
-  0xbad8ff,
-  0x111111,
-  1.8
- );
+    const ambient=new THREE.HemisphereLight(
+        0xbad8ff,
+        0x111111,
+        1.8
+    );
 
- scene.add(light);
+    scene.add(ambient);
 
- const sun=new THREE.DirectionalLight(
-  0xffffff,
-  2
- );
+    const sun=new THREE.DirectionalLight(
+        0xffffff,
+        2
+    );
 
- sun.position.set(20,30,10);
- sun.castShadow=true;
- scene.add(sun);
+    sun.position.set(
+        20,
+        30,
+        10
+    );
 
- createTrack();
- createBuildings();
+    sun.castShadow=true;
 
- addEventListener("resize",resize);
+    scene.add(sun);
 
- animate();
+    createTrack();
+    createBuildings();
+    createPlayer();
+
+    addEventListener(
+        "resize",
+        resize
+    );
+
+    animate();
 }
+
+
+/* ==============================
+   PLAYER
+============================== */
+
+function createPlayer(){
+
+    player=new THREE.Group();
+
+    const body=new THREE.Mesh(
+        new THREE.CapsuleGeometry(
+            .42,
+            1.15,
+            4,
+            8
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x2374d8
+        })
+    );
+
+    body.position.y=1.35;
+
+    player.add(body);
+
+    const head=new THREE.Mesh(
+        new THREE.SphereGeometry(
+            .34,
+            16,
+            12
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0xf0b58c
+        })
+    );
+
+    head.position.y=2.35;
+
+    player.add(head);
+
+    const hair=new THREE.Mesh(
+        new THREE.SphereGeometry(
+            .35,
+            16,
+            8,
+            0,
+            Math.PI*2,
+            0,
+            Math.PI*.55
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x21160f
+        })
+    );
+
+    hair.position.y=2.48;
+
+    player.add(hair);
+
+    for(const x of [-.22,.22]){
+
+        const leg=new THREE.Mesh(
+            new THREE.BoxGeometry(
+                .22,
+                .9,
+                .25
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x172235
+            })
+        );
+
+        leg.position.set(
+            x,
+            .45,
+            0
+        );
+
+        player.add(leg);
+    }
+
+    for(const x of [-.6,.6]){
+
+        const arm=new THREE.Mesh(
+            new THREE.BoxGeometry(
+                .2,
+                .9,
+                .2
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x2374d8
+            })
+        );
+
+        arm.position.set(
+            x,
+            1.35,
+            0
+        );
+
+        arm.rotation.z=
+            x<0 ? -.25 : .25;
+
+        player.add(arm);
+    }
+
+    player.position.set(
+        0,
+        0,
+        0
+    );
+
+    scene.add(player);
+}
+
+
+/* ==============================
+   TRACK
+============================== */
 
 function createTrack(){
 
- const ground=new THREE.Mesh(
-  new THREE.BoxGeometry(18,.3,600),
-  new THREE.MeshStandardMaterial({
-   color:0x292d31
-  })
- );
+    const ground=new THREE.Mesh(
+        new THREE.BoxGeometry(
+            18,
+            .3,
+            700
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x292d31
+        })
+    );
 
- ground.position.set(0,-.2,-280);
+    ground.position.set(
+        0,
+        -.2,
+        -320
+    );
 
- scene.add(ground);
- worldObjects.push(ground);
+    scene.add(ground);
 
- [-2,2].forEach(x=>{
+    worldObjects.push(ground);
 
-  const line=new THREE.Mesh(
-   new THREE.BoxGeometry(.08,.05,600),
-   new THREE.MeshStandardMaterial({
-    color:0xffffff
-   })
-  );
+    for(const x of [-2,2]){
 
-  line.position.set(x,0,-280);
+        const line=new THREE.Mesh(
+            new THREE.BoxGeometry(
+                .08,
+                .05,
+                700
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0xffffff
+            })
+        );
 
-  scene.add(line);
-  worldObjects.push(line);
- });
+        line.position.set(
+            x,
+            0,
+            -320
+        );
 
- for(let z=10;z>-600;z-=5){
+        scene.add(line);
 
-  const sleeper=new THREE.Mesh(
-   new THREE.BoxGeometry(16,.12,.4),
-   new THREE.MeshStandardMaterial({
-    color:0x4b3428
-   })
-  );
+        worldObjects.push(line);
+    }
 
-  sleeper.position.set(0,-.05,z);
+    for(
+        let z=10;
+        z>-700;
+        z-=5
+    ){
 
-  scene.add(sleeper);
-  worldObjects.push(sleeper);
- }
+        const sleeper=new THREE.Mesh(
+            new THREE.BoxGeometry(
+                16,
+                .12,
+                .4
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x4b3428
+            })
+        );
+
+        sleeper.position.set(
+            0,
+            -.05,
+            z
+        );
+
+        scene.add(sleeper);
+
+        worldObjects.push(sleeper);
+    }
 }
+
+
+/* ==============================
+   BUILDINGS
+============================== */
 
 function createBuildings(){
 
- for(let z=0;z>-600;z-=18){
+    for(
+        let z=0;
+        z>-700;
+        z-=20
+    ){
 
-  createBuilding(-15,z);
-  createBuilding(15,z-7);
- }
+        createBuilding(
+            -15,
+            z
+        );
+
+        createBuilding(
+            15,
+            z-8
+        );
+    }
 }
+
 
 function createBuilding(x,z){
 
- const height=8+Math.random()*18;
+    const height=
+        8+
+        Math.random()*18;
 
- const building=new THREE.Mesh(
-  new THREE.BoxGeometry(
-   5+Math.random()*4,
-   height,
-   5+Math.random()*4
-  ),
-  new THREE.MeshStandardMaterial({
-   color:new THREE.Color(
-    .05,
-    .08,
-    .12+Math.random()*.1
-   )
-  })
- );
+    const building=new THREE.Mesh(
+        new THREE.BoxGeometry(
+            5+
+            Math.random()*4,
+            height,
+            6+
+            Math.random()*4
+        ),
+        new THREE.MeshStandardMaterial({
+            color:new THREE.Color(
+                .04,
+                .07,
+                .11+
+                Math.random()*.08
+            )
+        })
+    );
 
- building.position.set(
-  x,
-  height/2,
-  z
- );
+    building.position.set(
+        x,
+        height/2,
+        z
+    );
 
- scene.add(building);
- worldObjects.push(building);
+    scene.add(building);
+
+    worldObjects.push(building);
 }
 
-function createContainer(lane,z){
 
- const group=new THREE.Group();
+/* ==============================
+   CONTAINER
+============================== */
 
- const body=new THREE.Mesh(
-  new THREE.BoxGeometry(3.2,2.5,3.2),
-  new THREE.MeshStandardMaterial({
-   color:new THREE.Color(
-    .02,
-    .18+Math.random()*.25,
-    .40+Math.random()*.25
-   ),
-   roughness:.85
-  })
- );
+function createContainer(
+    lane,
+    z
+){
 
- body.position.y=1.25;
- body.castShadow=true;
- group.add(body);
+    const group=new THREE.Group();
 
- for(let x=-1.25;x<=1.25;x+=.6){
+    const body=new THREE.Mesh(
+        new THREE.BoxGeometry(
+            3.2,
+            2.5,
+            3.2
+        ),
+        new THREE.MeshStandardMaterial({
+            color:new THREE.Color(
+                .02,
+                .18+
+                Math.random()*.22,
+                .38+
+                Math.random()*.25
+            ),
+            roughness:.85
+        })
+    );
 
-  const bar=new THREE.Mesh(
-   new THREE.BoxGeometry(.08,2.6,3.25),
-   new THREE.MeshStandardMaterial({
-    color:0x15202a
-   })
-  );
+    body.position.y=1.25;
 
-  bar.position.set(x,1.25,0);
-  group.add(bar);
- }
+    body.castShadow=true;
 
- group.position.set(
-  lanes[lane],
-  0,
-  z
- );
+    group.add(body);
 
- scene.add(group);
+    for(
+        let x=-1.25;
+        x<=1.25;
+        x+=.6
+    ){
 
- obstacles.push({
-  mesh:group,
-  lane:lane,
-  passed:false
- });
+        const bar=new THREE.Mesh(
+            new THREE.BoxGeometry(
+                .08,
+                2.6,
+                3.25
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x15202a
+            })
+        );
+
+        bar.position.set(
+            x,
+            1.25,
+            0
+        );
+
+        group.add(bar);
+    }
+
+    group.position.set(
+        lanes[lane],
+        0,
+        z
+    );
+
+    scene.add(group);
+
+    obstacles.push({
+        mesh:group,
+        lane:lane,
+        passed:false
+    });
 }
+
+
+/* ==============================
+   OBSTACLES
+============================== */
 
 function createInitialObstacles(){
 
- for(const o of obstacles){
-  scene.remove(o.mesh);
- }
+    for(const o of obstacles){
+        scene.remove(o.mesh);
+    }
 
- obstacles=[];
+    obstacles=[];
 
- createContainer(
-  Math.floor(Math.random()*3),
-  -55
- );
+    /*
+       Tři kontejnery.
+       Každý má jiný pruh,
+       aby hra nebyla nemožná.
+    */
 
- createContainer(
-  Math.floor(Math.random()*3),
-  -105
- );
+    const order=[
+        0,
+        2,
+        1
+    ];
 
- createContainer(
-  Math.floor(Math.random()*3),
-  -155
- );
+    createContainer(
+        order[0],
+        -55
+    );
+
+    createContainer(
+        order[1],
+        -105
+    );
+
+    createContainer(
+        order[2],
+        -155
+    );
 }
+
 
 function createNextObstacle(){
 
- if(obstacles.length>=3)return;
+    if(obstacles.length>=3){
+        return;
+    }
 
- let farthest=null;
+    let farthest=null;
 
- for(const o of obstacles){
+    for(const o of obstacles){
 
-  if(!farthest ||
-     o.mesh.position.z<
-     farthest.mesh.position.z){
+        if(
+            !farthest ||
+            o.mesh.position.z<
+            farthest.mesh.position.z
+        ){
 
-   farthest=o;
-  }
- }
+            farthest=o;
+        }
+    }
 
- let z=-100;
+    let z=-100;
 
- if(farthest){
-  z=farthest.mesh.position.z-50;
- }
+    if(farthest){
+        z=
+            farthest.mesh.position.z-
+            50;
+    }
 
- let lane=Math.floor(Math.random()*3);
+    let lane=
+        Math.floor(
+            Math.random()*3
+        );
 
- if(farthest && lane===farthest.lane){
+    if(
+        farthest &&
+        lane===farthest.lane
+    ){
 
-  const possible=[0,1,2]
-   .filter(x=>x!==farthest.lane);
+        const available=
+            [0,1,2].filter(
+                x=>
+                    x!==farthest.lane
+            );
 
-  lane=possible[
-   Math.floor(Math.random()*possible.length)
-  ];
- }
+        lane=
+            available[
+                Math.floor(
+                    Math.random()*
+                    available.length
+                )
+            ];
+    }
 
- createContainer(lane,z);
+    createContainer(
+        lane,
+        z
+    );
 }
+
+
+/* ==============================
+   CAMERA VISION
+============================== */
 
 function cameraVision(){
 
- const now=performance.now();
+    const now=
+        performance.now();
 
- if(now-lastDecision<decisionCooldown){
-  return;
- }
+    if(
+        now-lastDecision<
+        decisionCooldown
+    ){
+        return;
+    }
 
- let left=null;
- let center=null;
- let right=null;
+    /*
+       Najdeme nejbližší
+       překážku před hráčem.
+    */
 
- for(const obstacle of obstacles){
+    let nearest=null;
+    let nearestDistance=Infinity;
 
-  const dz=
-   obstacle.mesh.position.z-
-   camera.position.z;
+    for(const obstacle of obstacles){
 
-  if(dz>=0 || dz<-55){
-   continue;
-  }
+        const dz=
+            obstacle.mesh.position.z-
+            player.position.z;
 
-  const x=obstacle.mesh.position.x;
+        if(
+            dz>0 ||
+            dz<-decisionDistance
+        ){
+            continue;
+        }
 
-  if(x<-2){
+        const distance=
+            Math.abs(dz);
 
-   if(!left ||
-      Math.abs(dz)<
-      Math.abs(
-       left.mesh.position.z-
-       camera.position.z
-      )){
+        if(
+            distance<
+            nearestDistance
+        ){
 
-    left=obstacle;
-   }
+            nearest=obstacle;
+            nearestDistance=distance;
+        }
+    }
 
-  }else if(x>=-2 && x<=2){
+    /*
+       Nic před námi.
+       Jede doprava.
+    */
 
-   if(!center ||
-      Math.abs(dz)<
-      Math.abs(
-       center.mesh.position.z-
-       camera.position.z
-      )){
+    if(!nearest){
 
-    center=obstacle;
-   }
+        setDirection(
+            2
+        );
 
-  }else{
+        return;
+    }
 
-   if(!right ||
-      Math.abs(dz)<
-      Math.abs(
-       right.mesh.position.z-
-       camera.position.z
-      )){
+    /*
+       Překážka vlevo.
+       Jede rovně.
+    */
 
-    right=obstacle;
-   }
-  }
- }
+    if(
+        nearest.lane===0
+    ){
 
- /*
-   STŘED → DOLEVA
-   VPRAVO → DOLEVA
-   VLEVO → ROVNĚ
-   NIC → DOPRAVA
- */
+        setDirection(
+            1
+        );
 
- if(center){
+        return;
+    }
 
-  changeDirection(0);
+    /*
+       Překážka uprostřed.
+       Doleva.
+    */
 
- }else if(right){
+    if(
+        nearest.lane===1
+    ){
 
-  changeDirection(0);
+        setDirection(
+            0
+        );
 
- }else if(left){
+        return;
+    }
 
-  changeDirection(1);
+    /*
+       Překážka vpravo.
+       Doleva.
+    */
 
- }else{
+    if(
+        nearest.lane===2
+    ){
 
-  changeDirection(2);
- }
+        setDirection(
+            0
+        );
+    }
 }
 
-function changeDirection(lane){
 
- if(targetLane===lane){
-  return;
- }
+/* ==============================
+   AUTOMATICKÉ ZATÁČENÍ
+============================== */
 
- targetLane=lane;
- lastDecision=performance.now();
+function setDirection(lane){
 
- let text;
+    /*
+       Nezatáčej znovu,
+       pokud už jsme v cílovém pruhu.
+    */
 
- if(lane===0){
-  text="Zahni doleva!";
- }else if(lane===1){
-  text="Rovně!";
- }else{
-  text="Zahni doprava!";
- }
+    if(
+        targetLane===lane
+    ){
+        return;
+    }
 
- voice.textContent=text.toUpperCase();
- voice.classList.add("show");
+    targetLane=lane;
 
- setTimeout(()=>{
-  voice.classList.remove("show");
- },1000);
+    lastDecision=
+        performance.now();
 
- if("speechSynthesis" in window){
+    let text;
 
-  speechSynthesis.cancel();
+    if(lane===0){
 
-  const speech=
-   new SpeechSynthesisUtterance(text);
+        text="Zahni doleva!";
 
-  speech.lang="cs-CZ";
-  speech.rate=1.05;
+    }else if(lane===1){
 
-  speechSynthesis.speak(speech);
- }
+        text="Rovně!";
+
+    }else{
+
+        text="Zahni doprava!";
+    }
+
+    voice.textContent=
+        text.toUpperCase();
+
+    voice.classList.add(
+        "show"
+    );
+
+    setTimeout(()=>{
+        voice.classList.remove(
+            "show"
+        );
+    },900);
+
+    /*
+       Hlas.
+    */
+
+    if(
+        "speechSynthesis"
+        in window
+    ){
+
+        speechSynthesis.cancel();
+
+        const speech=
+            new SpeechSynthesisUtterance(
+                text
+            );
+
+        speech.lang="cs-CZ";
+
+        speech.rate=1.05;
+
+        speechSynthesis.speak(
+            speech
+        );
+    }
 }
+
+
+/* ==============================
+   START
+============================== */
 
 function startGame(){
 
- menu.style.display="none";
- gameover.style.display="none";
- hud.style.display="flex";
+    menu.style.display="none";
 
- camera.position.set(0,3.1,8);
+    gameover.style.display="none";
 
- targetLane=1;
- speed=.30;
- score=0;
- lastDecision=0;
- playing=true;
+    hud.style.display="flex";
 
- scoreEl.textContent="0";
+    player.position.set(
+        0,
+        0,
+        0
+    );
 
- createInitialObstacles();
+    camera.position.set(
+        0,
+        3.4,
+        9
+    );
 
- setTimeout(()=>{
-  cameraVision();
- },500);
+    currentLane=1;
+    targetLane=1;
+
+    speed=.32;
+    score=0;
+
+    lastDecision=0;
+
+    scoreEl.textContent="0";
+
+    createInitialObstacles();
+
+    playing=true;
+
+    /*
+       První rozhodnutí.
+    */
+
+    setTimeout(()=>{
+        cameraVision();
+    },500);
 }
 
 play.onclick=startGame;
 again.onclick=startGame;
 
-function createFallingPerson(){
 
- const person=new THREE.Group();
+/* ==============================
+   FALL ANIMATION
+============================== */
 
- const body=new THREE.Mesh(
-  new THREE.CapsuleGeometry(.45,1.2,4,8),
-  new THREE.MeshStandardMaterial({
-   color:0x2374d8
-  })
- );
+function createFallingPlayer(){
 
- body.position.y=1.35;
- person.add(body);
+    const fallPlayer=
+        player.clone();
 
- const head=new THREE.Mesh(
-  new THREE.SphereGeometry(.35,16,12),
-  new THREE.MeshStandardMaterial({
-   color:0xf0b58c
-  })
- );
+    scene.add(
+        fallPlayer
+    );
 
- head.position.y=2.35;
- person.add(head);
+    fallPlayer.position.copy(
+        player.position
+    );
 
- for(const x of [-.22,.22]){
+    const start=
+        performance.now();
 
-  const leg=new THREE.Mesh(
-   new THREE.BoxGeometry(.22,.9,.25),
-   new THREE.MeshStandardMaterial({
-    color:0x172235
-   })
-  );
+    function fall(){
 
-  leg.position.set(x,.45,0);
-  person.add(leg);
- }
+        const t=
+            Math.min(
+                (performance.now()-start)/
+                1200,
+                1
+            );
 
- for(const x of [-.6,.6]){
+        fallPlayer.rotation.x=
+            t*1.8;
 
-  const arm=new THREE.Mesh(
-   new THREE.BoxGeometry(.2,.9,.2),
-   new THREE.MeshStandardMaterial({
-    color:0x2374d8
-   })
-  );
+        fallPlayer.rotation.z=
+            Math.sin(t*8)*.12;
 
-  arm.position.set(x,1.35,0);
-  arm.rotation.z=x<0?-.3:.3;
+        fallPlayer.position.y=
+            Math.max(
+                0,
+                1.2-t*1.2
+            );
 
-  person.add(arm);
- }
+        if(t<1){
+            requestAnimationFrame(
+                fall
+            );
+        }
+    }
 
- person.position.set(
-  camera.position.x,
-  0,
-  camera.position.z-1
- );
-
- scene.add(person);
-
- const start=performance.now();
-
- function fall(){
-
-  const t=Math.min(
-   (performance.now()-start)/1000,
-   1.5
-  );
-
-  person.rotation.x=t*1.8;
-  person.rotation.z=Math.sin(t*8)*.12;
-
-  person.position.y=
-   Math.max(0,1.4-t);
-
-  person.position.z=
-   camera.position.z-1+t*2;
-
-  if(t<1.5){
-   requestAnimationFrame(fall);
-  }
- }
-
- fall();
+    fall();
 }
+
+
+/* ==============================
+   PES + ČLOVĚK
+============================== */
 
 function createDogPerson(){
 
- const human=new THREE.Group();
+    const human=new THREE.Group();
 
- const humanBody=new THREE.Mesh(
-  new THREE.CapsuleGeometry(.4,1,4,8),
-  new THREE.MeshStandardMaterial({
-   color:0x6b3d20
-  })
- );
+    const body=new THREE.Mesh(
+        new THREE.CapsuleGeometry(
+            .4,
+            1,
+            4,
+            8
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x6b3d20
+        })
+    );
 
- humanBody.position.y=1.25;
- human.add(humanBody);
+    body.position.y=1.25;
 
- const humanHead=new THREE.Mesh(
-  new THREE.SphereGeometry(.32,16,12),
-  new THREE.MeshStandardMaterial({
-   color:0xf0b58c
-  })
- );
+    human.add(body);
 
- humanHead.position.y=2.2;
- human.add(humanHead);
+    const head=new THREE.Mesh(
+        new THREE.SphereGeometry(
+            .32,
+            16,
+            12
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0xf0b58c
+        })
+    );
 
- const dog=new THREE.Group();
+    head.position.y=2.2;
 
- const dogBody=new THREE.Mesh(
-  new THREE.BoxGeometry(1.1,.65,.55),
-  new THREE.MeshStandardMaterial({
-   color:0x8b5a32
-  })
- );
+    human.add(head);
 
- dogBody.position.y=.65;
- dog.add(dogBody);
+    const dog=new THREE.Group();
 
- const dogHead=new THREE.Mesh(
-  new THREE.SphereGeometry(.4,12,10),
-  new THREE.MeshStandardMaterial({
-   color:0x9b673c
-  })
- );
+    const dogBody=new THREE.Mesh(
+        new THREE.BoxGeometry(
+            1.1,
+            .65,
+            .55
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x8b5a32
+        })
+    );
 
- dogHead.position.set(.6,.85,0);
- dog.add(dogHead);
+    dogBody.position.y=.65;
 
- human.position.set(
-  -1.2,
-  0,
-  camera.position.z+5
- );
+    dog.add(dogBody);
 
- dog.position.set(
-  1.2,
-  0,
-  camera.position.z+5
- );
+    const dogHead=new THREE.Mesh(
+        new THREE.SphereGeometry(
+            .4,
+            12,
+            10
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x9b673c
+        })
+    );
 
- scene.add(human);
- scene.add(dog);
+    dogHead.position.set(
+        .6,
+        .85,
+        0
+    );
+
+    dog.add(dogHead);
+
+    human.position.set(
+        player.position.x-1.2,
+        0,
+        player.position.z+5
+    );
+
+    dog.position.set(
+        player.position.x+1.2,
+        0,
+        player.position.z+5
+    );
+
+    scene.add(human);
+    scene.add(dog);
 }
+
+
+/* ==============================
+   CRASH
+============================== */
 
 function crash(){
 
- if(!playing)return;
+    if(!playing){
+        return;
+    }
 
- playing=false;
+    playing=false;
 
- createFallingPerson();
- createDogPerson();
+    createFallingPlayer();
+    createDogPerson();
 
- setTimeout(()=>{
-  gameover.style.display="flex";
- },1500);
+    setTimeout(()=>{
+        gameover.style.display="flex";
+    },1000);
 
- if("speechSynthesis" in window){
+    if(
+        "speechSynthesis"
+        in window
+    ){
 
-  speechSynthesis.cancel();
+        speechSynthesis.cancel();
 
-  const speech=
-   new SpeechSynthesisUtterance(
-    "Konec jízdy!"
-   );
+        const speech=
+            new SpeechSynthesisUtterance(
+                "Konec jízdy!"
+            );
 
-  speech.lang="cs-CZ";
-  speech.rate=1.05;
+        speech.lang="cs-CZ";
 
-  speechSynthesis.speak(speech);
- }
+        speech.rate=1.05;
+
+        speechSynthesis.speak(
+            speech
+        );
+    }
 }
+
+
+/* ==============================
+   GAME UPDATE
+============================== */
 
 function update(delta){
 
- camera.position.z-=
-  speed*60*delta;
+    /*
+       Hráč jede vždy dopředu.
+    */
 
- const targetX=lanes[targetLane];
+    player.position.z-=
+        speed*
+        60*
+        delta;
 
- const difference=
-  targetX-camera.position.x;
+    /*
+       Automatické přejíždění
+       mezi pruhy.
+    */
 
- camera.position.x+=
-  difference*Math.min(1,delta*4);
+    const targetX=
+        lanes[targetLane];
 
- camera.position.y=
-  3.1+
-  Math.sin(
-   performance.now()*.004
-  )*.025;
+    const difference=
+        targetX-
+        player.position.x;
 
- cameraVision();
+    player.position.x+=
+        difference*
+        Math.min(
+            1,
+            delta*5
+        );
 
- for(
-  let i=obstacles.length-1;
-  i>=0;
-  i--
- ){
+    /*
+       Kamera pouze sleduje hráče.
+       NEŘÍDÍ jeho pohyb.
+    */
 
-  const obstacle=obstacles[i];
+    const cameraTargetX=
+        player.position.x;
 
-  const dz=
-   obstacle.mesh.position.z-
-   camera.position.z;
+    camera.position.x+=
+        (
+            cameraTargetX-
+            camera.position.x
+        )*
+        Math.min(
+            1,
+            delta*5
+        );
 
-  const dx=
-   Math.abs(
-    obstacle.mesh.position.x-
-    camera.position.x
-   );
+    camera.position.z=
+        player.position.z+
+        9;
 
-  if(
-   Math.abs(dz)<1.7 &&
-   dx<1.25
-  ){
+    camera.position.y=
+        3.4+
+        Math.sin(
+            performance.now()*.005
+        )*.025;
 
-   crash();
-   return;
-  }
+    /*
+       Kamera se dívá před hráče.
+    */
 
-  if(
-   !obstacle.passed &&
-   obstacle.mesh.position.z>
-   camera.position.z
-  ){
+    camera.lookAt(
+        player.position.x,
+        1.4,
+        player.position.z-14
+    );
 
-   obstacle.passed=true;
-   score+=100;
-   scoreEl.textContent=score;
-  }
+    /*
+       AI rozhodování.
+    */
 
-  if(
-   obstacle.mesh.position.z>
-   camera.position.z+30
-  ){
+    cameraVision();
 
-   scene.remove(obstacle.mesh);
+    /*
+       Kolize.
+    */
 
-   obstacles.splice(i,1);
+    for(
+        let i=obstacles.length-1;
+        i>=0;
+        i--
+    ){
 
-   createNextObstacle();
-  }
- }
+        const obstacle=
+            obstacles[i];
 
- speed+=delta*.001;
+        const dz=
+            obstacle.mesh.position.z-
+            player.position.z;
+
+        const dx=
+            Math.abs(
+                obstacle.mesh.position.x-
+                player.position.x
+            );
+
+        if(
+            Math.abs(dz)<1.8 &&
+            dx<1.25
+        ){
+
+            crash();
+
+            return;
+        }
+
+        /*
+           Body.
+        */
+
+        if(
+            !obstacle.passed &&
+            obstacle.mesh.position.z>
+            player.position.z
+        ){
+
+            obstacle.passed=true;
+
+            score+=100;
+
+            scoreEl.textContent=
+                score;
+        }
+
+        /*
+           Překážka je za hráčem.
+        */
+
+        if(
+            obstacle.mesh.position.z>
+            player.position.z+30
+        ){
+
+            scene.remove(
+                obstacle.mesh
+            );
+
+            obstacles.splice(
+                i,
+                1
+            );
+
+            createNextObstacle();
+        }
+    }
+
+    /*
+       Postupné zrychlení.
+    */
+
+    speed+=
+        delta*.001;
 }
+
+
+/* ==============================
+   INFINITE WORLD
+============================== */
 
 function updateWorld(){
 
- for(const object of worldObjects){
+    for(
+        const object of worldObjects
+    ){
 
-  if(
-   object.position.z>
-   camera.position.z+60
-  ){
+        if(
+            object.position.z>
+            player.position.z+60
+        ){
 
-   object.position.z-=600;
-  }
- }
+            object.position.z-=700;
+        }
+    }
 }
 
-let lastTime=performance.now();
+
+/* ==============================
+   LOOP
+============================== */
+
+let lastTime=
+    performance.now();
 
 function animate(){
 
- requestAnimationFrame(animate);
+    requestAnimationFrame(
+        animate
+    );
 
- const now=performance.now();
+    const now=
+        performance.now();
 
- const delta=Math.min(
-  (now-lastTime)/1000,
-  .05
- );
+    const delta=
+        Math.min(
+            (now-lastTime)/1000,
+            .05
+        );
 
- lastTime=now;
+    lastTime=now;
 
- if(playing){
+    if(playing){
 
-  update(delta);
-  updateWorld();
- }
+        update(delta);
 
- renderer.render(
-  scene,
-  camera
- );
+        updateWorld();
+    }
+
+    renderer.render(
+        scene,
+        camera
+    );
 }
+
+
+/* ==============================
+   RESIZE
+============================== */
 
 function resize(){
 
- camera.aspect=
-  innerWidth/innerHeight;
+    camera.aspect=
+        innerWidth/
+        innerHeight;
 
- camera.updateProjectionMatrix();
+    camera.updateProjectionMatrix();
 
- renderer.setSize(
-  innerWidth,
-  innerHeight
- );
+    renderer.setSize(
+        innerWidth,
+        innerHeight
+    );
 }
+
+
+/* ==============================
+   START ENGINE
+============================== */
 
 init();
 
 </script>
 
 </body>
-</html>
+ </html>
