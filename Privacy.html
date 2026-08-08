@@ -2,129 +2,838 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Privacy Display AI</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>SirTros Subway 3D</title>
 
 <style>
-body{
-    margin:0;
-    background:#000;
-    color:white;
-    font-family:Arial;
-    height:100vh;
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:Arial}
+#game{position:fixed;inset:0}
+canvas{display:block}
+
+#menu,#gameover{
+ position:fixed;inset:0;z-index:20;
+ display:flex;flex-direction:column;
+ justify-content:center;align-items:center;
+ color:white;text-align:center;
+ background:radial-gradient(circle,#315b75,#091119 55%,#000);
 }
 
-#screen{
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    transition:.4s;
+#menu h1{
+ font-size:clamp(40px,10vw,80px);
+ text-shadow:0 0 30px #09f;
+ margin-bottom:12px;
 }
 
-.lock{
-    filter:blur(15px);
-    opacity:.2;
+#menu p{margin-bottom:30px;color:#ccd8df}
+
+button{
+ border:0;border-radius:16px;
+ padding:17px 50px;
+ color:white;
+ background:linear-gradient(135deg,#00aaff,#0050ff);
+ font-size:22px;font-weight:bold;
+ box-shadow:0 8px 30px #0077ff66;
 }
 
-video{
-    display:none;
+#hud{
+ position:fixed;z-index:10;
+ top:15px;left:15px;right:15px;
+ display:none;justify-content:space-between;
+ pointer-events:none;
 }
+
+.hud{
+ color:white;
+ background:#0009;
+ padding:10px 16px;
+ border-radius:12px;
+}
+
+#voice{
+ position:fixed;z-index:15;
+ top:75px;left:50%;
+ transform:translateX(-50%);
+ padding:12px 28px;
+ border-radius:50px;
+ background:#000d;
+ color:white;
+ font-size:25px;
+ font-weight:bold;
+ opacity:0;
+ transition:.2s;
+}
+
+#voice.show{opacity:1}
+
+#gameover{display:none}
+#gameover h2{font-size:60px;margin-bottom:15px}
+#gameover p{margin-bottom:25px;color:#ccc}
 </style>
-
 </head>
 
 <body>
 
-<video id="video" autoplay muted playsinline></video>
+<div id="game"></div>
 
-<div id="screen">
-    <h1>🔒 Privacy Display</h1>
-    <h2>SirTros</h2>
-    <p>Soukromý obsah</p>
+<div id="menu">
+<h1>🚇 SIRTROS SUBWAY</h1>
+<p>Nekonečný automatický 3D svět</p>
+<button id="play">▶ PLAY</button>
 </div>
 
+<div id="hud">
+<div class="hud">🚇 SIRTROS SUBWAY</div>
+<div class="hud">⭐ <span id="score">0</span></div>
+</div>
 
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<div id="voice">ROVNĚ</div>
 
+<div id="gameover">
+<h2>💥 KONEC</h2>
+<p>Narazil jsi do kontejneru.</p>
+<button id="again">↻ HRÁT ZNOVU</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
+let scene,camera,renderer;
+let playing=false;
+let speed=.30;
+let score=0;
+let targetLane=1;
+let obstacles=[];
+let worldObjects=[];
+let lastDecision=0;
+const decisionCooldown=850;
 
-const video=document.getElementById("video");
-const screen=document.getElementById("screen");
+const lanes=[-4,0,4];
 
+const menu=document.getElementById("menu");
+const play=document.getElementById("play");
+const again=document.getElementById("again");
+const hud=document.getElementById("hud");
+const gameover=document.getElementById("gameover");
+const voice=document.getElementById("voice");
+const scoreEl=document.getElementById("score");
 
-function privacy(on){
-    if(on){
-        screen.classList.add("lock");
-    }else{
-        screen.classList.remove("lock");
-    }
+function init(){
+
+ scene=new THREE.Scene();
+
+ scene.background=new THREE.Color(0x07111d);
+
+ scene.fog=new THREE.Fog(
+  0x07111d,
+  20,
+  190
+ );
+
+ camera=new THREE.PerspectiveCamera(
+  70,
+  innerWidth/innerHeight,
+  .1,
+  500
+ );
+
+ camera.position.set(0,3.1,8);
+
+ renderer=new THREE.WebGLRenderer({
+  antialias:true
+ });
+
+ renderer.setPixelRatio(
+  Math.min(devicePixelRatio,2)
+ );
+
+ renderer.setSize(
+  innerWidth,
+  innerHeight
+ );
+
+ renderer.shadowMap.enabled=true;
+
+ document.getElementById("game")
+ .appendChild(renderer.domElement);
+
+ const light=new THREE.HemisphereLight(
+  0xbad8ff,
+  0x111111,
+  1.8
+ );
+
+ scene.add(light);
+
+ const sun=new THREE.DirectionalLight(
+  0xffffff,
+  2
+ );
+
+ sun.position.set(20,30,10);
+ sun.castShadow=true;
+ scene.add(sun);
+
+ createTrack();
+ createBuildings();
+
+ addEventListener("resize",resize);
+
+ animate();
 }
 
+function createTrack(){
 
-const detector=new FaceDetection({
-    locateFile:(file)=>{
-        return "https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/"+file;
-    }
-});
+ const ground=new THREE.Mesh(
+  new THREE.BoxGeometry(18,.3,600),
+  new THREE.MeshStandardMaterial({
+   color:0x292d31
+  })
+ );
 
+ ground.position.set(0,-.2,-280);
 
-detector.setOptions({
-    model:"short",
-    minDetectionConfidence:0.6
-});
+ scene.add(ground);
+ worldObjects.push(ground);
 
+ [-2,2].forEach(x=>{
 
-detector.onResults((result)=>{
+  const line=new THREE.Mesh(
+   new THREE.BoxGeometry(.08,.05,600),
+   new THREE.MeshStandardMaterial({
+    color:0xffffff
+   })
+  );
 
-    let faces=result.detections;
+  line.position.set(x,0,-280);
 
+  scene.add(line);
+  worldObjects.push(line);
+ });
 
-    if(!faces || faces.length!==1){
-        privacy(true);
-        return;
-    }
+ for(let z=10;z>-600;z-=5){
 
+  const sleeper=new THREE.Mesh(
+   new THREE.BoxGeometry(16,.12,.4),
+   new THREE.MeshStandardMaterial({
+    color:0x4b3428
+   })
+  );
 
-    let face=faces[0].boundingBox;
+  sleeper.position.set(0,-.05,z);
 
+  scene.add(sleeper);
+  worldObjects.push(sleeper);
+ }
+}
 
-    if(face.xCenter>0.3 && face.xCenter<0.7){
-        privacy(false);
-    }
-    else{
-        privacy(true);
-    }
+function createBuildings(){
 
-});
+ for(let z=0;z>-600;z-=18){
 
+  createBuilding(-15,z);
+  createBuilding(15,z-7);
+ }
+}
 
+function createBuilding(x,z){
 
-navigator.mediaDevices.getUserMedia({
-    video:{
-        facingMode:"user"
-    }
-})
-.then(stream=>{
-    video.srcObject=stream;
-});
+ const height=8+Math.random()*18;
 
+ const building=new THREE.Mesh(
+  new THREE.BoxGeometry(
+   5+Math.random()*4,
+   height,
+   5+Math.random()*4
+  ),
+  new THREE.MeshStandardMaterial({
+   color:new THREE.Color(
+    .05,
+    .08,
+    .12+Math.random()*.1
+   )
+  })
+ );
 
+ building.position.set(
+  x,
+  height/2,
+  z
+ );
 
-const camera=new Camera(video,{
-    onFrame:async()=>{
-        await detector.send({image:video});
-    },
-    width:640,
-    height:480
-});
+ scene.add(building);
+ worldObjects.push(building);
+}
 
+function createContainer(lane,z){
 
-camera.start();
+ const group=new THREE.Group();
+
+ const body=new THREE.Mesh(
+  new THREE.BoxGeometry(3.2,2.5,3.2),
+  new THREE.MeshStandardMaterial({
+   color:new THREE.Color(
+    .02,
+    .18+Math.random()*.25,
+    .40+Math.random()*.25
+   ),
+   roughness:.85
+  })
+ );
+
+ body.position.y=1.25;
+ body.castShadow=true;
+ group.add(body);
+
+ for(let x=-1.25;x<=1.25;x+=.6){
+
+  const bar=new THREE.Mesh(
+   new THREE.BoxGeometry(.08,2.6,3.25),
+   new THREE.MeshStandardMaterial({
+    color:0x15202a
+   })
+  );
+
+  bar.position.set(x,1.25,0);
+  group.add(bar);
+ }
+
+ group.position.set(
+  lanes[lane],
+  0,
+  z
+ );
+
+ scene.add(group);
+
+ obstacles.push({
+  mesh:group,
+  lane:lane,
+  passed:false
+ });
+}
+
+function createInitialObstacles(){
+
+ for(const o of obstacles){
+  scene.remove(o.mesh);
+ }
+
+ obstacles=[];
+
+ createContainer(
+  Math.floor(Math.random()*3),
+  -55
+ );
+
+ createContainer(
+  Math.floor(Math.random()*3),
+  -105
+ );
+
+ createContainer(
+  Math.floor(Math.random()*3),
+  -155
+ );
+}
+
+function createNextObstacle(){
+
+ if(obstacles.length>=3)return;
+
+ let farthest=null;
+
+ for(const o of obstacles){
+
+  if(!farthest ||
+     o.mesh.position.z<
+     farthest.mesh.position.z){
+
+   farthest=o;
+  }
+ }
+
+ let z=-100;
+
+ if(farthest){
+  z=farthest.mesh.position.z-50;
+ }
+
+ let lane=Math.floor(Math.random()*3);
+
+ if(farthest && lane===farthest.lane){
+
+  const possible=[0,1,2]
+   .filter(x=>x!==farthest.lane);
+
+  lane=possible[
+   Math.floor(Math.random()*possible.length)
+  ];
+ }
+
+ createContainer(lane,z);
+}
+
+function cameraVision(){
+
+ const now=performance.now();
+
+ if(now-lastDecision<decisionCooldown){
+  return;
+ }
+
+ let left=null;
+ let center=null;
+ let right=null;
+
+ for(const obstacle of obstacles){
+
+  const dz=
+   obstacle.mesh.position.z-
+   camera.position.z;
+
+  if(dz>=0 || dz<-55){
+   continue;
+  }
+
+  const x=obstacle.mesh.position.x;
+
+  if(x<-2){
+
+   if(!left ||
+      Math.abs(dz)<
+      Math.abs(
+       left.mesh.position.z-
+       camera.position.z
+      )){
+
+    left=obstacle;
+   }
+
+  }else if(x>=-2 && x<=2){
+
+   if(!center ||
+      Math.abs(dz)<
+      Math.abs(
+       center.mesh.position.z-
+       camera.position.z
+      )){
+
+    center=obstacle;
+   }
+
+  }else{
+
+   if(!right ||
+      Math.abs(dz)<
+      Math.abs(
+       right.mesh.position.z-
+       camera.position.z
+      )){
+
+    right=obstacle;
+   }
+  }
+ }
+
+ /*
+   STŘED → DOLEVA
+   VPRAVO → DOLEVA
+   VLEVO → ROVNĚ
+   NIC → DOPRAVA
+ */
+
+ if(center){
+
+  changeDirection(0);
+
+ }else if(right){
+
+  changeDirection(0);
+
+ }else if(left){
+
+  changeDirection(1);
+
+ }else{
+
+  changeDirection(2);
+ }
+}
+
+function changeDirection(lane){
+
+ if(targetLane===lane){
+  return;
+ }
+
+ targetLane=lane;
+ lastDecision=performance.now();
+
+ let text;
+
+ if(lane===0){
+  text="Zahni doleva!";
+ }else if(lane===1){
+  text="Rovně!";
+ }else{
+  text="Zahni doprava!";
+ }
+
+ voice.textContent=text.toUpperCase();
+ voice.classList.add("show");
+
+ setTimeout(()=>{
+  voice.classList.remove("show");
+ },1000);
+
+ if("speechSynthesis" in window){
+
+  speechSynthesis.cancel();
+
+  const speech=
+   new SpeechSynthesisUtterance(text);
+
+  speech.lang="cs-CZ";
+  speech.rate=1.05;
+
+  speechSynthesis.speak(speech);
+ }
+}
+
+function startGame(){
+
+ menu.style.display="none";
+ gameover.style.display="none";
+ hud.style.display="flex";
+
+ camera.position.set(0,3.1,8);
+
+ targetLane=1;
+ speed=.30;
+ score=0;
+ lastDecision=0;
+ playing=true;
+
+ scoreEl.textContent="0";
+
+ createInitialObstacles();
+
+ setTimeout(()=>{
+  cameraVision();
+ },500);
+}
+
+play.onclick=startGame;
+again.onclick=startGame;
+
+function createFallingPerson(){
+
+ const person=new THREE.Group();
+
+ const body=new THREE.Mesh(
+  new THREE.CapsuleGeometry(.45,1.2,4,8),
+  new THREE.MeshStandardMaterial({
+   color:0x2374d8
+  })
+ );
+
+ body.position.y=1.35;
+ person.add(body);
+
+ const head=new THREE.Mesh(
+  new THREE.SphereGeometry(.35,16,12),
+  new THREE.MeshStandardMaterial({
+   color:0xf0b58c
+  })
+ );
+
+ head.position.y=2.35;
+ person.add(head);
+
+ for(const x of [-.22,.22]){
+
+  const leg=new THREE.Mesh(
+   new THREE.BoxGeometry(.22,.9,.25),
+   new THREE.MeshStandardMaterial({
+    color:0x172235
+   })
+  );
+
+  leg.position.set(x,.45,0);
+  person.add(leg);
+ }
+
+ for(const x of [-.6,.6]){
+
+  const arm=new THREE.Mesh(
+   new THREE.BoxGeometry(.2,.9,.2),
+   new THREE.MeshStandardMaterial({
+    color:0x2374d8
+   })
+  );
+
+  arm.position.set(x,1.35,0);
+  arm.rotation.z=x<0?-.3:.3;
+
+  person.add(arm);
+ }
+
+ person.position.set(
+  camera.position.x,
+  0,
+  camera.position.z-1
+ );
+
+ scene.add(person);
+
+ const start=performance.now();
+
+ function fall(){
+
+  const t=Math.min(
+   (performance.now()-start)/1000,
+   1.5
+  );
+
+  person.rotation.x=t*1.8;
+  person.rotation.z=Math.sin(t*8)*.12;
+
+  person.position.y=
+   Math.max(0,1.4-t);
+
+  person.position.z=
+   camera.position.z-1+t*2;
+
+  if(t<1.5){
+   requestAnimationFrame(fall);
+  }
+ }
+
+ fall();
+}
+
+function createDogPerson(){
+
+ const human=new THREE.Group();
+
+ const humanBody=new THREE.Mesh(
+  new THREE.CapsuleGeometry(.4,1,4,8),
+  new THREE.MeshStandardMaterial({
+   color:0x6b3d20
+  })
+ );
+
+ humanBody.position.y=1.25;
+ human.add(humanBody);
+
+ const humanHead=new THREE.Mesh(
+  new THREE.SphereGeometry(.32,16,12),
+  new THREE.MeshStandardMaterial({
+   color:0xf0b58c
+  })
+ );
+
+ humanHead.position.y=2.2;
+ human.add(humanHead);
+
+ const dog=new THREE.Group();
+
+ const dogBody=new THREE.Mesh(
+  new THREE.BoxGeometry(1.1,.65,.55),
+  new THREE.MeshStandardMaterial({
+   color:0x8b5a32
+  })
+ );
+
+ dogBody.position.y=.65;
+ dog.add(dogBody);
+
+ const dogHead=new THREE.Mesh(
+  new THREE.SphereGeometry(.4,12,10),
+  new THREE.MeshStandardMaterial({
+   color:0x9b673c
+  })
+ );
+
+ dogHead.position.set(.6,.85,0);
+ dog.add(dogHead);
+
+ human.position.set(
+  -1.2,
+  0,
+  camera.position.z+5
+ );
+
+ dog.position.set(
+  1.2,
+  0,
+  camera.position.z+5
+ );
+
+ scene.add(human);
+ scene.add(dog);
+}
+
+function crash(){
+
+ if(!playing)return;
+
+ playing=false;
+
+ createFallingPerson();
+ createDogPerson();
+
+ setTimeout(()=>{
+  gameover.style.display="flex";
+ },1500);
+
+ if("speechSynthesis" in window){
+
+  speechSynthesis.cancel();
+
+  const speech=
+   new SpeechSynthesisUtterance(
+    "Konec jízdy!"
+   );
+
+  speech.lang="cs-CZ";
+  speech.rate=1.05;
+
+  speechSynthesis.speak(speech);
+ }
+}
+
+function update(delta){
+
+ camera.position.z-=
+  speed*60*delta;
+
+ const targetX=lanes[targetLane];
+
+ const difference=
+  targetX-camera.position.x;
+
+ camera.position.x+=
+  difference*Math.min(1,delta*4);
+
+ camera.position.y=
+  3.1+
+  Math.sin(
+   performance.now()*.004
+  )*.025;
+
+ cameraVision();
+
+ for(
+  let i=obstacles.length-1;
+  i>=0;
+  i--
+ ){
+
+  const obstacle=obstacles[i];
+
+  const dz=
+   obstacle.mesh.position.z-
+   camera.position.z;
+
+  const dx=
+   Math.abs(
+    obstacle.mesh.position.x-
+    camera.position.x
+   );
+
+  if(
+   Math.abs(dz)<1.7 &&
+   dx<1.25
+  ){
+
+   crash();
+   return;
+  }
+
+  if(
+   !obstacle.passed &&
+   obstacle.mesh.position.z>
+   camera.position.z
+  ){
+
+   obstacle.passed=true;
+   score+=100;
+   scoreEl.textContent=score;
+  }
+
+  if(
+   obstacle.mesh.position.z>
+   camera.position.z+30
+  ){
+
+   scene.remove(obstacle.mesh);
+
+   obstacles.splice(i,1);
+
+   createNextObstacle();
+  }
+ }
+
+ speed+=delta*.001;
+}
+
+function updateWorld(){
+
+ for(const object of worldObjects){
+
+  if(
+   object.position.z>
+   camera.position.z+60
+  ){
+
+   object.position.z-=600;
+  }
+ }
+}
+
+let lastTime=performance.now();
+
+function animate(){
+
+ requestAnimationFrame(animate);
+
+ const now=performance.now();
+
+ const delta=Math.min(
+  (now-lastTime)/1000,
+  .05
+ );
+
+ lastTime=now;
+
+ if(playing){
+
+  update(delta);
+  updateWorld();
+ }
+
+ renderer.render(
+  scene,
+  camera
+ );
+}
+
+function resize(){
+
+ camera.aspect=
+  innerWidth/innerHeight;
+
+ camera.updateProjectionMatrix();
+
+ renderer.setSize(
+  innerWidth,
+  innerHeight
+ );
+}
+
+init();
 
 </script>
 
