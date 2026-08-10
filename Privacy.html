@@ -2,1373 +2,547 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>SirTros Subway 3D</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ouškův NFC Finder</title>
 
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+* {
+    box-sizing: border-box;
 }
 
-html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#000;
-    font-family:Arial,sans-serif;
+html,
+body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: "Segoe UI", Arial, sans-serif;
 }
 
-#game{
-    position:fixed;
-    inset:0;
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background:
+        radial-gradient(circle at top, #19364b 0%, #071018 45%, #03070a 100%);
+
+    color: white;
+    padding: 20px;
 }
 
-canvas{
-    display:block;
+.container {
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+
+    background: rgba(15, 27, 38, 0.96);
+
+    border: 1px solid rgba(255,255,255,0.1);
+
+    border-radius: 28px;
+
+    padding: 35px 25px;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,0.55);
 }
 
-#menu,#gameover{
-    position:fixed;
-    inset:0;
-    z-index:20;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    color:white;
-    text-align:center;
-    background:radial-gradient(circle,#315b75,#091119 55%,#000);
+.logo {
+    font-size: 85px;
+
+    animation:
+        float 3s ease-in-out infinite;
 }
 
-#menu h1{
-    font-size:clamp(40px,10vw,80px);
-    text-shadow:0 0 30px #009cff;
-    margin-bottom:12px;
+@keyframes float {
+
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
-#menu p{
-    color:#d5e0e7;
-    margin-bottom:30px;
+h1 {
+    margin: 10px 0 5px;
+
+    font-size: 30px;
 }
 
-button{
-    border:0;
-    border-radius:16px;
-    padding:17px 50px;
-    color:white;
-    background:linear-gradient(135deg,#00aaff,#0050ff);
-    font-size:22px;
-    font-weight:bold;
-    box-shadow:0 8px 30px #0077ff66;
+.subtitle {
+    color: #9eb4c4;
+    margin-bottom: 25px;
 }
 
-#hud{
-    position:fixed;
-    z-index:10;
-    top:15px;
-    left:15px;
-    right:15px;
-    display:none;
-    justify-content:space-between;
-    pointer-events:none;
+.status {
+    padding: 22px;
+
+    border-radius: 18px;
+
+    background: #14232f;
+
+    color: #b9c9d4;
+
+    font-size: 17px;
+
+    line-height: 1.5;
+
+    margin-bottom: 20px;
 }
 
-.hud{
-    color:white;
-    background:#0009;
-    padding:10px 16px;
-    border-radius:12px;
+.status.scanning {
+    border: 1px solid #238cff;
+    background: #102b40;
+    color: #8fc9ff;
 }
 
-#voice{
-    position:fixed;
-    z-index:15;
-    top:75px;
-    left:50%;
-    transform:translateX(-50%);
-    padding:12px 28px;
-    border-radius:50px;
-    background:#000d;
-    color:white;
-    font-size:25px;
-    font-weight:bold;
-    opacity:0;
-    transition:.2s;
-    pointer-events:none;
+.status.success {
+    border: 1px solid #35c76f;
+    background: #10351f;
+    color: #7df0a3;
+
+    animation: successPulse 1.2s infinite;
 }
 
-#voice.show{
-    opacity:1;
+@keyframes successPulse {
+
+    0%, 100% {
+        box-shadow: 0 0 0 rgba(53,199,111,0);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(53,199,111,0.25);
+    }
 }
 
-#gameover{
-    display:none;
+.status.error {
+    border: 1px solid #d94b55;
+    background: #351519;
+    color: #ff9ba2;
 }
 
-#gameover h2{
-    font-size:60px;
-    margin-bottom:15px;
+button {
+    width: 100%;
+
+    border: 0;
+
+    border-radius: 16px;
+
+    padding: 17px;
+
+    background: #1687e8;
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s;
 }
 
-#gameover p{
-    margin-bottom:25px;
-    color:#ccc;
+button:hover {
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.info {
+    margin-top: 20px;
+
+    color: #7890a0;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+.nfc-info {
+    margin-top: 15px;
+
+    padding: 12px;
+
+    background: rgba(255,255,255,0.04);
+
+    border-radius: 12px;
+
+    color: #91a7b5;
+
+    font-size: 13px;
+
+    word-break: break-word;
+}
+
+.reset {
+    margin-top: 12px;
+
+    background: #253744;
+
+    font-size: 14px;
+
+    display: none;
 }
 </style>
 </head>
 
 <body>
 
-<div id="game"></div>
+<div class="container">
 
-<div id="menu">
-    <h1>🚇 SIRTROS SUBWAY</h1>
-    <p>Nekonečný automatický 3D svět</p>
-    <button id="play">▶ PLAY</button>
+    <div class="logo">
+        🐻
+    </div>
+
+    <h1>
+        OUŠKŮV NFC FINDER
+    </h1>
+
+    <div class="subtitle">
+        NFC detektor pro Ouška
+    </div>
+
+    <div
+        id="status"
+        class="status"
+    >
+        📡 NFC skenování není spuštěné.
+    </div>
+
+    <button
+        id="scanButton"
+    >
+        📡 SPUSTIT NFC SKENOVÁNÍ
+    </button>
+
+    <button
+        id="resetButton"
+        class="reset"
+    >
+        🔄 SPUSTIT ZNOVU
+    </button>
+
+    <div
+        id="nfcInfo"
+        class="nfc-info"
+        style="display:none;"
+    ></div>
+
+    <div class="info">
+        Přilož NFC kartu nebo jiný kompatibilní NFC tag
+        k zadní straně telefonu.
+    </div>
+
 </div>
 
-<div id="hud">
-    <div class="hud">🚇 SIRTROS SUBWAY</div>
-    <div class="hud">⭐ <span id="score">0</span></div>
-</div>
-
-<div id="voice">ROVNĚ</div>
-
-<div id="gameover">
-    <h2>💥 KONEC</h2>
-    <p>Narazil jsi do kontejneru.</p>
-    <button id="again">↻ HRÁT ZNOVU</button>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
 
-let scene;
-let camera;
-let renderer;
+const scanButton =
+    document.getElementById("scanButton");
 
-let player;
+const resetButton =
+    document.getElementById("resetButton");
 
-let playing=false;
+const statusBox =
+    document.getElementById("status");
 
-let speed=0.32;
-let score=0;
+const nfcInfo =
+    document.getElementById("nfcInfo");
 
-let currentLane=1;
-let targetLane=1;
 
-let obstacles=[];
-let worldObjects=[];
+let ndef = null;
 
-let lastDecision=0;
 
-const lanes=[-4,0,4];
+/* =========================================
+   SPUŠTĚNÍ NFC
+========================================= */
 
-const decisionDistance=45;
-const decisionCooldown=700;
-
-const menu=document.getElementById("menu");
-const play=document.getElementById("play");
-const again=document.getElementById("again");
-const hud=document.getElementById("hud");
-const gameover=document.getElementById("gameover");
-const voice=document.getElementById("voice");
-const scoreEl=document.getElementById("score");
-
-
-/* ==============================
-   INIT
-============================== */
-
-function init(){
-
-    scene=new THREE.Scene();
-
-    scene.background=new THREE.Color(0x07111d);
-
-    scene.fog=new THREE.Fog(
-        0x07111d,
-        15,
-        180
-    );
-
-    camera=new THREE.PerspectiveCamera(
-        70,
-        innerWidth/innerHeight,
-        0.1,
-        500
-    );
-
-    camera.position.set(
-        0,
-        3.4,
-        9
-    );
-
-    renderer=new THREE.WebGLRenderer({
-        antialias:true
-    });
-
-    renderer.setPixelRatio(
-        Math.min(devicePixelRatio,2)
-    );
-
-    renderer.setSize(
-        innerWidth,
-        innerHeight
-    );
-
-    renderer.shadowMap.enabled=true;
-
-    document
-        .getElementById("game")
-        .appendChild(renderer.domElement);
-
-    const ambient=new THREE.HemisphereLight(
-        0xbad8ff,
-        0x111111,
-        1.8
-    );
-
-    scene.add(ambient);
-
-    const sun=new THREE.DirectionalLight(
-        0xffffff,
-        2
-    );
-
-    sun.position.set(
-        20,
-        30,
-        10
-    );
-
-    sun.castShadow=true;
-
-    scene.add(sun);
-
-    createTrack();
-    createBuildings();
-    createPlayer();
-
-    addEventListener(
-        "resize",
-        resize
-    );
-
-    animate();
-}
-
-
-/* ==============================
-   PLAYER
-============================== */
-
-function createPlayer(){
-
-    player=new THREE.Group();
-
-    const body=new THREE.Mesh(
-        new THREE.CapsuleGeometry(
-            .42,
-            1.15,
-            4,
-            8
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x2374d8
-        })
-    );
-
-    body.position.y=1.35;
-
-    player.add(body);
-
-    const head=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .34,
-            16,
-            12
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0xf0b58c
-        })
-    );
-
-    head.position.y=2.35;
-
-    player.add(head);
-
-    const hair=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .35,
-            16,
-            8,
-            0,
-            Math.PI*2,
-            0,
-            Math.PI*.55
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x21160f
-        })
-    );
-
-    hair.position.y=2.48;
-
-    player.add(hair);
-
-    for(const x of [-.22,.22]){
-
-        const leg=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                .22,
-                .9,
-                .25
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x172235
-            })
-        );
-
-        leg.position.set(
-            x,
-            .45,
-            0
-        );
-
-        player.add(leg);
-    }
-
-    for(const x of [-.6,.6]){
-
-        const arm=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                .2,
-                .9,
-                .2
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x2374d8
-            })
-        );
-
-        arm.position.set(
-            x,
-            1.35,
-            0
-        );
-
-        arm.rotation.z=
-            x<0 ? -.25 : .25;
-
-        player.add(arm);
-    }
-
-    player.position.set(
-        0,
-        0,
-        0
-    );
-
-    scene.add(player);
-}
-
-
-/* ==============================
-   TRACK
-============================== */
-
-function createTrack(){
-
-    const ground=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            18,
-            .3,
-            700
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x292d31
-        })
-    );
-
-    ground.position.set(
-        0,
-        -.2,
-        -320
-    );
-
-    scene.add(ground);
-
-    worldObjects.push(ground);
-
-    for(const x of [-2,2]){
-
-        const line=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                .08,
-                .05,
-                700
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0xffffff
-            })
-        );
-
-        line.position.set(
-            x,
-            0,
-            -320
-        );
-
-        scene.add(line);
-
-        worldObjects.push(line);
-    }
-
-    for(
-        let z=10;
-        z>-700;
-        z-=5
-    ){
-
-        const sleeper=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                16,
-                .12,
-                .4
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x4b3428
-            })
-        );
-
-        sleeper.position.set(
-            0,
-            -.05,
-            z
-        );
-
-        scene.add(sleeper);
-
-        worldObjects.push(sleeper);
-    }
-}
-
-
-/* ==============================
-   BUILDINGS
-============================== */
-
-function createBuildings(){
-
-    for(
-        let z=0;
-        z>-700;
-        z-=20
-    ){
-
-        createBuilding(
-            -15,
-            z
-        );
-
-        createBuilding(
-            15,
-            z-8
-        );
-    }
-}
-
-
-function createBuilding(x,z){
-
-    const height=
-        8+
-        Math.random()*18;
-
-    const building=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            5+
-            Math.random()*4,
-            height,
-            6+
-            Math.random()*4
-        ),
-        new THREE.MeshStandardMaterial({
-            color:new THREE.Color(
-                .04,
-                .07,
-                .11+
-                Math.random()*.08
-            )
-        })
-    );
-
-    building.position.set(
-        x,
-        height/2,
-        z
-    );
-
-    scene.add(building);
-
-    worldObjects.push(building);
-}
-
-
-/* ==============================
-   CONTAINER
-============================== */
-
-function createContainer(
-    lane,
-    z
-){
-
-    const group=new THREE.Group();
-
-    const body=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            3.2,
-            2.5,
-            3.2
-        ),
-        new THREE.MeshStandardMaterial({
-            color:new THREE.Color(
-                .02,
-                .18+
-                Math.random()*.22,
-                .38+
-                Math.random()*.25
-            ),
-            roughness:.85
-        })
-    );
-
-    body.position.y=1.25;
-
-    body.castShadow=true;
-
-    group.add(body);
-
-    for(
-        let x=-1.25;
-        x<=1.25;
-        x+=.6
-    ){
-
-        const bar=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                .08,
-                2.6,
-                3.25
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x15202a
-            })
-        );
-
-        bar.position.set(
-            x,
-            1.25,
-            0
-        );
-
-        group.add(bar);
-    }
-
-    group.position.set(
-        lanes[lane],
-        0,
-        z
-    );
-
-    scene.add(group);
-
-    obstacles.push({
-        mesh:group,
-        lane:lane,
-        passed:false
-    });
-}
-
-
-/* ==============================
-   OBSTACLES
-============================== */
-
-function createInitialObstacles(){
-
-    for(const o of obstacles){
-        scene.remove(o.mesh);
-    }
-
-    obstacles=[];
+async function startNFC() {
 
     /*
-       Tři kontejnery.
-       Každý má jiný pruh,
-       aby hra nebyla nemožná.
+        Kontrola podpory Web NFC
     */
 
-    const order=[
-        0,
-        2,
-        1
-    ];
+    if (!("NDEFReader" in window)) {
 
-    createContainer(
-        order[0],
-        -55
-    );
+        statusBox.className =
+            "status error";
 
-    createContainer(
-        order[1],
-        -105
-    );
-
-    createContainer(
-        order[2],
-        -155
-    );
-}
-
-
-function createNextObstacle(){
-
-    if(obstacles.length>=3){
-        return;
-    }
-
-    let farthest=null;
-
-    for(const o of obstacles){
-
-        if(
-            !farthest ||
-            o.mesh.position.z<
-            farthest.mesh.position.z
-        ){
-
-            farthest=o;
-        }
-    }
-
-    let z=-100;
-
-    if(farthest){
-        z=
-            farthest.mesh.position.z-
-            50;
-    }
-
-    let lane=
-        Math.floor(
-            Math.random()*3
-        );
-
-    if(
-        farthest &&
-        lane===farthest.lane
-    ){
-
-        const available=
-            [0,1,2].filter(
-                x=>
-                    x!==farthest.lane
-            );
-
-        lane=
-            available[
-                Math.floor(
-                    Math.random()*
-                    available.length
-                )
-            ];
-    }
-
-    createContainer(
-        lane,
-        z
-    );
-}
-
-
-/* ==============================
-   CAMERA VISION
-============================== */
-
-function cameraVision(){
-
-    const now=
-        performance.now();
-
-    if(
-        now-lastDecision<
-        decisionCooldown
-    ){
-        return;
-    }
-
-    /*
-       Najdeme nejbližší
-       překážku před hráčem.
-    */
-
-    let nearest=null;
-    let nearestDistance=Infinity;
-
-    for(const obstacle of obstacles){
-
-        const dz=
-            obstacle.mesh.position.z-
-            player.position.z;
-
-        if(
-            dz>0 ||
-            dz<-decisionDistance
-        ){
-            continue;
-        }
-
-        const distance=
-            Math.abs(dz);
-
-        if(
-            distance<
-            nearestDistance
-        ){
-
-            nearest=obstacle;
-            nearestDistance=distance;
-        }
-    }
-
-    /*
-       Nic před námi.
-       Jede doprava.
-    */
-
-    if(!nearest){
-
-        setDirection(
-            2
-        );
+        statusBox.innerHTML =
+            "❌ Tento prohlížeč nepodporuje Web NFC.<br><br>" +
+            "Použij kompatibilní Android prohlížeč.";
 
         return;
     }
 
-    /*
-       Překážka vlevo.
-       Jede rovně.
-    */
 
-    if(
-        nearest.lane===0
-    ){
+    try {
 
-        setDirection(
-            1
-        );
+        ndef = new NDEFReader();
 
-        return;
+
+        /*
+            Spustíme skenování
+        */
+
+        await ndef.scan();
+
+
+        scanButton.disabled = true;
+
+        resetButton.style.display =
+            "none";
+
+
+        statusBox.className =
+            "status scanning";
+
+
+        statusBox.innerHTML =
+            "📡 <strong>NFC SKENOVÁNÍ AKTIVNÍ</strong><br><br>" +
+            "Přilož NFC zařízení k telefonu.";
+
+
+        /*
+            NFC TAG NALEZEN
+        */
+
+        ndef.onreading = event => {
+
+            console.log(
+                "NFC zařízení nalezeno!"
+            );
+
+
+            console.log(
+                "Serial:",
+                event.serialNumber
+            );
+
+
+            /*
+                LIBOVOLNÉ NFC = ÚSPĚCH
+            */
+
+            statusBox.className =
+                "status success";
+
+
+            statusBox.innerHTML =
+                "🐻 <strong>OUŠKO NALEZENO!</strong><br><br>" +
+                "NFC zařízení bylo úspěšně detekováno. 💙";
+
+
+            /*
+                Informace o tagu
+            */
+
+            nfcInfo.style.display =
+                "block";
+
+
+            nfcInfo.innerHTML =
+                "📡 NFC zařízení detekováno<br>" +
+                "ID: " +
+                (
+                    event.serialNumber ||
+                    "neuvedeno"
+                );
+
+
+            /*
+                Vibrace telefonu
+            */
+
+            if (
+                "vibrate" in navigator
+            ) {
+
+                navigator.vibrate([
+                    200,
+                    100,
+                    200
+                ]);
+
+            }
+
+
+            /*
+                Zvukové upozornění
+            */
+
+            playSuccessSound();
+
+
+            /*
+                Po nalezení necháme
+                skener dál běžet.
+            */
+
+        };
+
+
+        /*
+            Chyba čtení NFC
+        */
+
+        ndef.onreadingerror = () => {
+
+            statusBox.className =
+                "status error";
+
+
+            statusBox.innerHTML =
+                "⚠️ NFC zařízení bylo zachyceno," +
+                " ale nepodařilo se přečíst jeho obsah.<br><br>" +
+                "Zkus ho přiložit znovu.";
+
+        };
+
     }
 
-    /*
-       Překážka uprostřed.
-       Doleva.
-    */
+    catch (error) {
 
-    if(
-        nearest.lane===1
-    ){
+        console.error(error);
 
-        setDirection(
-            0
-        );
 
-        return;
+        statusBox.className =
+            "status error";
+
+
+        statusBox.innerHTML =
+            "❌ NFC skenování se nepodařilo spustit.<br><br>" +
+            error.message;
+
+
+        scanButton.disabled =
+            false;
+
     }
 
-    /*
-       Překážka vpravo.
-       Doleva.
-    */
-
-    if(
-        nearest.lane===2
-    ){
-
-        setDirection(
-            0
-        );
-    }
 }
 
 
-/* ==============================
-   AUTOMATICKÉ ZATÁČENÍ
-============================== */
+/* =========================================
+   ZVUK
+========================================= */
 
-function setDirection(lane){
+function playSuccessSound() {
 
-    /*
-       Nezatáčej znovu,
-       pokud už jsme v cílovém pruhu.
-    */
+    try {
 
-    if(
-        targetLane===lane
-    ){
-        return;
-    }
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
 
-    targetLane=lane;
 
-    lastDecision=
-        performance.now();
-
-    let text;
-
-    if(lane===0){
-
-        text="Zahni doleva!";
-
-    }else if(lane===1){
-
-        text="Rovně!";
-
-    }else{
-
-        text="Zahni doprava!";
-    }
-
-    voice.textContent=
-        text.toUpperCase();
-
-    voice.classList.add(
-        "show"
-    );
-
-    setTimeout(()=>{
-        voice.classList.remove(
-            "show"
-        );
-    },900);
-
-    /*
-       Hlas.
-    */
-
-    if(
-        "speechSynthesis"
-        in window
-    ){
-
-        speechSynthesis.cancel();
-
-        const speech=
-            new SpeechSynthesisUtterance(
-                text
-            );
-
-        speech.lang="cs-CZ";
-
-        speech.rate=1.05;
-
-        speechSynthesis.speak(
-            speech
-        );
-    }
-}
-
-
-/* ==============================
-   START
-============================== */
-
-function startGame(){
-
-    menu.style.display="none";
-
-    gameover.style.display="none";
-
-    hud.style.display="flex";
-
-    player.position.set(
-        0,
-        0,
-        0
-    );
-
-    camera.position.set(
-        0,
-        3.4,
-        9
-    );
-
-    currentLane=1;
-    targetLane=1;
-
-    speed=.32;
-    score=0;
-
-    lastDecision=0;
-
-    scoreEl.textContent="0";
-
-    createInitialObstacles();
-
-    playing=true;
-
-    /*
-       První rozhodnutí.
-    */
-
-    setTimeout(()=>{
-        cameraVision();
-    },500);
-}
-
-play.onclick=startGame;
-again.onclick=startGame;
-
-
-/* ==============================
-   FALL ANIMATION
-============================== */
-
-function createFallingPlayer(){
-
-    const fallPlayer=
-        player.clone();
-
-    scene.add(
-        fallPlayer
-    );
-
-    fallPlayer.position.copy(
-        player.position
-    );
-
-    const start=
-        performance.now();
-
-    function fall(){
-
-        const t=
-            Math.min(
-                (performance.now()-start)/
-                1200,
-                1
-            );
-
-        fallPlayer.rotation.x=
-            t*1.8;
-
-        fallPlayer.rotation.z=
-            Math.sin(t*8)*.12;
-
-        fallPlayer.position.y=
-            Math.max(
-                0,
-                1.2-t*1.2
-            );
-
-        if(t<1){
-            requestAnimationFrame(
-                fall
-            );
-        }
-    }
-
-    fall();
-}
-
-
-/* ==============================
-   PES + ČLOVĚK
-============================== */
-
-function createDogPerson(){
-
-    const human=new THREE.Group();
-
-    const body=new THREE.Mesh(
-        new THREE.CapsuleGeometry(
-            .4,
-            1,
-            4,
-            8
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x6b3d20
-        })
-    );
-
-    body.position.y=1.25;
-
-    human.add(body);
-
-    const head=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .32,
-            16,
-            12
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0xf0b58c
-        })
-    );
-
-    head.position.y=2.2;
-
-    human.add(head);
-
-    const dog=new THREE.Group();
-
-    const dogBody=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            1.1,
-            .65,
-            .55
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x8b5a32
-        })
-    );
-
-    dogBody.position.y=.65;
-
-    dog.add(dogBody);
-
-    const dogHead=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .4,
-            12,
-            10
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x9b673c
-        })
-    );
-
-    dogHead.position.set(
-        .6,
-        .85,
-        0
-    );
-
-    dog.add(dogHead);
-
-    human.position.set(
-        player.position.x-1.2,
-        0,
-        player.position.z+5
-    );
-
-    dog.position.set(
-        player.position.x+1.2,
-        0,
-        player.position.z+5
-    );
-
-    scene.add(human);
-    scene.add(dog);
-}
-
-
-/* ==============================
-   CRASH
-============================== */
-
-function crash(){
-
-    if(!playing){
-        return;
-    }
-
-    playing=false;
-
-    createFallingPlayer();
-    createDogPerson();
-
-    setTimeout(()=>{
-        gameover.style.display="flex";
-    },1000);
-
-    if(
-        "speechSynthesis"
-        in window
-    ){
-
-        speechSynthesis.cancel();
-
-        const speech=
-            new SpeechSynthesisUtterance(
-                "Konec jízdy!"
-            );
-
-        speech.lang="cs-CZ";
-
-        speech.rate=1.05;
-
-        speechSynthesis.speak(
-            speech
-        );
-    }
-}
-
-
-/* ==============================
-   GAME UPDATE
-============================== */
-
-function update(delta){
-
-    /*
-       Hráč jede vždy dopředu.
-    */
-
-    player.position.z-=
-        speed*
-        60*
-        delta;
-
-    /*
-       Automatické přejíždění
-       mezi pruhy.
-    */
-
-    const targetX=
-        lanes[targetLane];
-
-    const difference=
-        targetX-
-        player.position.x;
-
-    player.position.x+=
-        difference*
-        Math.min(
-            1,
-            delta*5
-        );
-
-    /*
-       Kamera pouze sleduje hráče.
-       NEŘÍDÍ jeho pohyb.
-    */
-
-    const cameraTargetX=
-        player.position.x;
-
-    camera.position.x+=
-        (
-            cameraTargetX-
-            camera.position.x
-        )*
-        Math.min(
-            1,
-            delta*5
-        );
-
-    camera.position.z=
-        player.position.z+
-        9;
-
-    camera.position.y=
-        3.4+
-        Math.sin(
-            performance.now()*.005
-        )*.025;
-
-    /*
-       Kamera se dívá před hráče.
-    */
-
-    camera.lookAt(
-        player.position.x,
-        1.4,
-        player.position.z-14
-    );
-
-    /*
-       AI rozhodování.
-    */
-
-    cameraVision();
-
-    /*
-       Kolize.
-    */
-
-    for(
-        let i=obstacles.length-1;
-        i>=0;
-        i--
-    ){
-
-        const obstacle=
-            obstacles[i];
-
-        const dz=
-            obstacle.mesh.position.z-
-            player.position.z;
-
-        const dx=
-            Math.abs(
-                obstacle.mesh.position.x-
-                player.position.x
-            );
-
-        if(
-            Math.abs(dz)<1.8 &&
-            dx<1.25
-        ){
-
-            crash();
-
+        if (!AudioContext) {
             return;
         }
 
-        /*
-           Body.
-        */
 
-        if(
-            !obstacle.passed &&
-            obstacle.mesh.position.z>
-            player.position.z
-        ){
-
-            obstacle.passed=true;
-
-            score+=100;
-
-            scoreEl.textContent=
-                score;
-        }
-
-        /*
-           Překážka je za hráčem.
-        */
-
-        if(
-            obstacle.mesh.position.z>
-            player.position.z+30
-        ){
-
-            scene.remove(
-                obstacle.mesh
-            );
-
-            obstacles.splice(
-                i,
-                1
-            );
-
-            createNextObstacle();
-        }
-    }
-
-    /*
-       Postupné zrychlení.
-    */
-
-    speed+=
-        delta*.001;
-}
+        const audio =
+            new AudioContext();
 
 
-/* ==============================
-   INFINITE WORLD
-============================== */
-
-function updateWorld(){
-
-    for(
-        const object of worldObjects
-    ){
-
-        if(
-            object.position.z>
-            player.position.z+60
-        ){
-
-            object.position.z-=700;
-        }
-    }
-}
+        const oscillator =
+            audio.createOscillator();
 
 
-/* ==============================
-   LOOP
-============================== */
+        const gain =
+            audio.createGain();
 
-let lastTime=
-    performance.now();
 
-function animate(){
+        oscillator.frequency.value =
+            880;
 
-    requestAnimationFrame(
-        animate
-    );
 
-    const now=
-        performance.now();
+        oscillator.type =
+            "sine";
 
-    const delta=
-        Math.min(
-            (now-lastTime)/1000,
-            .05
+
+        gain.gain.value =
+            0.12;
+
+
+        oscillator.connect(gain);
+
+        gain.connect(
+            audio.destination
         );
 
-    lastTime=now;
 
-    if(playing){
+        oscillator.start();
 
-        update(delta);
 
-        updateWorld();
+        setTimeout(() => {
+
+            oscillator.frequency.value =
+                1175;
+
+        }, 150);
+
+
+        setTimeout(() => {
+
+            oscillator.stop();
+
+            audio.close();
+
+        }, 350);
+
     }
 
-    renderer.render(
-        scene,
-        camera
-    );
+    catch (error) {
+
+        console.log(
+            "Zvuk nelze přehrát.",
+            error
+        );
+
+    }
+
 }
 
 
-/* ==============================
-   RESIZE
-============================== */
+/* =========================================
+   TLAČÍTKO START
+========================================= */
 
-function resize(){
-
-    camera.aspect=
-        innerWidth/
-        innerHeight;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-        innerWidth,
-        innerHeight
-    );
-}
+scanButton.addEventListener(
+    "click",
+    startNFC
+);
 
 
-/* ==============================
-   START ENGINE
-============================== */
+/* =========================================
+   RESET
+========================================= */
 
-init();
+resetButton.addEventListener(
+    "click",
+    () => {
+
+        location.reload();
+
+    }
+);
 
 </script>
 
 </body>
- </html>
+</html>
