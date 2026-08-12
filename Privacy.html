@@ -36,12 +36,10 @@ body{
     background:var(--bg);
     color:var(--text);
     min-height:100vh;
-    padding-bottom:100px;
+    padding-bottom:105px;
 }
 
-button,
-input,
-select{
+button,input,select{
     font:inherit;
 }
 
@@ -54,9 +52,7 @@ button{
     display:none!important;
 }
 
-/* =========================
-HEADER
-========================= */
+/* HEADER */
 
 .header{
     background:linear-gradient(135deg,#ff7417,#ff9d42);
@@ -109,9 +105,7 @@ HEADER
     font-size:22px;
 }
 
-/* =========================
-MAIN
-========================= */
+/* MAIN */
 
 main{
     width:min(1100px,calc(100% - 30px));
@@ -126,9 +120,7 @@ main{
     display:block;
 }
 
-/* =========================
-CARDS
-========================= */
+/* CARDS */
 
 .card{
     background:var(--card);
@@ -150,9 +142,7 @@ CARDS
     font-size:20px;
 }
 
-/* =========================
-REALISTIC PETTING AREA
-========================= */
+/* FOX */
 
 .fox-card{
     text-align:center;
@@ -290,7 +280,6 @@ REALISTIC PETTING AREA
     height:17px;
     background:#241d1b;
     border-radius:50%;
-    transition:.15s;
 }
 
 .eye.left{
@@ -412,9 +401,50 @@ REALISTIC PETTING AREA
     transition:.2s;
 }
 
-/* =========================
-QUICK
-========================= */
+/* NEXT PET */
+
+.next-pet-card{
+    border:2px solid #ffe0c9;
+    background:linear-gradient(135deg,#fffaf6,#fff);
+}
+
+.next-pet-row{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.next-pet-icon{
+    width:58px;
+    height:58px;
+    border-radius:18px;
+    background:#fff0e5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:31px;
+    flex-shrink:0;
+}
+
+.next-pet-title{
+    font-weight:bold;
+    font-size:17px;
+}
+
+.next-pet-time{
+    font-size:25px;
+    font-weight:bold;
+    color:var(--orange);
+    margin-top:3px;
+}
+
+.next-pet-sub{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:3px;
+}
+
+/* QUICK */
 
 .quick-grid{
     display:grid;
@@ -462,9 +492,7 @@ QUICK
     background:linear-gradient(135deg,#8556ed,#aa85ff);
 }
 
-/* =========================
-STATS
-========================= */
+/* STATS */
 
 .stats{
     display:grid;
@@ -510,9 +538,7 @@ STATS
     transition:.4s;
 }
 
-/* =========================
-FORMS
-========================= */
+/* FORMS */
 
 .form-grid{
     display:grid;
@@ -578,9 +604,73 @@ FORMS
     font-weight:bold;
 }
 
-/* =========================
-LIST
-========================= */
+/* TOGGLE */
+
+.toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    padding:16px;
+    background:#f7f9fc;
+    border-radius:18px;
+    margin-bottom:14px;
+}
+
+.toggle-info strong{
+    display:block;
+}
+
+.toggle-info small{
+    color:var(--muted);
+    display:block;
+    margin-top:4px;
+}
+
+.switch{
+    position:relative;
+    width:55px;
+    height:31px;
+    flex-shrink:0;
+}
+
+.switch input{
+    opacity:0;
+    width:0;
+    height:0;
+}
+
+.slider{
+    position:absolute;
+    inset:0;
+    background:#cfd5de;
+    border-radius:30px;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.slider:before{
+    content:"";
+    position:absolute;
+    width:25px;
+    height:25px;
+    left:3px;
+    top:3px;
+    background:#fff;
+    border-radius:50%;
+    transition:.25s;
+    box-shadow:0 2px 5px rgba(0,0,0,.15);
+}
+
+.switch input:checked + .slider{
+    background:var(--orange);
+}
+
+.switch input:checked + .slider:before{
+    transform:translateX(24px);
+}
+
+/* LIST */
 
 .list{
     display:flex;
@@ -632,9 +722,7 @@ LIST
     padding:25px 10px;
 }
 
-/* =========================
-PROFILE
-========================= */
+/* PROFILE */
 
 .profile-top{
     display:flex;
@@ -663,9 +751,7 @@ PROFILE
     margin-top:5px;
 }
 
-/* =========================
-NAV
-========================= */
+/* NAV */
 
 .nav{
     position:fixed;
@@ -709,9 +795,7 @@ NAV
     font-size:10px;
 }
 
-/* =========================
-TOAST
-========================= */
+/* TOAST */
 
 .toast{
     position:fixed;
@@ -735,9 +819,7 @@ TOAST
     transform:translate(-50%,0);
 }
 
-/* =========================
-MODAL
-========================= */
+/* MODAL */
 
 .modal{
     position:fixed;
@@ -777,9 +859,7 @@ MODAL
     background:#edf0f4;
 }
 
-/* =========================
-SETUP
-========================= */
+/* SETUP */
 
 .setup{
     position:fixed;
@@ -824,9 +904,7 @@ SETUP
     padding:15px;
 }
 
-/* =========================
-NOTIFICATIONS
-========================= */
+/* NOTIFICATIONS */
 
 .notification-panel{
     position:fixed;
@@ -858,9 +936,7 @@ NOTIFICATIONS
     margin-top:4px;
 }
 
-/* =========================
-RESPONSIVE
-========================= */
+/* RESPONSIVE */
 
 @media(max-width:700px){
 
@@ -911,9 +987,7 @@ RESPONSIVE
 
 <body>
 
-<!-- =========================
-PRVNÍ PROFIL
-========================= -->
+<!-- SETUP PROFILU -->
 
 <div id="setup" class="setup hidden">
 
@@ -975,9 +1049,7 @@ PRVNÍ PROFIL
 </div>
 
 
-<!-- =========================
-HEADER
-========================= -->
+<!-- HEADER -->
 
 <header class="header">
 
@@ -1006,9 +1078,7 @@ HEADER
 
 <main>
 
-<!-- =========================
-DOMŮ
-========================= -->
+<!-- DOMŮ -->
 
 <section id="home" class="view active">
 
@@ -1068,6 +1138,44 @@ DOMŮ
     </div>
 
 
+    <!-- AUTOMATICKÉ POHLAZENÍ -->
+
+    <div class="card next-pet-card">
+
+        <div class="card-title">
+            <h2>❤️ Další pohlazení</h2>
+            <span>⏰</span>
+        </div>
+
+        <div class="next-pet-row">
+
+            <div class="next-pet-icon">
+                🦊
+            </div>
+
+            <div>
+
+                <div class="next-pet-title">
+                    Připomínka pohlazení
+                </div>
+
+                <div id="nextPetCountdown"
+                     class="next-pet-time">
+                    10:00
+                </div>
+
+                <div id="nextPetSub"
+                     class="next-pet-sub">
+                    Připomínka každých 10 minut
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
     <div class="quick-grid">
 
         <button class="quick food"
@@ -1089,11 +1197,11 @@ DOMŮ
         </button>
 
         <button class="quick rem"
-                onclick="openModal('reminderModal')">
+                onclick="showView('reminders')">
 
             <div class="quick-icon">⏰</div>
-            <strong>Připomínka</strong>
-            <small>Nastavit čas</small>
+            <strong>Připomínky</strong>
+            <small>Spravovat</small>
 
         </button>
 
@@ -1140,7 +1248,8 @@ DOMŮ
 
         <div class="progress">
             <div id="waterProgress"
-                 class="progress-bar"></div>
+                 class="progress-bar">
+            </div>
         </div>
 
     </div>
@@ -1159,9 +1268,7 @@ DOMŮ
 </section>
 
 
-<!-- =========================
-JÍDLO
-========================= -->
+<!-- JÍDLO -->
 
 <section id="food" class="view">
 
@@ -1193,9 +1300,7 @@ JÍDLO
 </section>
 
 
-<!-- =========================
-PITÍ
-========================= -->
+<!-- PITÍ -->
 
 <section id="water" class="view">
 
@@ -1227,9 +1332,7 @@ PITÍ
 </section>
 
 
-<!-- =========================
-PŘIPOMÍNKY
-========================= -->
+<!-- PŘIPOMÍNKY -->
 
 <section id="reminders" class="view">
 
@@ -1240,21 +1343,56 @@ PŘIPOMÍNKY
             <span>🔔</span>
         </div>
 
-        <p style="color:#778094;margin-bottom:12px;">
-            Nastav vlastní připomínky pro Ouška.
-        </p>
+        <!-- AUTOMATICKÁ PŘIPOMÍNKA -->
+
+        <div class="toggle-row">
+
+            <div class="toggle-info">
+
+                <strong>
+                    ❤️ Pohladit Ouška
+                </strong>
+
+                <small>
+                    Automaticky každých 10 minut
+                </small>
+
+            </div>
+
+            <label class="switch">
+
+                <input id="petReminderToggle"
+                       type="checkbox"
+                       onchange="togglePetReminder()">
+
+                <span class="slider"></span>
+
+            </label>
+
+        </div>
+
+
+        <button class="secondary"
+                onclick="requestNotifications()">
+            🔔 Povolit systémová oznámení
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>➕ Vlastní připomínka</h2>
+        </div>
 
         <button class="primary"
                 onclick="openModal('reminderModal')">
             ＋ Nová připomínka
         </button>
 
-        <button class="secondary"
-                onclick="requestNotifications()">
-            🔔 Povolit oznámení
-        </button>
-
     </div>
+
 
     <div class="card">
 
@@ -1270,9 +1408,7 @@ PŘIPOMÍNKY
 </section>
 
 
-<!-- =========================
-PROFIL
-========================= -->
+<!-- PROFIL -->
 
 <section id="profile" class="view">
 
@@ -1386,9 +1522,7 @@ PROFIL
 </main>
 
 
-<!-- =========================
-NAVIGACE
-========================= -->
+<!-- NAVIGACE -->
 
 <nav class="nav">
 
@@ -1435,9 +1569,7 @@ NAVIGACE
 </div>
 
 
-<!-- =========================
-JÍDLO MODAL
-========================= -->
+<!-- JÍDLO MODAL -->
 
 <div id="foodModal"
      class="modal">
@@ -1491,9 +1623,7 @@ JÍDLO MODAL
 </div>
 
 
-<!-- =========================
-PITÍ MODAL
-========================= -->
+<!-- PITÍ MODAL -->
 
 <div id="waterModal"
      class="modal">
@@ -1523,10 +1653,12 @@ PITÍ MODAL
 
             <div class="field">
                 <label>Co vypil?</label>
+
                 <select id="waterType">
                     <option>Voda</option>
                     <option>Jiné pití</option>
                 </select>
+
             </div>
 
         </div>
@@ -1541,9 +1673,7 @@ PITÍ MODAL
 </div>
 
 
-<!-- =========================
-PŘIPOMÍNKA MODAL
-========================= -->
+<!-- VLASTNÍ PŘIPOMÍNKA -->
 
 <div id="reminderModal"
      class="modal">
@@ -1565,6 +1695,7 @@ PŘIPOMÍNKA MODAL
 
             <div class="field full">
                 <label>Text připomínky</label>
+
                 <input id="reminderText"
                        type="text"
                        placeholder="Např. Čas na pití 💧">
@@ -1572,6 +1703,7 @@ PŘIPOMÍNKA MODAL
 
             <div class="field">
                 <label>Čas</label>
+
                 <input id="reminderTime"
                        type="time">
             </div>
@@ -1585,6 +1717,7 @@ PŘIPOMÍNKA MODAL
                     <option value="❤️">Péče</option>
                     <option value="🔔">Vlastní</option>
                 </select>
+
             </div>
 
         </div>
@@ -1622,9 +1755,38 @@ let data =
         water:[],
         reminders:[],
         notifications:[],
+
         pets:0,
-        petSessions:0
+        petSessions:0,
+
+        /*
+            AUTOMATICKÉ POHLAZENÍ
+        */
+
+        petReminder:{
+            enabled:true,
+            interval:10 * 60 * 1000,
+            nextAt:Date.now() + 10 * 60 * 1000
+        }
     };
+
+
+/*
+    Pokud máme starší uložená data,
+    doplníme nové nastavení.
+*/
+
+if(!data.petReminder){
+
+    data.petReminder={
+        enabled:true,
+        interval:10 * 60 * 1000,
+        nextAt:Date.now() + 10 * 60 * 1000
+    };
+
+    saveData();
+
+}
 
 
 /* =====================================================
@@ -1806,24 +1968,24 @@ function loadProfile(){
 function saveProfile(){
 
     const name=
-        document.getElementById(
-            "profileNameInput"
-        ).value.trim();
+        document
+        .getElementById("profileNameInput")
+        .value.trim();
 
     const age=
-        document.getElementById(
-            "profileAge"
-        ).value;
+        document
+        .getElementById("profileAge")
+        .value;
 
     const weight=
-        document.getElementById(
-            "profileWeight"
-        ).value;
+        document
+        .getElementById("profileWeight")
+        .value;
 
     const note=
-        document.getElementById(
-            "profileNote"
-        ).value.trim();
+        document
+        .getElementById("profileNote")
+        .value.trim();
 
 
     if(!name){
@@ -1852,6 +2014,7 @@ function saveProfile(){
 
 
     saveData();
+
     loadProfile();
 
     toast("💾 Profil byl uložen!");
@@ -1969,7 +2132,7 @@ function toast(text){
 
 
 /* =====================================================
-REALISTICKÉ POHLAZENÍ
+POHLAZENÍ
 ===================================================== */
 
 const petArea=
@@ -1989,11 +2152,6 @@ let lastHeart=0;
 let petStart=0;
 let lastCountTime=0;
 
-
-/*
-    Zjistí, jestli je dotyk/myš
-    opravdu uvnitř oblasti Ouška.
-*/
 
 function pointInsideFox(x,y){
 
@@ -2024,10 +2182,6 @@ function pointInsideFox(x,y){
 }
 
 
-/*
-    Začátek hlazení.
-*/
-
 function startPetting(x,y){
 
     if(!pointInsideFox(x,y)){
@@ -2045,7 +2199,6 @@ function startPetting(x,y){
     petDistance=0;
 
     fox.classList.add("petting");
-
     fox.classList.add("happy");
 
     petHint.classList.add("hide");
@@ -2057,15 +2210,10 @@ function startPetting(x,y){
 
     addHeart(x,y);
 
-
     countPet();
 
 }
 
-
-/*
-    Pohyb při hlazení.
-*/
 
 function movePetting(x,y){
 
@@ -2097,11 +2245,6 @@ function movePetting(x,y){
     lastPetY=y;
 
 
-    /*
-        Hlazení musí mít určitý pohyb,
-        aby se počítalo jako opravdové pohlazení.
-    */
-
     if(petDistance>=45){
 
         countPet();
@@ -2110,10 +2253,6 @@ function movePetting(x,y){
 
     }
 
-
-    /*
-        Srdíčka se nevytváří při každém pixelu.
-    */
 
     const now=Date.now();
 
@@ -2126,10 +2265,6 @@ function movePetting(x,y){
 
     }
 
-
-    /*
-        Ouško reaguje podle směru pohybu.
-    */
 
     const tilt=
         Math.max(
@@ -2147,10 +2282,6 @@ function movePetting(x,y){
 }
 
 
-/*
-    Konec hlazení.
-*/
-
 function stopPetting(){
 
     if(!touching){
@@ -2161,7 +2292,6 @@ function stopPetting(){
     touching=false;
 
     fox.classList.remove("petting");
-
     fox.classList.remove("happy");
 
     fox.style.transform="";
@@ -2190,22 +2320,22 @@ function stopPetting(){
 
     }
 
+
+    /*
+        Po skutečném pohlazení
+        nastavíme další připomínku
+        znovu za 10 minut.
+    */
+
+    resetPetReminder();
+
 }
 
-
-/*
-    Počítání pohlazení.
-*/
 
 function countPet(){
 
     const now=Date.now();
 
-
-    /*
-        Ochrana proti několikanásobnému
-        počítání při jednom dotyku.
-    */
 
     if(now-lastCountTime<350){
         return;
@@ -2216,7 +2346,6 @@ function countPet(){
 
 
     data.pets++;
-
     data.petSessions++;
 
 
@@ -2236,22 +2365,218 @@ function countPet(){
 }
 
 
-/*
-    Změna textu.
-*/
+/* =====================================================
+AUTOMATICKÁ PŘIPOMÍNKA POHLAZENÍ
+===================================================== */
 
-function petMessage(text){
+function resetPetReminder(){
 
-    document
-        .getElementById("petMessage")
-        .textContent=text;
+    if(!data.petReminder.enabled){
+        return;
+    }
+
+
+    data.petReminder.nextAt=
+        Date.now()+
+        data.petReminder.interval;
+
+
+    saveData();
+
+    renderPetCountdown();
 
 }
 
 
 /*
-    Srdíčko na místě dotyku.
+    ON / OFF
 */
+
+function togglePetReminder(){
+
+    const checkbox=
+        document.getElementById(
+            "petReminderToggle"
+        );
+
+
+    data.petReminder.enabled=
+        checkbox.checked;
+
+
+    if(data.petReminder.enabled){
+
+        data.petReminder.nextAt=
+            Date.now()+
+            data.petReminder.interval;
+
+
+        toast(
+            "❤️ Připomínání pohlazení zapnuto."
+        );
+
+    }
+    else{
+
+        toast(
+            "🔕 Připomínání pohlazení vypnuto."
+        );
+
+    }
+
+
+    saveData();
+
+    renderPetCountdown();
+
+}
+
+
+/*
+    Kontrola každou sekundu.
+*/
+
+function checkPetReminder(){
+
+    if(!data.petReminder.enabled){
+        return;
+    }
+
+
+    const now=Date.now();
+
+
+    if(now>=data.petReminder.nextAt){
+
+        /*
+            Nastavíme další termín
+            přesně o 10 minut.
+        */
+
+        data.petReminder.nextAt=
+            now+
+            data.petReminder.interval;
+
+
+        saveData();
+
+
+        /*
+            Interní oznámení.
+        */
+
+        addNotification(
+            "❤️ Čas na pohlazení!",
+            "Ouško čeká na pohlazení 🦊"
+        );
+
+
+        /*
+            Toast.
+        */
+
+        toast(
+            "❤️ Čas pohladit Ouška! 🦊"
+        );
+
+
+        /*
+            Systémové oznámení,
+            pokud je povolené.
+        */
+
+        sendBrowserNotification(
+            "❤️ Ouško Health",
+            "Čas pohladit Ouška! 🦊"
+        );
+
+
+        petMessage(
+            "Pohlaď mě prosím 🥺❤️"
+        );
+
+    }
+
+
+    renderPetCountdown();
+
+}
+
+
+/*
+    Odpočet do dalšího pohlazení.
+*/
+
+function renderPetCountdown(){
+
+    const el=
+        document.getElementById(
+            "nextPetCountdown"
+        );
+
+    const sub=
+        document.getElementById(
+            "nextPetSub"
+        );
+
+
+    if(!data.petReminder.enabled){
+
+        el.textContent="VYPNUTO";
+
+        el.style.color="#778094";
+
+        sub.textContent=
+            "Automatické připomínky jsou vypnuté.";
+
+        return;
+
+    }
+
+
+    el.style.color="var(--orange)";
+
+
+    let remaining=
+        Math.max(
+            0,
+            data.petReminder.nextAt-Date.now()
+        );
+
+
+    const totalSeconds=
+        Math.ceil(
+            remaining/1000
+        );
+
+
+    const minutes=
+        Math.floor(
+            totalSeconds/60
+        );
+
+
+    const seconds=
+        totalSeconds%60;
+
+
+    el.textContent=
+        String(minutes).padStart(2,"0")+
+        ":"+
+        String(seconds).padStart(2,"0");
+
+
+    sub.textContent=
+        "Další připomínka za "+minutes+
+        " min "+seconds+
+        " s";
+
+}
+
+
+/* =====================================================
+HEART
+===================================================== */
 
 function addHeart(x,y){
 
@@ -2313,18 +2638,20 @@ function addHeart(x,y){
 
 
 /* =====================================================
-MYŠ
+MOUSE
 ===================================================== */
 
 petArea.addEventListener(
     "mousedown",
     e=>{
+
         e.preventDefault();
 
         startPetting(
             e.clientX,
             e.clientY
         );
+
     }
 );
 
@@ -2353,7 +2680,7 @@ window.addEventListener(
 
 
 /* =====================================================
-DOTYK
+TOUCH
 ===================================================== */
 
 petArea.addEventListener(
@@ -2362,9 +2689,7 @@ petArea.addEventListener(
 
         e.preventDefault();
 
-
         const t=e.touches[0];
-
 
         startPetting(
             t.clientX,
@@ -2384,14 +2709,11 @@ petArea.addEventListener(
 
         e.preventDefault();
 
-
         if(!touching){
             return;
         }
 
-
         const t=e.touches[0];
-
 
         movePetting(
             t.clientX,
@@ -2460,8 +2782,13 @@ function addFood(){
 
 
     if(!name){
-        toast("🍎 Napiš, co Ouško jedlo.");
+
+        toast(
+            "🍎 Napiš, co Ouško jedlo."
+        );
+
         return;
+
     }
 
 
@@ -2480,9 +2807,17 @@ function addFood(){
     saveData();
 
 
-    document.getElementById("foodName").value="";
-    document.getElementById("foodCalories").value="";
-    document.getElementById("foodAmount").value="";
+    document.getElementById(
+        "foodName"
+    ).value="";
+
+    document.getElementById(
+        "foodCalories"
+    ).value="";
+
+    document.getElementById(
+        "foodAmount"
+    ).value="";
 
 
     closeModal("foodModal");
@@ -2504,8 +2839,6 @@ function deleteFood(id){
     saveData();
 
     renderAll();
-
-    toast("Jídlo odstraněno.");
 
 }
 
@@ -2540,8 +2873,13 @@ function addWater(){
 
 
     if(!amount || amount<=0){
-        toast("💧 Zadej množství pití.");
+
+        toast(
+            "💧 Zadej množství pití."
+        );
+
         return;
+
     }
 
 
@@ -2559,14 +2897,16 @@ function addWater(){
     saveData();
 
 
-    document
-        .getElementById("waterAmount")
-        .value="";
+    document.getElementById(
+        "waterAmount"
+    ).value="";
 
 
     closeModal("waterModal");
 
-    toast(`💧 Uloženo ${amount} ml`);
+    toast(
+        `💧 Uloženo ${amount} ml`
+    );
 
     renderAll();
 
@@ -2584,13 +2924,11 @@ function deleteWater(id){
 
     renderAll();
 
-    toast("Pití odstraněno.");
-
 }
 
 
 /* =====================================================
-REMINDERS
+CUSTOM REMINDERS
 ===================================================== */
 
 function addReminder(){
@@ -2612,14 +2950,24 @@ function addReminder(){
 
 
     if(!text){
-        toast("⏰ Napiš text připomínky.");
+
+        toast(
+            "⏰ Napiš text připomínky."
+        );
+
         return;
+
     }
 
 
     if(!time){
-        toast("⏰ Vyber čas.");
+
+        toast(
+            "⏰ Vyber čas."
+        );
+
         return;
+
     }
 
 
@@ -2638,19 +2986,20 @@ function addReminder(){
     saveData();
 
 
-    document
-        .getElementById("reminderText")
-        .value="";
+    document.getElementById(
+        "reminderText"
+    ).value="";
 
-
-    document
-        .getElementById("reminderTime")
-        .value="";
+    document.getElementById(
+        "reminderTime"
+    ).value="";
 
 
     closeModal("reminderModal");
 
-    toast("⏰ Připomínka vytvořena!");
+    toast(
+        "⏰ Připomínka vytvořena!"
+    );
 
     renderAll();
 
@@ -2679,7 +3028,9 @@ function toggleReminder(id){
         );
 
 
-    if(!r)return;
+    if(!r){
+        return;
+    }
 
 
     r.enabled=!r.enabled;
@@ -2692,13 +3043,15 @@ function toggleReminder(id){
 
 
 /* =====================================================
-RENDER FOOD
+FOOD RENDER
 ===================================================== */
 
 function renderFood(){
 
     const list=
-        document.getElementById("foodList");
+        document.getElementById(
+            "foodList"
+        );
 
 
     const items=todayFood();
@@ -2718,7 +3071,8 @@ function renderFood(){
 
 
     list.innerHTML=
-        items.slice().reverse()
+        items.slice()
+        .reverse()
         .map(item=>`
 
             <div class="list-item">
@@ -2761,13 +3115,15 @@ function renderFood(){
 
 
 /* =====================================================
-RENDER WATER
+WATER RENDER
 ===================================================== */
 
 function renderWater(){
 
     const list=
-        document.getElementById("waterList");
+        document.getElementById(
+            "waterList"
+        );
 
 
     const items=todayWater();
@@ -2787,7 +3143,8 @@ function renderWater(){
 
 
     list.innerHTML=
-        items.slice().reverse()
+        items.slice()
+        .reverse()
         .map(item=>`
 
             <div class="list-item">
@@ -2827,7 +3184,7 @@ function renderWater(){
 
 
 /* =====================================================
-RENDER REMINDERS
+REMINDERS RENDER
 ===================================================== */
 
 function renderReminders(){
@@ -2842,7 +3199,7 @@ function renderReminders(){
 
         list.innerHTML=`
             <div class="empty">
-                ⏰ Zatím žádné připomínky.
+                ⏰ Zatím žádné vlastní připomínky.
             </div>
         `;
 
@@ -2968,18 +3325,19 @@ function renderStats(){
     document.getElementById(
         "waterProgress"
     ).style.width=
-        Math.min(100,water/1000*100)+"%";
+        Math.min(
+            100,
+            water/1000*100
+        )+"%";
 
-
-    /*
-        Pohlazení:
-        20 pohlazení = plný denní progress.
-    */
 
     document.getElementById(
         "petProgress"
     ).style.width=
-        Math.min(100,data.pets/20*100)+"%";
+        Math.min(
+            100,
+            data.pets/20*100
+        )+"%";
 
 }
 
@@ -3009,7 +3367,7 @@ function renderNextReminder(){
 
         el.innerHTML=`
             <div class="empty">
-                Žádná aktivní připomínka.
+                Žádná aktivní vlastní připomínka.
             </div>
         `;
 
@@ -3040,6 +3398,7 @@ function renderNextReminder(){
         if(minutes>=current){
 
             next=r;
+
             break;
 
         }
@@ -3113,6 +3472,7 @@ function requestNotifications(){
                     "🔔 Oznámení jsou povolena!"
                 );
 
+
                 sendBrowserNotification(
                     "Ouško Health 🦊",
                     "Oznámení jsou připravena."
@@ -3185,7 +3545,7 @@ function sendBrowserNotification(title,body){
 
 
 /* =====================================================
-INTERNÍ NOTIFIKACE
+INTERNÍ OZNÁMENÍ
 ===================================================== */
 
 function addNotification(title,text){
@@ -3274,7 +3634,7 @@ function toggleNotifications(){
 
 
 /* =====================================================
-CHECK REMINDERS
+CLASSIC TIME REMINDERS
 ===================================================== */
 
 function checkReminders(){
@@ -3358,7 +3718,7 @@ function escapeHTML(value){
 
 
 /* =====================================================
-DELETE ALL
+DELETE DATA
 ===================================================== */
 
 function clearAllData(){
@@ -3389,13 +3749,36 @@ RENDER ALL
 function renderAll(){
 
     loadProfile();
+
     renderFood();
+
     renderWater();
+
     renderReminders();
+
     renderStats();
+
     renderNextReminder();
+
     renderNotifications();
+
+    renderPetCountdown();
+
     updateNotificationStatus();
+
+
+    const toggle=
+        document.getElementById(
+            "petReminderToggle"
+        );
+
+
+    if(toggle){
+
+        toggle.checked=
+            data.petReminder.enabled;
+
+    }
 
 }
 
@@ -3409,11 +3792,40 @@ checkProfile();
 renderAll();
 
 
+/*
+    Automatické pohlazení:
+    kontrolujeme každou sekundu.
+*/
+
+setInterval(
+    checkPetReminder,
+    1000
+);
+
+
+/*
+    Klasické časové připomínky.
+*/
+
 setInterval(
     checkReminders,
     1000
 );
 
+
+/*
+    Odpočet se také obnovuje každou sekundu.
+*/
+
+setInterval(
+    renderPetCountdown,
+    1000
+);
+
+
+/*
+    Nejbližší připomínka.
+*/
 
 setInterval(
     renderNextReminder,
