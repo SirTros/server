@@ -2,248 +2,1598 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Ouškův NFC Finder</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Ouško Health 🦊</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
-html,
-body {
-    margin: 0;
-    width: 100%;
-    min-height: 100%;
-    font-family: "Segoe UI", Arial, sans-serif;
+:root{
+    --bg:#f4f6fa;
+    --card:#fff;
+    --text:#172033;
+    --muted:#778094;
+    --orange:#ff7417;
+    --orange2:#ff9d42;
+    --blue:#3988ff;
+    --purple:#8b5cf6;
+    --green:#36b66d;
+    --red:#e74c3c;
+    --border:#e9edf3;
+    --shadow:0 10px 30px rgba(25,35,55,.09);
 }
 
-body {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    background:
-        radial-gradient(circle at top, #19364b 0%, #071018 45%, #03070a 100%);
-
-    color: white;
-    padding: 20px;
+html{
+    scroll-behavior:smooth;
 }
 
-.container {
-    width: 100%;
-    max-width: 520px;
-    text-align: center;
-
-    background: rgba(15, 27, 38, 0.96);
-
-    border: 1px solid rgba(255,255,255,0.1);
-
-    border-radius: 28px;
-
-    padding: 35px 25px;
-
-    box-shadow:
-        0 25px 70px rgba(0,0,0,0.55);
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding-bottom:100px;
 }
 
-.logo {
-    font-size: 85px;
-
-    animation:
-        float 3s ease-in-out infinite;
+button,
+input,
+select{
+    font:inherit;
 }
 
-@keyframes float {
+button{
+    border:0;
+    cursor:pointer;
+}
 
-    0%, 100% {
-        transform: translateY(0);
+.hidden{
+    display:none!important;
+}
+
+/* =========================
+HEADER
+========================= */
+
+.header{
+    background:linear-gradient(135deg,#ff7417,#ff9d42);
+    color:#fff;
+    padding:25px 18px 42px;
+    border-radius:0 0 35px 35px;
+    box-shadow:0 8px 25px rgba(255,116,23,.25);
+}
+
+.header-inner{
+    width:min(1100px,100%);
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.logo{
+    width:58px;
+    height:58px;
+    border-radius:19px;
+    background:rgba(255,255,255,.2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:34px;
+}
+
+.brand h1{
+    font-size:27px;
+}
+
+.brand p{
+    margin-top:4px;
+    opacity:.9;
+}
+
+.bell{
+    width:48px;
+    height:48px;
+    border-radius:16px;
+    background:rgba(255,255,255,.2);
+    color:#fff;
+    font-size:22px;
+}
+
+/* =========================
+MAIN
+========================= */
+
+main{
+    width:min(1100px,calc(100% - 30px));
+    margin:-20px auto 40px;
+}
+
+.view{
+    display:none;
+}
+
+.view.active{
+    display:block;
+}
+
+/* =========================
+CARDS
+========================= */
+
+.card{
+    background:var(--card);
+    border-radius:25px;
+    padding:22px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow);
+}
+
+.card-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:17px;
+}
+
+.card-title h2{
+    font-size:20px;
+}
+
+/* =========================
+REALISTIC PETTING AREA
+========================= */
+
+.fox-card{
+    text-align:center;
+    padding:25px 15px 30px;
+    overflow:hidden;
+}
+
+.pet-area{
+    position:relative;
+    width:min(420px,100%);
+    height:310px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    touch-action:none;
+    user-select:none;
+    -webkit-user-select:none;
+}
+
+.pet-hint{
+    position:absolute;
+    top:5px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#fff3e9;
+    color:#d96112;
+    padding:8px 14px;
+    border-radius:30px;
+    font-size:13px;
+    z-index:5;
+    pointer-events:none;
+    transition:.4s;
+}
+
+.pet-hint.hide{
+    opacity:0;
+    transform:translate(-50%,-15px);
+}
+
+.fox-character{
+    position:relative;
+    width:245px;
+    height:245px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transform-origin:center bottom;
+    transition:transform .15s ease;
+    z-index:3;
+}
+
+.fox-character.petting{
+    animation:foxPet .42s ease-in-out infinite alternate;
+}
+
+@keyframes foxPet{
+    from{
+        transform:rotate(-2deg) translateY(0);
+    }
+    to{
+        transform:rotate(2deg) translateY(-3px);
+    }
+}
+
+.fox-body{
+    font-size:190px;
+    line-height:1;
+    filter:drop-shadow(0 15px 10px rgba(0,0,0,.14));
+    pointer-events:none;
+}
+
+.ear{
+    position:absolute;
+    top:38px;
+    width:52px;
+    height:65px;
+    background:#ff7417;
+    border-radius:70% 30% 55% 45%;
+    z-index:-1;
+    transition:transform .18s ease;
+}
+
+.ear:after{
+    content:"";
+    position:absolute;
+    inset:9px;
+    background:#ffb18a;
+    border-radius:70% 30% 55% 45%;
+}
+
+.ear.left{
+    left:52px;
+    transform:rotate(-25deg);
+}
+
+.ear.right{
+    right:52px;
+    transform:scaleX(-1) rotate(-25deg);
+}
+
+.fox-character.petting .ear.left{
+    animation:earLeft .5s ease-in-out infinite alternate;
+}
+
+.fox-character.petting .ear.right{
+    animation:earRight .5s ease-in-out infinite alternate;
+}
+
+@keyframes earLeft{
+    from{transform:rotate(-25deg);}
+    to{transform:rotate(-38deg);}
+}
+
+@keyframes earRight{
+    from{transform:scaleX(-1) rotate(-25deg);}
+    to{transform:scaleX(-1) rotate(-38deg);}
+}
+
+.fox-face{
+    position:absolute;
+    width:130px;
+    height:95px;
+    top:95px;
+    left:58px;
+    z-index:4;
+    pointer-events:none;
+}
+
+.eye{
+    position:absolute;
+    top:27px;
+    width:13px;
+    height:17px;
+    background:#241d1b;
+    border-radius:50%;
+    transition:.15s;
+}
+
+.eye.left{
+    left:27px;
+}
+
+.eye.right{
+    right:27px;
+}
+
+.fox-character.happy .eye{
+    height:6px;
+    border-radius:100%;
+}
+
+.nose{
+    position:absolute;
+    left:50%;
+    top:48px;
+    transform:translateX(-50%);
+    width:20px;
+    height:14px;
+    background:#241d1b;
+    border-radius:50%;
+}
+
+.mouth{
+    position:absolute;
+    left:50%;
+    top:61px;
+    width:24px;
+    height:12px;
+    transform:translateX(-50%);
+    border-bottom:3px solid #241d1b;
+    border-radius:50%;
+}
+
+.paw{
+    position:absolute;
+    font-size:40px;
+    opacity:0;
+    pointer-events:none;
+}
+
+.fox-character.petting .paw{
+    animation:pawMove .7s ease infinite;
+}
+
+.paw.left{
+    left:25px;
+    bottom:43px;
+}
+
+.paw.right{
+    right:25px;
+    bottom:43px;
+}
+
+@keyframes pawMove{
+    0%,100%{
+        opacity:0;
+        transform:translateY(10px);
+    }
+    40%,70%{
+        opacity:1;
+        transform:translateY(-2px);
+    }
+}
+
+.heart{
+    position:absolute;
+    pointer-events:none;
+    font-size:24px;
+    z-index:20;
+    animation:heartFloat 1.25s ease-out forwards;
+}
+
+@keyframes heartFloat{
+    0%{
+        opacity:1;
+        transform:translate(0,0) scale(.6);
+    }
+    60%{
+        opacity:1;
+        transform:translate(var(--x),-65px) scale(1);
+    }
+    100%{
+        opacity:0;
+        transform:translate(calc(var(--x) * 1.3),-115px) scale(.8);
+    }
+}
+
+.pet-message{
+    font-size:20px;
+    font-weight:bold;
+    margin-top:3px;
+    min-height:25px;
+}
+
+.pet-info{
+    color:var(--muted);
+    margin-top:7px;
+}
+
+.pet-progress{
+    width:min(360px,90%);
+    height:7px;
+    background:#edf0f5;
+    border-radius:20px;
+    margin:16px auto 0;
+    overflow:hidden;
+}
+
+.pet-progress-bar{
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg,#ff7417,#ffb15d);
+    border-radius:20px;
+    transition:.2s;
+}
+
+/* =========================
+QUICK
+========================= */
+
+.quick-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.quick{
+    color:#fff;
+    min-height:125px;
+    border-radius:22px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    transition:.15s;
+}
+
+.quick:hover{
+    transform:translateY(-3px);
+}
+
+.quick-icon{
+    font-size:35px;
+}
+
+.quick strong{
+    font-size:16px;
+}
+
+.quick small{
+    opacity:.85;
+}
+
+.food{
+    background:linear-gradient(135deg,#ff7417,#ff9d42);
+}
+
+.water{
+    background:linear-gradient(135deg,#3284ff,#59aaff);
+}
+
+.rem{
+    background:linear-gradient(135deg,#8556ed,#aa85ff);
+}
+
+/* =========================
+STATS
+========================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.stat{
+    background:#fff;
+    border-radius:20px;
+    padding:19px;
+    box-shadow:var(--shadow);
+}
+
+.stat-icon{
+    font-size:27px;
+}
+
+.stat-value{
+    font-size:27px;
+    font-weight:bold;
+    margin-top:7px;
+}
+
+.stat-label{
+    color:var(--muted);
+    margin-top:3px;
+}
+
+.progress{
+    height:12px;
+    background:#edf0f5;
+    border-radius:20px;
+    overflow:hidden;
+    margin-top:12px;
+}
+
+.progress-bar{
+    width:0%;
+    height:100%;
+    border-radius:20px;
+    background:linear-gradient(90deg,#3988ff,#62b3ff);
+    transition:.4s;
+}
+
+/* =========================
+FORMS
+========================= */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.full{
+    grid-column:1/-1;
+}
+
+.field label{
+    color:#4c5669;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.field input,
+.field select{
+    width:100%;
+    padding:13px 14px;
+    border:2px solid var(--border);
+    background:#fafbfc;
+    border-radius:14px;
+    outline:none;
+}
+
+.field input:focus,
+.field select:focus{
+    border-color:var(--orange);
+    background:#fff;
+}
+
+.primary{
+    background:linear-gradient(135deg,#ff7417,#ff9d42);
+    color:#fff;
+    padding:13px 18px;
+    border-radius:14px;
+    font-weight:bold;
+    margin-top:15px;
+}
+
+.secondary{
+    background:#edf1f6;
+    color:var(--text);
+    padding:12px 17px;
+    border-radius:13px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.danger{
+    background:#ffe8e6;
+    color:#d43b32;
+    padding:10px 14px;
+    border-radius:12px;
+    font-weight:bold;
+}
+
+/* =========================
+LIST
+========================= */
+
+.list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.list-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:15px;
+    background:#f7f9fc;
+    border-radius:17px;
+}
+
+.item-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.item-icon{
+    width:45px;
+    height:45px;
+    border-radius:14px;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:23px;
+    flex-shrink:0;
+}
+
+.item-title{
+    font-weight:bold;
+}
+
+.item-sub{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:3px;
+}
+
+.empty{
+    color:var(--muted);
+    text-align:center;
+    padding:25px 10px;
+}
+
+/* =========================
+PROFILE
+========================= */
+
+.profile-top{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.profile-avatar{
+    width:90px;
+    height:90px;
+    border-radius:30px;
+    background:#fff0e5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:57px;
+}
+
+.profile-name{
+    font-size:25px;
+    font-weight:bold;
+}
+
+.profile-info{
+    color:var(--muted);
+    margin-top:5px;
+}
+
+/* =========================
+NAV
+========================= */
+
+.nav{
+    position:fixed;
+    z-index:60;
+    bottom:14px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(650px,calc(100% - 25px));
+    padding:8px;
+    background:rgba(255,255,255,.94);
+    backdrop-filter:blur(18px);
+    border-radius:25px;
+    box-shadow:0 10px 35px rgba(20,30,50,.17);
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:5px;
+}
+
+.nav button{
+    background:transparent;
+    color:#7b8495;
+    padding:8px 4px;
+    border-radius:17px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+}
+
+.nav button.active{
+    color:var(--orange);
+    background:#fff0e5;
+    font-weight:bold;
+}
+
+.nav-icon{
+    font-size:21px;
+}
+
+.nav-text{
+    font-size:10px;
+}
+
+/* =========================
+TOAST
+========================= */
+
+.toast{
+    position:fixed;
+    z-index:200;
+    left:50%;
+    bottom:105px;
+    transform:translate(-50%,20px);
+    background:#202838;
+    color:#fff;
+    padding:14px 20px;
+    border-radius:16px;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    max-width:calc(100% - 30px);
+    text-align:center;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+/* =========================
+MODAL
+========================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    background:rgba(15,22,35,.58);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:min(500px,100%);
+    max-height:90vh;
+    overflow:auto;
+    background:#fff;
+    border-radius:27px;
+    padding:24px;
+}
+
+.modal-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.close{
+    width:40px;
+    height:40px;
+    border-radius:13px;
+    background:#edf0f4;
+}
+
+/* =========================
+SETUP
+========================= */
+
+.setup{
+    position:fixed;
+    z-index:500;
+    inset:0;
+    background:linear-gradient(135deg,#fff7f0,#f4f7ff);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.setup-box{
+    width:min(520px,100%);
+    background:#fff;
+    border-radius:32px;
+    padding:30px;
+    box-shadow:0 20px 60px rgba(30,40,60,.16);
+}
+
+.setup-fox{
+    text-align:center;
+    font-size:90px;
+    margin-bottom:5px;
+}
+
+.setup h1{
+    text-align:center;
+    font-size:29px;
+}
+
+.setup-sub{
+    text-align:center;
+    color:var(--muted);
+    margin:8px 0 24px;
+    line-height:1.5;
+}
+
+.setup .primary{
+    width:100%;
+    font-size:16px;
+    padding:15px;
+}
+
+/* =========================
+NOTIFICATIONS
+========================= */
+
+.notification-panel{
+    position:fixed;
+    z-index:90;
+    top:82px;
+    right:18px;
+    width:min(360px,calc(100% - 36px));
+    background:#fff;
+    border-radius:23px;
+    padding:18px;
+    box-shadow:0 15px 45px rgba(20,30,50,.2);
+    display:none;
+}
+
+.notification-panel.show{
+    display:block;
+}
+
+.notification{
+    background:#f5f7fa;
+    padding:13px;
+    border-radius:14px;
+    margin-top:9px;
+}
+
+.notification small{
+    display:block;
+    color:var(--muted);
+    margin-top:4px;
+}
+
+/* =========================
+RESPONSIVE
+========================= */
+
+@media(max-width:700px){
+
+    .quick-grid,
+    .stats{
+        grid-template-columns:1fr;
     }
 
-    50% {
-        transform: translateY(-8px);
-    }
-}
-
-h1 {
-    margin: 10px 0 5px;
-
-    font-size: 30px;
-}
-
-.subtitle {
-    color: #9eb4c4;
-    margin-bottom: 25px;
-}
-
-.status {
-    padding: 22px;
-
-    border-radius: 18px;
-
-    background: #14232f;
-
-    color: #b9c9d4;
-
-    font-size: 17px;
-
-    line-height: 1.5;
-
-    margin-bottom: 20px;
-}
-
-.status.scanning {
-    border: 1px solid #238cff;
-    background: #102b40;
-    color: #8fc9ff;
-}
-
-.status.success {
-    border: 1px solid #35c76f;
-    background: #10351f;
-    color: #7df0a3;
-
-    animation: successPulse 1.2s infinite;
-}
-
-@keyframes successPulse {
-
-    0%, 100% {
-        box-shadow: 0 0 0 rgba(53,199,111,0);
+    .form-grid{
+        grid-template-columns:1fr;
     }
 
-    50% {
-        box-shadow: 0 0 30px rgba(53,199,111,0.25);
+    .full{
+        grid-column:auto;
     }
-}
 
-.status.error {
-    border: 1px solid #d94b55;
-    background: #351519;
-    color: #ff9ba2;
-}
+    .brand h1{
+        font-size:22px;
+    }
 
-button {
-    width: 100%;
+    .pet-area{
+        height:290px;
+    }
 
-    border: 0;
+    .fox-character{
+        transform:scale(.9);
+    }
 
-    border-radius: 16px;
+    .fox-character.petting{
+        animation:foxPetMobile .42s ease-in-out infinite alternate;
+    }
 
-    padding: 17px;
+    @keyframes foxPetMobile{
+        from{
+            transform:scale(.9) rotate(-2deg);
+        }
+        to{
+            transform:scale(.93) rotate(2deg) translateY(-3px);
+        }
+    }
 
-    background: #1687e8;
-
-    color: white;
-
-    font-size: 17px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
-    transition: 0.2s;
-}
-
-button:hover {
-    transform: translateY(-2px);
-}
-
-button:active {
-    transform: scale(0.98);
-}
-
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.info {
-    margin-top: 20px;
-
-    color: #7890a0;
-
-    font-size: 13px;
-
-    line-height: 1.5;
-}
-
-.nfc-info {
-    margin-top: 15px;
-
-    padding: 12px;
-
-    background: rgba(255,255,255,0.04);
-
-    border-radius: 12px;
-
-    color: #91a7b5;
-
-    font-size: 13px;
-
-    word-break: break-word;
-}
-
-.reset {
-    margin-top: 12px;
-
-    background: #253744;
-
-    font-size: 14px;
-
-    display: none;
+    .setup-box{
+        padding:23px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<!-- =========================
+PRVNÍ PROFIL
+========================= -->
 
-    <div class="logo">
-        🐻
+<div id="setup" class="setup hidden">
+
+    <div class="setup-box">
+
+        <div class="setup-fox">🦊</div>
+
+        <h1>Vytvořit profil Ouška</h1>
+
+        <p class="setup-sub">
+            Nastav základní informace o Ouškovi.
+            Datum narození není potřeba. ❤️
+        </p>
+
+        <div class="form-grid">
+
+            <div class="field full">
+                <label>🦊 Jméno</label>
+                <input id="setupName"
+                       type="text"
+                       placeholder="Ouško"
+                       maxlength="30">
+            </div>
+
+            <div class="field">
+                <label>🎂 Věk</label>
+                <input id="setupAge"
+                       type="number"
+                       min="0"
+                       step="1"
+                       placeholder="Např. 3">
+            </div>
+
+            <div class="field">
+                <label>⚖️ Hmotnost (g)</label>
+                <input id="setupWeight"
+                       type="number"
+                       min="0"
+                       step="1"
+                       placeholder="Např. 4500">
+            </div>
+
+            <div class="field full">
+                <label>📝 Poznámka</label>
+                <input id="setupNote"
+                       type="text"
+                       maxlength="150"
+                       placeholder="Např. oblíbené jídlo...">
+            </div>
+
+        </div>
+
+        <button class="primary"
+                onclick="createProfile()">
+            🦊 Vytvořit profil
+        </button>
+
+    </div>
+</div>
+
+
+<!-- =========================
+HEADER
+========================= -->
+
+<header class="header">
+
+    <div class="header-inner">
+
+        <div class="brand">
+
+            <div class="logo">🦊</div>
+
+            <div>
+                <h1>Ouško Health</h1>
+                <p>Péče o Ouška ❤️</p>
+            </div>
+
+        </div>
+
+        <button class="bell"
+                onclick="toggleNotifications()">
+            🔔
+        </button>
+
     </div>
 
-    <h1>
-        OUŠKŮV NFC FINDER
-    </h1>
+</header>
 
-    <div class="subtitle">
-        NFC detektor pro Ouška
+
+<main>
+
+<!-- =========================
+DOMŮ
+========================= -->
+
+<section id="home" class="view active">
+
+    <div class="card fox-card">
+
+        <div class="pet-area"
+             id="petArea">
+
+            <div class="pet-hint"
+                 id="petHint">
+                🖐️ Pohlaď Ouška
+            </div>
+
+            <div class="fox-character"
+                 id="foxCharacter">
+
+                <div class="ear left"></div>
+                <div class="ear right"></div>
+
+                <div class="fox-body">
+                    🦊
+                </div>
+
+                <div class="fox-face">
+
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+
+                    <div class="nose"></div>
+                    <div class="mouth"></div>
+
+                </div>
+
+                <div class="paw left">🐾</div>
+                <div class="paw right">🐾</div>
+
+            </div>
+
+        </div>
+
+        <div id="petMessage"
+             class="pet-message">
+            Ahoj! Jsem Ouško 🧡
+        </div>
+
+        <div class="pet-info">
+            Pohlazení dnes:
+            <strong id="petCount">0</strong> ❤️
+        </div>
+
+        <div class="pet-progress">
+            <div id="petProgress"
+                 class="pet-progress-bar">
+            </div>
+        </div>
+
     </div>
 
-    <div
-        id="status"
-        class="status"
-    >
-        📡 NFC skenování není spuštěné.
+
+    <div class="quick-grid">
+
+        <button class="quick food"
+                onclick="openModal('foodModal')">
+
+            <div class="quick-icon">🍎</div>
+            <strong>Přidat jídlo</strong>
+            <small>Co Ouško jedlo?</small>
+
+        </button>
+
+        <button class="quick water"
+                onclick="openModal('waterModal')">
+
+            <div class="quick-icon">💧</div>
+            <strong>Přidat pití</strong>
+            <small>Kolik vypil?</small>
+
+        </button>
+
+        <button class="quick rem"
+                onclick="openModal('reminderModal')">
+
+            <div class="quick-icon">⏰</div>
+            <strong>Připomínka</strong>
+            <small>Nastavit čas</small>
+
+        </button>
+
     </div>
 
-    <button
-        id="scanButton"
-    >
-        📡 SPUSTIT NFC SKENOVÁNÍ
+    <br>
+
+    <div class="stats">
+
+        <div class="stat">
+            <div class="stat-icon">🍎</div>
+            <div id="todayCalories"
+                 class="stat-value">0</div>
+            <div class="stat-label">kcal dnes</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon">💧</div>
+            <div class="stat-value">
+                <span id="todayWater">0</span> ml
+            </div>
+            <div class="stat-label">pití dnes</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon">❤️</div>
+            <div id="todayPets"
+                 class="stat-value">0</div>
+            <div class="stat-label">pohlazení</div>
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>💧 Pití dnes</h2>
+            <span>💦</span>
+        </div>
+
+        <strong id="waterText">0 ml</strong>
+
+        <div class="progress">
+            <div id="waterProgress"
+                 class="progress-bar"></div>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>⏰ Nejbližší připomínka</h2>
+            <span>🔔</span>
+        </div>
+
+        <div id="nextReminder"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+JÍDLO
+========================= -->
+
+<section id="food" class="view">
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>🍎 Jídlo</h2>
+            <span>🥕</span>
+        </div>
+
+        <button class="primary"
+                onclick="openModal('foodModal')">
+            ＋ Přidat jídlo
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>📋 Dnešní jídlo</h2>
+        </div>
+
+        <div id="foodList"
+             class="list"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+PITÍ
+========================= -->
+
+<section id="water" class="view">
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>💧 Pití</h2>
+            <span>💦</span>
+        </div>
+
+        <button class="primary"
+                onclick="openModal('waterModal')">
+            ＋ Přidat pití
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>📋 Dnešní pití</h2>
+        </div>
+
+        <div id="waterList"
+             class="list"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+PŘIPOMÍNKY
+========================= -->
+
+<section id="reminders" class="view">
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>⏰ Připomínky</h2>
+            <span>🔔</span>
+        </div>
+
+        <p style="color:#778094;margin-bottom:12px;">
+            Nastav vlastní připomínky pro Ouška.
+        </p>
+
+        <button class="primary"
+                onclick="openModal('reminderModal')">
+            ＋ Nová připomínka
+        </button>
+
+        <button class="secondary"
+                onclick="requestNotifications()">
+            🔔 Povolit oznámení
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>📋 Moje připomínky</h2>
+        </div>
+
+        <div id="reminderList"
+             class="list"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+PROFIL
+========================= -->
+
+<section id="profile" class="view">
+
+    <div class="card">
+
+        <div class="profile-top">
+
+            <div class="profile-avatar">🦊</div>
+
+            <div>
+
+                <div id="profileName"
+                     class="profile-name">
+                    Ouško
+                </div>
+
+                <div id="profileInfo"
+                     class="profile-info">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>👤 Profil Ouška</h2>
+        </div>
+
+        <div class="form-grid">
+
+            <div class="field full">
+                <label>🦊 Jméno</label>
+                <input id="profileNameInput"
+                       type="text"
+                       maxlength="30">
+            </div>
+
+            <div class="field">
+                <label>🎂 Věk</label>
+                <input id="profileAge"
+                       type="number"
+                       min="0">
+            </div>
+
+            <div class="field">
+                <label>⚖️ Hmotnost (g)</label>
+                <input id="profileWeight"
+                       type="number"
+                       min="0">
+            </div>
+
+            <div class="field full">
+                <label>📝 Poznámka</label>
+                <input id="profileNote"
+                       type="text"
+                       maxlength="150">
+            </div>
+
+        </div>
+
+        <button class="primary"
+                onclick="saveProfile()">
+            💾 Uložit profil
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>🔔 Oznámení</h2>
+        </div>
+
+        <p id="notificationStatus"
+           style="color:#778094;margin-bottom:12px;">
+        </p>
+
+        <button class="secondary"
+                onclick="requestNotifications()">
+            🔔 Povolit systémová oznámení
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            <h2>🗑️ Data</h2>
+        </div>
+
+        <p style="color:#778094;margin-bottom:12px;">
+            Data jsou uložená v tomto prohlížeči.
+        </p>
+
+        <button class="danger"
+                onclick="clearAllData()">
+            Smazat všechna data
+        </button>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<!-- =========================
+NAVIGACE
+========================= -->
+
+<nav class="nav">
+
+    <button class="active"
+            onclick="showView('home',this)">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Domů</span>
     </button>
 
-    <button
-        id="resetButton"
-        class="reset"
-    >
-        🔄 SPUSTIT ZNOVU
+    <button onclick="showView('food',this)">
+        <span class="nav-icon">🍎</span>
+        <span class="nav-text">Jídlo</span>
     </button>
 
-    <div
-        id="nfcInfo"
-        class="nfc-info"
-        style="display:none;"
-    ></div>
+    <button onclick="showView('water',this)">
+        <span class="nav-icon">💧</span>
+        <span class="nav-text">Pití</span>
+    </button>
 
-    <div class="info">
-        Přilož NFC kartu nebo jiný kompatibilní NFC tag
-        k zadní straně telefonu.
+    <button onclick="showView('reminders',this)">
+        <span class="nav-icon">⏰</span>
+        <span class="nav-text">Připomínky</span>
+    </button>
+
+    <button onclick="showView('profile',this)">
+        <span class="nav-icon">👤</span>
+        <span class="nav-text">Profil</span>
+    </button>
+
+</nav>
+
+
+<div id="toast"
+     class="toast"></div>
+
+
+<div id="notificationPanel"
+     class="notification-panel">
+
+    <h3>🔔 Oznámení</h3>
+
+    <div id="notificationList"></div>
+
+</div>
+
+
+<!-- =========================
+JÍDLO MODAL
+========================= -->
+
+<div id="foodModal"
+     class="modal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>🍎 Přidat jídlo</h2>
+
+            <button class="close"
+                    onclick="closeModal('foodModal')">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="form-grid">
+
+            <div class="field full">
+                <label>Co Ouško jedlo?</label>
+                <input id="foodName"
+                       type="text"
+                       placeholder="Např. jeho jídlo">
+            </div>
+
+            <div class="field">
+                <label>Kalorie</label>
+                <input id="foodCalories"
+                       type="number"
+                       min="0"
+                       placeholder="Např. 100">
+            </div>
+
+            <div class="field">
+                <label>Množství</label>
+                <input id="foodAmount"
+                       type="text"
+                       placeholder="Např. 50 g">
+            </div>
+
+        </div>
+
+        <button class="primary"
+                onclick="addFood()">
+            🍎 Uložit jídlo
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+PITÍ MODAL
+========================= -->
+
+<div id="waterModal"
+     class="modal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>💧 Přidat pití</h2>
+
+            <button class="close"
+                    onclick="closeModal('waterModal')">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="form-grid">
+
+            <div class="field">
+                <label>Množství (ml)</label>
+                <input id="waterAmount"
+                       type="number"
+                       min="1"
+                       placeholder="Např. 100">
+            </div>
+
+            <div class="field">
+                <label>Co vypil?</label>
+                <select id="waterType">
+                    <option>Voda</option>
+                    <option>Jiné pití</option>
+                </select>
+            </div>
+
+        </div>
+
+        <button class="primary"
+                onclick="addWater()">
+            💧 Uložit pití
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+PŘIPOMÍNKA MODAL
+========================= -->
+
+<div id="reminderModal"
+     class="modal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>⏰ Nová připomínka</h2>
+
+            <button class="close"
+                    onclick="closeModal('reminderModal')">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="form-grid">
+
+            <div class="field full">
+                <label>Text připomínky</label>
+                <input id="reminderText"
+                       type="text"
+                       placeholder="Např. Čas na pití 💧">
+            </div>
+
+            <div class="field">
+                <label>Čas</label>
+                <input id="reminderTime"
+                       type="time">
+            </div>
+
+            <div class="field">
+                <label>Typ</label>
+
+                <select id="reminderType">
+                    <option value="💧">Pití</option>
+                    <option value="🍎">Jídlo</option>
+                    <option value="❤️">Péče</option>
+                    <option value="🔔">Vlastní</option>
+                </select>
+            </div>
+
+        </div>
+
+        <button class="primary"
+                onclick="addReminder()">
+            ⏰ Uložit připomínku
+        </button>
+
     </div>
 
 </div>
@@ -251,267 +1601,1582 @@ button:disabled {
 
 <script>
 
-const scanButton =
-    document.getElementById("scanButton");
+/* =====================================================
+DATA
+===================================================== */
 
-const resetButton =
-    document.getElementById("resetButton");
+let data =
+    JSON.parse(
+        localStorage.getItem("ouskoHealthData")
+    ) || {
 
-const statusBox =
-    document.getElementById("status");
+        profile:{
+            created:false,
+            name:"",
+            age:"",
+            weight:"",
+            note:""
+        },
 
-const nfcInfo =
-    document.getElementById("nfcInfo");
+        food:[],
+        water:[],
+        reminders:[],
+        notifications:[],
+        pets:0,
+        petSessions:0
+    };
 
 
-let ndef = null;
+/* =====================================================
+SAVE
+===================================================== */
+
+function saveData(){
+
+    localStorage.setItem(
+        "ouskoHealthData",
+        JSON.stringify(data)
+    );
+
+}
 
 
-/* =========================================
-   SPUŠTĚNÍ NFC
-========================================= */
+/* =====================================================
+DATE
+===================================================== */
 
-async function startNFC() {
+function todayKey(){
 
-    /*
-        Kontrola podpory Web NFC
-    */
+    const d=new Date();
 
-    if (!("NDEFReader" in window)) {
+    return d.getFullYear()+"-"+
+        String(d.getMonth()+1).padStart(2,"0")+"-"+
+        String(d.getDate()).padStart(2,"0");
 
-        statusBox.className =
-            "status error";
+}
 
-        statusBox.innerHTML =
-            "❌ Tento prohlížeč nepodporuje Web NFC.<br><br>" +
-            "Použij kompatibilní Android prohlížeč.";
 
+function currentTime(){
+
+    return new Date().toLocaleTimeString(
+        "cs-CZ",
+        {
+            hour:"2-digit",
+            minute:"2-digit"
+        }
+    );
+
+}
+
+
+/* =====================================================
+PROFILE
+===================================================== */
+
+function checkProfile(){
+
+    if(
+        !data.profile ||
+        !data.profile.created
+    ){
+
+        document
+            .getElementById("setup")
+            .classList.remove("hidden");
+
+    }
+
+}
+
+
+function createProfile(){
+
+    const name=
+        document.getElementById("setupName")
+        .value.trim();
+
+    const age=
+        document.getElementById("setupAge")
+        .value;
+
+    const weight=
+        document.getElementById("setupWeight")
+        .value;
+
+    const note=
+        document.getElementById("setupNote")
+        .value.trim();
+
+
+    if(!name){
+        toast("🦊 Zadej jméno Ouška.");
+        return;
+    }
+
+    if(age==="" || Number(age)<0){
+        toast("🎂 Zadej věk Ouška.");
+        return;
+    }
+
+    if(weight==="" || Number(weight)<=0){
+        toast("⚖️ Zadej hmotnost v gramech.");
         return;
     }
 
 
-    try {
-
-        ndef = new NDEFReader();
-
-
-        /*
-            Spustíme skenování
-        */
-
-        await ndef.scan();
+    data.profile={
+        created:true,
+        name:name,
+        age:Number(age),
+        weight:Number(weight),
+        note:note
+    };
 
 
-        scanButton.disabled = true;
-
-        resetButton.style.display =
-            "none";
+    saveData();
 
 
-        statusBox.className =
-            "status scanning";
+    document
+        .getElementById("setup")
+        .classList.add("hidden");
 
 
-        statusBox.innerHTML =
-            "📡 <strong>NFC SKENOVÁNÍ AKTIVNÍ</strong><br><br>" +
-            "Přilož NFC zařízení k telefonu.";
+    renderAll();
+
+    toast(
+        `🦊 Profil ${name} byl vytvořen!`
+    );
+
+}
 
 
-        /*
-            NFC TAG NALEZEN
-        */
+function loadProfile(){
 
-        ndef.onreading = event => {
-
-            console.log(
-                "NFC zařízení nalezeno!"
-            );
+    const p=data.profile;
 
 
-            console.log(
-                "Serial:",
-                event.serialNumber
-            );
+    document.getElementById(
+        "profileNameInput"
+    ).value=p.name || "";
 
 
-            /*
-                LIBOVOLNÉ NFC = ÚSPĚCH
-            */
-
-            statusBox.className =
-                "status success";
+    document.getElementById(
+        "profileAge"
+    ).value=p.age ?? "";
 
 
-            statusBox.innerHTML =
-                "🐻 <strong>OUŠKO NALEZENO!</strong><br><br>" +
-                "NFC zařízení bylo úspěšně detekováno. 💙";
+    document.getElementById(
+        "profileWeight"
+    ).value=p.weight ?? "";
 
 
-            /*
-                Informace o tagu
-            */
-
-            nfcInfo.style.display =
-                "block";
+    document.getElementById(
+        "profileNote"
+    ).value=p.note || "";
 
 
-            nfcInfo.innerHTML =
-                "📡 NFC zařízení detekováno<br>" +
-                "ID: " +
-                (
-                    event.serialNumber ||
-                    "neuvedeno"
-                );
+    document.getElementById(
+        "profileName"
+    ).textContent=p.name || "Ouško";
 
 
-            /*
-                Vibrace telefonu
-            */
+    let info=[];
 
-            if (
-                "vibrate" in navigator
-            ) {
 
-                navigator.vibrate([
-                    200,
-                    100,
-                    200
-                ]);
+    if(p.age!=="" && p.age!=null){
+        info.push(`🎂 ${p.age} let`);
+    }
+
+
+    if(p.weight!=="" && p.weight!=null){
+        info.push(`⚖️ ${p.weight} g`);
+    }
+
+
+    document.getElementById(
+        "profileInfo"
+    ).textContent=
+        info.length
+        ? info.join(" • ")
+        : "Profil Ouška";
+
+}
+
+
+function saveProfile(){
+
+    const name=
+        document.getElementById(
+            "profileNameInput"
+        ).value.trim();
+
+    const age=
+        document.getElementById(
+            "profileAge"
+        ).value;
+
+    const weight=
+        document.getElementById(
+            "profileWeight"
+        ).value;
+
+    const note=
+        document.getElementById(
+            "profileNote"
+        ).value.trim();
+
+
+    if(!name){
+        toast("🦊 Zadej jméno.");
+        return;
+    }
+
+    if(age==="" || Number(age)<0){
+        toast("🎂 Zadej věk.");
+        return;
+    }
+
+    if(weight==="" || Number(weight)<=0){
+        toast("⚖️ Zadej hmotnost v gramech.");
+        return;
+    }
+
+
+    data.profile={
+        created:true,
+        name:name,
+        age:Number(age),
+        weight:Number(weight),
+        note:note
+    };
+
+
+    saveData();
+    loadProfile();
+
+    toast("💾 Profil byl uložen!");
+
+}
+
+
+/* =====================================================
+NAVIGATION
+===================================================== */
+
+function showView(id,button){
+
+    document
+        .querySelectorAll(".view")
+        .forEach(v=>{
+            v.classList.remove("active");
+        });
+
+
+    document
+        .getElementById(id)
+        .classList.add("active");
+
+
+    document
+        .querySelectorAll(".nav button")
+        .forEach(b=>{
+            b.classList.remove("active");
+        });
+
+
+    if(button){
+        button.classList.add("active");
+    }
+
+
+    renderAll();
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =====================================================
+MODALS
+===================================================== */
+
+function openModal(id){
+
+    document
+        .getElementById(id)
+        .classList.add("show");
+
+}
+
+
+function closeModal(id){
+
+    document
+        .getElementById(id)
+        .classList.remove("show");
+
+}
+
+
+document
+    .querySelectorAll(".modal")
+    .forEach(modal=>{
+
+        modal.addEventListener(
+            "click",
+            e=>{
+
+                if(e.target===modal){
+                    modal.classList.remove("show");
+                }
 
             }
+        );
+
+    });
 
 
-            /*
-                Zvukové upozornění
-            */
+/* =====================================================
+TOAST
+===================================================== */
 
-            playSuccessSound();
-
-
-            /*
-                Po nalezení necháme
-                skener dál běžet.
-            */
-
-        };
+let toastTimer;
 
 
-        /*
-            Chyba čtení NFC
-        */
+function toast(text){
 
-        ndef.onreadingerror = () => {
-
-            statusBox.className =
-                "status error";
+    const el=
+        document.getElementById("toast");
 
 
-            statusBox.innerHTML =
-                "⚠️ NFC zařízení bylo zachyceno," +
-                " ale nepodařilo se přečíst jeho obsah.<br><br>" +
-                "Zkus ho přiložit znovu.";
+    el.textContent=text;
 
-        };
+    el.classList.add("show");
+
+
+    clearTimeout(toastTimer);
+
+
+    toastTimer=setTimeout(()=>{
+        el.classList.remove("show");
+    },2800);
+
+}
+
+
+/* =====================================================
+REALISTICKÉ POHLAZENÍ
+===================================================== */
+
+const petArea=
+    document.getElementById("petArea");
+
+const fox=
+    document.getElementById("foxCharacter");
+
+const petHint=
+    document.getElementById("petHint");
+
+let touching=false;
+let lastPetX=0;
+let lastPetY=0;
+let petDistance=0;
+let lastHeart=0;
+let petStart=0;
+let lastCountTime=0;
+
+
+/*
+    Zjistí, jestli je dotyk/myš
+    opravdu uvnitř oblasti Ouška.
+*/
+
+function pointInsideFox(x,y){
+
+    const rect=
+        fox.getBoundingClientRect();
+
+
+    const centerX=
+        rect.left+rect.width/2;
+
+    const centerY=
+        rect.top+rect.height/2;
+
+
+    const dx=x-centerX;
+    const dy=y-centerY;
+
+
+    const rx=rect.width*.46;
+    const ry=rect.height*.47;
+
+
+    return (
+        (dx*dx)/(rx*rx)+
+        (dy*dy)/(ry*ry)
+    ) <= 1;
+
+}
+
+
+/*
+    Začátek hlazení.
+*/
+
+function startPetting(x,y){
+
+    if(!pointInsideFox(x,y)){
+        return;
+    }
+
+
+    touching=true;
+
+    petStart=Date.now();
+
+    lastPetX=x;
+    lastPetY=y;
+
+    petDistance=0;
+
+    fox.classList.add("petting");
+
+    fox.classList.add("happy");
+
+    petHint.classList.add("hide");
+
+    petMessage(
+        "To je příjemné... 🥰"
+    );
+
+
+    addHeart(x,y);
+
+
+    countPet();
+
+}
+
+
+/*
+    Pohyb při hlazení.
+*/
+
+function movePetting(x,y){
+
+    if(!touching){
+        return;
+    }
+
+
+    if(!pointInsideFox(x,y)){
+        return;
+    }
+
+
+    const dx=x-lastPetX;
+    const dy=y-lastPetY;
+
+
+    const distance=
+        Math.sqrt(
+            dx*dx+
+            dy*dy
+        );
+
+
+    petDistance+=distance;
+
+
+    lastPetX=x;
+    lastPetY=y;
+
+
+    /*
+        Hlazení musí mít určitý pohyb,
+        aby se počítalo jako opravdové pohlazení.
+    */
+
+    if(petDistance>=45){
+
+        countPet();
+
+        petDistance=0;
 
     }
 
-    catch (error) {
 
-        console.error(error);
+    /*
+        Srdíčka se nevytváří při každém pixelu.
+    */
 
-
-        statusBox.className =
-            "status error";
-
-
-        statusBox.innerHTML =
-            "❌ NFC skenování se nepodařilo spustit.<br><br>" +
-            error.message;
+    const now=Date.now();
 
 
-        scanButton.disabled =
-            false;
+    if(now-lastHeart>170){
+
+        addHeart(x,y);
+
+        lastHeart=now;
+
+    }
+
+
+    /*
+        Ouško reaguje podle směru pohybu.
+    */
+
+    const tilt=
+        Math.max(
+            -7,
+            Math.min(
+                7,
+                dx*.18
+            )
+        );
+
+
+    fox.style.transform=
+        `rotate(${tilt}deg)`;
+
+}
+
+
+/*
+    Konec hlazení.
+*/
+
+function stopPetting(){
+
+    if(!touching){
+        return;
+    }
+
+
+    touching=false;
+
+    fox.classList.remove("petting");
+
+    fox.classList.remove("happy");
+
+    fox.style.transform="";
+
+
+    const duration=
+        Date.now()-petStart;
+
+
+    if(duration>1800){
+
+        petMessage(
+            "Ouško je úplně spokojené! ❤️🦊"
+        );
+
+        toast(
+            "❤️ Ouško si užilo dlouhé pohlazení!"
+        );
+
+    }
+    else{
+
+        petMessage(
+            "Děkuju za pohlazení! 🧡"
+        );
 
     }
 
 }
 
 
-/* =========================================
-   ZVUK
-========================================= */
+/*
+    Počítání pohlazení.
+*/
 
-function playSuccessSound() {
+function countPet(){
 
-    try {
-
-        const AudioContext =
-            window.AudioContext ||
-            window.webkitAudioContext;
+    const now=Date.now();
 
 
-        if (!AudioContext) {
+    /*
+        Ochrana proti několikanásobnému
+        počítání při jednom dotyku.
+    */
+
+    if(now-lastCountTime<350){
+        return;
+    }
+
+
+    lastCountTime=now;
+
+
+    data.pets++;
+
+    data.petSessions++;
+
+
+    saveData();
+
+    renderStats();
+
+
+    if(data.pets%5===0){
+
+        petMessage(
+            "Jéé! Tolik pohlazení! 🥰"
+        );
+
+    }
+
+}
+
+
+/*
+    Změna textu.
+*/
+
+function petMessage(text){
+
+    document
+        .getElementById("petMessage")
+        .textContent=text;
+
+}
+
+
+/*
+    Srdíčko na místě dotyku.
+*/
+
+function addHeart(x,y){
+
+    const rect=
+        petArea.getBoundingClientRect();
+
+
+    const heart=
+        document.createElement("div");
+
+
+    heart.className="heart";
+
+
+    const hearts=[
+        "❤️",
+        "🧡",
+        "💕",
+        "💖",
+        "🥰"
+    ];
+
+
+    heart.textContent=
+        hearts[
+            Math.floor(
+                Math.random()*hearts.length
+            )
+        ];
+
+
+    heart.style.left=
+        (x-rect.left)+"px";
+
+
+    heart.style.top=
+        (y-rect.top)+"px";
+
+
+    const randomX=
+        (Math.random()*70-35)
+        +"px";
+
+
+    heart.style.setProperty(
+        "--x",
+        randomX
+    );
+
+
+    petArea.appendChild(heart);
+
+
+    setTimeout(()=>{
+        heart.remove();
+    },1300);
+
+}
+
+
+/* =====================================================
+MYŠ
+===================================================== */
+
+petArea.addEventListener(
+    "mousedown",
+    e=>{
+        e.preventDefault();
+
+        startPetting(
+            e.clientX,
+            e.clientY
+        );
+    }
+);
+
+
+window.addEventListener(
+    "mousemove",
+    e=>{
+
+        if(touching){
+
+            movePetting(
+                e.clientX,
+                e.clientY
+            );
+
+        }
+
+    }
+);
+
+
+window.addEventListener(
+    "mouseup",
+    stopPetting
+);
+
+
+/* =====================================================
+DOTYK
+===================================================== */
+
+petArea.addEventListener(
+    "touchstart",
+    e=>{
+
+        e.preventDefault();
+
+
+        const t=e.touches[0];
+
+
+        startPetting(
+            t.clientX,
+            t.clientY
+        );
+
+    },
+    {
+        passive:false
+    }
+);
+
+
+petArea.addEventListener(
+    "touchmove",
+    e=>{
+
+        e.preventDefault();
+
+
+        if(!touching){
             return;
         }
 
 
-        const audio =
-            new AudioContext();
+        const t=e.touches[0];
 
 
-        const oscillator =
-            audio.createOscillator();
+        movePetting(
+            t.clientX,
+            t.clientY
+        );
+
+    },
+    {
+        passive:false
+    }
+);
 
 
-        const gain =
-            audio.createGain();
+petArea.addEventListener(
+    "touchend",
+    e=>{
+
+        e.preventDefault();
+
+        stopPetting();
+
+    },
+    {
+        passive:false
+    }
+);
 
 
-        oscillator.frequency.value =
-            880;
+petArea.addEventListener(
+    "touchcancel",
+    stopPetting
+);
 
 
-        oscillator.type =
-            "sine";
+/* =====================================================
+FOOD
+===================================================== */
+
+function todayFood(){
+
+    return data.food.filter(
+        x=>x.date===todayKey()
+    );
+
+}
 
 
-        gain.gain.value =
-            0.12;
+function addFood(){
+
+    const name=
+        document
+        .getElementById("foodName")
+        .value.trim();
+
+    const calories=
+        Number(
+            document
+            .getElementById("foodCalories")
+            .value
+        )||0;
+
+    const amount=
+        document
+        .getElementById("foodAmount")
+        .value.trim();
 
 
-        oscillator.connect(gain);
+    if(!name){
+        toast("🍎 Napiš, co Ouško jedlo.");
+        return;
+    }
 
-        gain.connect(
-            audio.destination
+
+    data.food.push({
+
+        id:Date.now(),
+        date:todayKey(),
+        name:name,
+        calories:calories,
+        amount:amount,
+        time:currentTime()
+
+    });
+
+
+    saveData();
+
+
+    document.getElementById("foodName").value="";
+    document.getElementById("foodCalories").value="";
+    document.getElementById("foodAmount").value="";
+
+
+    closeModal("foodModal");
+
+    toast("🍎 Jídlo uloženo!");
+
+    renderAll();
+
+}
+
+
+function deleteFood(id){
+
+    data.food=
+        data.food.filter(
+            x=>x.id!==id
+        );
+
+    saveData();
+
+    renderAll();
+
+    toast("Jídlo odstraněno.");
+
+}
+
+
+/* =====================================================
+WATER
+===================================================== */
+
+function todayWater(){
+
+    return data.water.filter(
+        x=>x.date===todayKey()
+    );
+
+}
+
+
+function addWater(){
+
+    const amount=
+        Number(
+            document
+            .getElementById("waterAmount")
+            .value
         );
 
 
-        oscillator.start();
+    const type=
+        document
+        .getElementById("waterType")
+        .value;
 
 
-        setTimeout(() => {
-
-            oscillator.frequency.value =
-                1175;
-
-        }, 150);
+    if(!amount || amount<=0){
+        toast("💧 Zadej množství pití.");
+        return;
+    }
 
 
-        setTimeout(() => {
+    data.water.push({
 
-            oscillator.stop();
+        id:Date.now(),
+        date:todayKey(),
+        amount:amount,
+        type:type,
+        time:currentTime()
 
-            audio.close();
+    });
 
-        }, 350);
+
+    saveData();
+
+
+    document
+        .getElementById("waterAmount")
+        .value="";
+
+
+    closeModal("waterModal");
+
+    toast(`💧 Uloženo ${amount} ml`);
+
+    renderAll();
+
+}
+
+
+function deleteWater(id){
+
+    data.water=
+        data.water.filter(
+            x=>x.id!==id
+        );
+
+    saveData();
+
+    renderAll();
+
+    toast("Pití odstraněno.");
+
+}
+
+
+/* =====================================================
+REMINDERS
+===================================================== */
+
+function addReminder(){
+
+    const text=
+        document
+        .getElementById("reminderText")
+        .value.trim();
+
+    const time=
+        document
+        .getElementById("reminderTime")
+        .value;
+
+    const type=
+        document
+        .getElementById("reminderType")
+        .value;
+
+
+    if(!text){
+        toast("⏰ Napiš text připomínky.");
+        return;
+    }
+
+
+    if(!time){
+        toast("⏰ Vyber čas.");
+        return;
+    }
+
+
+    data.reminders.push({
+
+        id:Date.now(),
+        text:text,
+        time:time,
+        type:type,
+        enabled:true,
+        lastTriggered:""
+
+    });
+
+
+    saveData();
+
+
+    document
+        .getElementById("reminderText")
+        .value="";
+
+
+    document
+        .getElementById("reminderTime")
+        .value="";
+
+
+    closeModal("reminderModal");
+
+    toast("⏰ Připomínka vytvořena!");
+
+    renderAll();
+
+}
+
+
+function deleteReminder(id){
+
+    data.reminders=
+        data.reminders.filter(
+            r=>r.id!==id
+        );
+
+    saveData();
+
+    renderAll();
+
+}
+
+
+function toggleReminder(id){
+
+    const r=
+        data.reminders.find(
+            x=>x.id===id
+        );
+
+
+    if(!r)return;
+
+
+    r.enabled=!r.enabled;
+
+    saveData();
+
+    renderAll();
+
+}
+
+
+/* =====================================================
+RENDER FOOD
+===================================================== */
+
+function renderFood(){
+
+    const list=
+        document.getElementById("foodList");
+
+
+    const items=todayFood();
+
+
+    if(items.length===0){
+
+        list.innerHTML=`
+            <div class="empty">
+                🍎 Dnes ještě není žádné jídlo.
+            </div>
+        `;
+
+        return;
 
     }
 
-    catch (error) {
 
-        console.log(
-            "Zvuk nelze přehrát.",
-            error
+    list.innerHTML=
+        items.slice().reverse()
+        .map(item=>`
+
+            <div class="list-item">
+
+                <div class="item-left">
+
+                    <div class="item-icon">
+                        🍎
+                    </div>
+
+                    <div>
+
+                        <div class="item-title">
+                            ${escapeHTML(item.name)}
+                        </div>
+
+                        <div class="item-sub">
+                            ${item.time}
+                            ${item.amount
+                                ?" • "+escapeHTML(item.amount)
+                                :""}
+                            • ${item.calories} kcal
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button class="danger"
+                        onclick="deleteFood(${item.id})">
+                    🗑️
+                </button>
+
+            </div>
+
+        `)
+        .join("");
+
+}
+
+
+/* =====================================================
+RENDER WATER
+===================================================== */
+
+function renderWater(){
+
+    const list=
+        document.getElementById("waterList");
+
+
+    const items=todayWater();
+
+
+    if(items.length===0){
+
+        list.innerHTML=`
+            <div class="empty">
+                💧 Dnes ještě není žádné pití.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    list.innerHTML=
+        items.slice().reverse()
+        .map(item=>`
+
+            <div class="list-item">
+
+                <div class="item-left">
+
+                    <div class="item-icon">
+                        💧
+                    </div>
+
+                    <div>
+
+                        <div class="item-title">
+                            ${item.amount} ml
+                        </div>
+
+                        <div class="item-sub">
+                            ${escapeHTML(item.type)}
+                            • ${item.time}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button class="danger"
+                        onclick="deleteWater(${item.id})">
+                    🗑️
+                </button>
+
+            </div>
+
+        `)
+        .join("");
+
+}
+
+
+/* =====================================================
+RENDER REMINDERS
+===================================================== */
+
+function renderReminders(){
+
+    const list=
+        document.getElementById(
+            "reminderList"
+        );
+
+
+    if(data.reminders.length===0){
+
+        list.innerHTML=`
+            <div class="empty">
+                ⏰ Zatím žádné připomínky.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    list.innerHTML=
+        data.reminders
+        .slice()
+        .sort(
+            (a,b)=>
+                a.time.localeCompare(b.time)
+        )
+        .map(r=>`
+
+            <div class="list-item">
+
+                <div class="item-left">
+
+                    <div class="item-icon">
+                        ${r.type}
+                    </div>
+
+                    <div>
+
+                        <div style="
+                            font-size:19px;
+                            font-weight:bold;">
+                            ${r.time}
+                        </div>
+
+                        <div class="item-title">
+                            ${escapeHTML(r.text)}
+                        </div>
+
+                        <div class="item-sub">
+                            ${r.enabled
+                                ?"🟢 Aktivní"
+                                :"⚪ Vypnutá"}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div style="
+                    display:flex;
+                    gap:7px;">
+
+                    <button class="secondary"
+                            onclick="toggleReminder(${r.id})">
+                        ${r.enabled?"🔕":"🔔"}
+                    </button>
+
+                    <button class="danger"
+                            onclick="deleteReminder(${r.id})">
+                        🗑️
+                    </button>
+
+                </div>
+
+            </div>
+
+        `)
+        .join("");
+
+}
+
+
+/* =====================================================
+STATS
+===================================================== */
+
+function renderStats(){
+
+    const foods=todayFood();
+    const waters=todayWater();
+
+
+    const calories=
+        foods.reduce(
+            (sum,x)=>
+                sum+Number(x.calories||0),
+            0
+        );
+
+
+    const water=
+        waters.reduce(
+            (sum,x)=>
+                sum+Number(x.amount||0),
+            0
+        );
+
+
+    document.getElementById(
+        "todayCalories"
+    ).textContent=calories;
+
+
+    document.getElementById(
+        "todayWater"
+    ).textContent=water;
+
+
+    document.getElementById(
+        "todayPets"
+    ).textContent=data.pets;
+
+
+    document.getElementById(
+        "petCount"
+    ).textContent=data.pets;
+
+
+    document.getElementById(
+        "waterText"
+    ).textContent=water+" ml";
+
+
+    document.getElementById(
+        "waterProgress"
+    ).style.width=
+        Math.min(100,water/1000*100)+"%";
+
+
+    /*
+        Pohlazení:
+        20 pohlazení = plný denní progress.
+    */
+
+    document.getElementById(
+        "petProgress"
+    ).style.width=
+        Math.min(100,data.pets/20*100)+"%";
+
+}
+
+
+/* =====================================================
+NEXT REMINDER
+===================================================== */
+
+function renderNextReminder(){
+
+    const el=
+        document.getElementById(
+            "nextReminder"
+        );
+
+
+    const active=
+        data.reminders
+        .filter(r=>r.enabled)
+        .sort(
+            (a,b)=>
+                a.time.localeCompare(b.time)
+        );
+
+
+    if(active.length===0){
+
+        el.innerHTML=`
+            <div class="empty">
+                Žádná aktivní připomínka.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    const now=new Date();
+
+    const current=
+        now.getHours()*60+
+        now.getMinutes();
+
+
+    let next=null;
+
+
+    for(const r of active){
+
+        const p=r.time.split(":");
+
+        const minutes=
+            Number(p[0])*60+
+            Number(p[1]);
+
+
+        if(minutes>=current){
+
+            next=r;
+            break;
+
+        }
+
+    }
+
+
+    if(!next){
+        next=active[0];
+    }
+
+
+    el.innerHTML=`
+
+        <div class="list-item">
+
+            <div class="item-left">
+
+                <div class="item-icon">
+                    ${next.type}
+                </div>
+
+                <div>
+
+                    <div class="item-title">
+                        ${escapeHTML(next.text)}
+                    </div>
+
+                    <div class="item-sub">
+                        Dnes v ${next.time}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+NOTIFICATIONS
+===================================================== */
+
+function requestNotifications(){
+
+    if(!("Notification" in window)){
+
+        toast(
+            "Tento prohlížeč nepodporuje oznámení."
+        );
+
+        return;
+
+    }
+
+
+    Notification
+        .requestPermission()
+        .then(permission=>{
+
+            updateNotificationStatus();
+
+
+            if(permission==="granted"){
+
+                toast(
+                    "🔔 Oznámení jsou povolena!"
+                );
+
+                sendBrowserNotification(
+                    "Ouško Health 🦊",
+                    "Oznámení jsou připravena."
+                );
+
+            }
+
+        });
+
+}
+
+
+function updateNotificationStatus(){
+
+    const el=
+        document.getElementById(
+            "notificationStatus"
+        );
+
+
+    if(!("Notification" in window)){
+
+        el.textContent=
+            "Tento prohlížeč oznámení nepodporuje.";
+
+        return;
+
+    }
+
+
+    if(Notification.permission==="granted"){
+
+        el.textContent=
+            "✅ Systémová oznámení jsou povolena.";
+
+    }
+    else if(Notification.permission==="denied"){
+
+        el.textContent=
+            "❌ Oznámení jsou zablokována.";
+
+    }
+    else{
+
+        el.textContent=
+            "🔔 Oznámení zatím nejsou povolena.";
+
+    }
+
+}
+
+
+function sendBrowserNotification(title,body){
+
+    if(
+        "Notification" in window &&
+        Notification.permission==="granted"
+    ){
+
+        new Notification(
+            title,
+            {
+                body:body
+            }
         );
 
     }
@@ -519,27 +3184,240 @@ function playSuccessSound() {
 }
 
 
-/* =========================================
-   TLAČÍTKO START
-========================================= */
+/* =====================================================
+INTERNÍ NOTIFIKACE
+===================================================== */
 
-scanButton.addEventListener(
-    "click",
-    startNFC
+function addNotification(title,text){
+
+    data.notifications.unshift({
+
+        id:Date.now(),
+        title:title,
+        text:text,
+        time:new Date()
+            .toLocaleString("cs-CZ")
+
+    });
+
+
+    data.notifications=
+        data.notifications.slice(0,20);
+
+
+    saveData();
+
+    renderNotifications();
+
+}
+
+
+function renderNotifications(){
+
+    const list=
+        document.getElementById(
+            "notificationList"
+        );
+
+
+    if(!data.notifications.length){
+
+        list.innerHTML=`
+            <div class="empty">
+                Zatím žádná oznámení.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    list.innerHTML=
+        data.notifications
+        .map(n=>`
+
+            <div class="notification">
+
+                <strong>
+                    ${escapeHTML(n.title)}
+                </strong>
+
+                <div>
+                    ${escapeHTML(n.text)}
+                </div>
+
+                <small>
+                    ${escapeHTML(n.time)}
+                </small>
+
+            </div>
+
+        `)
+        .join("");
+
+}
+
+
+function toggleNotifications(){
+
+    document
+        .getElementById(
+            "notificationPanel"
+        )
+        .classList.toggle("show");
+
+
+    renderNotifications();
+
+}
+
+
+/* =====================================================
+CHECK REMINDERS
+===================================================== */
+
+function checkReminders(){
+
+    const now=new Date();
+
+    const hh=
+        String(now.getHours())
+        .padStart(2,"0");
+
+    const mm=
+        String(now.getMinutes())
+        .padStart(2,"0");
+
+    const current=
+        hh+":"+mm;
+
+    const today=
+        todayKey();
+
+
+    data.reminders.forEach(r=>{
+
+        if(!r.enabled){
+            return;
+        }
+
+
+        const key=
+            today+"_"+current;
+
+
+        if(
+            r.time===current &&
+            r.lastTriggered!==key
+        ){
+
+            r.lastTriggered=key;
+
+
+            addNotification(
+                r.type+" Ouško Health",
+                r.text
+            );
+
+
+            sendBrowserNotification(
+                r.type+" Ouško Health",
+                r.text
+            );
+
+
+            toast(
+                r.type+" "+r.text
+            );
+
+
+            saveData();
+
+        }
+
+    });
+
+}
+
+
+/* =====================================================
+ESCAPE
+===================================================== */
+
+function escapeHTML(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =====================================================
+DELETE ALL
+===================================================== */
+
+function clearAllData(){
+
+    if(
+        !confirm(
+            "Opravdu chceš smazat všechna data Ouška?"
+        )
+    ){
+        return;
+    }
+
+
+    localStorage.removeItem(
+        "ouskoHealthData"
+    );
+
+
+    location.reload();
+
+}
+
+
+/* =====================================================
+RENDER ALL
+===================================================== */
+
+function renderAll(){
+
+    loadProfile();
+    renderFood();
+    renderWater();
+    renderReminders();
+    renderStats();
+    renderNextReminder();
+    renderNotifications();
+    updateNotificationStatus();
+
+}
+
+
+/* =====================================================
+START
+===================================================== */
+
+checkProfile();
+
+renderAll();
+
+
+setInterval(
+    checkReminders,
+    1000
 );
 
 
-/* =========================================
-   RESET
-========================================= */
-
-resetButton.addEventListener(
-    "click",
-    () => {
-
-        location.reload();
-
-    }
+setInterval(
+    renderNextReminder,
+    30000
 );
 
 </script>
