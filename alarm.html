@@ -2,11 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<meta
+    name="viewport"
+    content="width=device-width,
+             initial-scale=1,
+             viewport-fit=cover"
+>
 
 <title>Car Crash Detection</title>
 
 <style>
+
+/* =========================================================
+   BASE
+========================================================= */
 
 * {
     box-sizing: border-box;
@@ -15,10 +25,12 @@
 
 html,
 body {
-    margin: 0;
     width: 100%;
     height: 100%;
+    margin: 0;
+
     overflow: hidden;
+
     background: #000;
     color: #fff;
 
@@ -29,9 +41,14 @@ body {
         sans-serif;
 }
 
+body {
+    user-select: none;
+}
+
 button {
     font: inherit;
     border: 0;
+    outline: none;
     cursor: pointer;
 }
 
@@ -45,31 +62,57 @@ button {
 ========================================================= */
 
 #home {
+    position: fixed;
+    inset: 0;
+
     width: 100%;
     height: 100dvh;
-    min-height: 100vh;
 
     display: flex;
     flex-direction: column;
+
     align-items: center;
     justify-content: center;
 
-    padding: 30px;
+    padding:
+        max(28px, env(safe-area-inset-top))
+        25px
+        max(28px, env(safe-area-inset-bottom));
 
     text-align: center;
 
     background:
         radial-gradient(
-            circle at 50% 40%,
-            #1c1c1c 0%,
-            #0b0b0b 48%,
+            circle at 50% 38%,
+            #202020 0%,
+            #0c0c0c 45%,
             #000 100%
         );
 }
 
+.homeGlow {
+    position: absolute;
+
+    width: 420px;
+    height: 420px;
+
+    top: -180px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.035);
+
+    filter: blur(80px);
+
+    pointer-events: none;
+}
+
 .logo {
-    width: 84px;
-    height: 84px;
+    position: relative;
+
+    width: 92px;
+    height: 92px;
 
     border-radius: 50%;
 
@@ -77,58 +120,96 @@ button {
     align-items: center;
     justify-content: center;
 
-    background: #1b1b1b;
+    background:
+        linear-gradient(
+            145deg,
+            #292929,
+            #151515
+        );
 
-    border: 1px solid #333;
+    border:
+        1px solid #383838;
 
-    font-size: 40px;
-
-    margin-bottom: 25px;
+    font-size: 43px;
 
     box-shadow:
-        0 12px 40px rgba(0,0,0,.45);
+        0 18px 55px
+        rgba(0,0,0,.55);
+
+    animation:
+        homeLogo 4s
+        ease-in-out
+        infinite;
+}
+
+@keyframes homeLogo {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
 }
 
 .title {
+    position: relative;
+
+    margin-top: 25px;
+
     font-size:
-        clamp(30px, 7vw, 52px);
+        clamp(30px, 8vw, 54px);
+
+    line-height: 1;
 
     font-weight: 900;
 
-    letter-spacing: -1.2px;
+    letter-spacing: -1.8px;
 }
 
 .subtitle {
-    margin-top: 12px;
+    position: relative;
 
-    max-width: 600px;
+    max-width: 580px;
 
-    color: #aaa;
+    margin-top: 15px;
 
-    font-size: 16px;
+    color: #a7a7a7;
 
-    line-height: 1.5;
+    font-size: 15px;
+
+    line-height: 1.55;
 }
 
 .startButton {
-    margin-top: 35px;
+    position: relative;
 
-    width: min(400px, 90vw);
+    width:
+        min(420px, 90vw);
 
-    min-height: 60px;
+    min-height: 62px;
+
+    margin-top: 34px;
 
     border-radius: 32px;
 
     background: #fff;
+
     color: #000;
 
     font-size: 18px;
 
     font-weight: 900;
 
+    box-shadow:
+        0 12px 35px
+        rgba(255,255,255,.08);
+
     transition:
         transform .15s,
-        opacity .15s;
+        opacity .2s;
 }
 
 .startButton:active {
@@ -136,11 +217,14 @@ button {
 }
 
 .testButton {
-    margin-top: 14px;
+    position: relative;
 
-    width: min(400px, 90vw);
+    width:
+        min(420px, 90vw);
 
     min-height: 52px;
+
+    margin-top: 12px;
 
     border-radius: 28px;
 
@@ -148,9 +232,12 @@ button {
 
     color: #fff;
 
-    border: 1px solid #333;
+    border:
+        1px solid #343434;
 
-    font-weight: 700;
+    font-size: 15px;
+
+    font-weight: 800;
 
     transition:
         transform .15s,
@@ -164,7 +251,7 @@ button {
 }
 
 .status {
-    margin-top: 25px;
+    position: relative;
 
     display: flex;
 
@@ -172,7 +259,9 @@ button {
 
     gap: 9px;
 
-    color: #999;
+    margin-top: 24px;
+
+    color: #8e8e8e;
 
     font-size: 14px;
 }
@@ -183,111 +272,28 @@ button {
 
     border-radius: 50%;
 
-    background: #666;
+    background: #555;
+
+    transition:
+        background .2s,
+        box-shadow .2s;
 }
 
 .statusDot.active {
-    background: #34d399;
+    background: #35d58a;
 
     box-shadow:
-        0 0 14px #34d399;
+        0 0 14px
+        rgba(53,213,138,.85);
 }
 
 
 /* =========================================================
-   STILLNESS SCREEN
+   POSSIBLE IMPACT
 ========================================================= */
 
 #stillScreen {
     position: fixed;
-
-    inset: 0;
-
-    z-index: 90;
-
-    width: 100%;
-    height: 100dvh;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-    justify-content: center;
-
-    padding:
-        max(25px, env(safe-area-inset-top))
-        25px
-        max(25px, env(safe-area-inset-bottom));
-
-    text-align: center;
-
-    background:
-        radial-gradient(
-            circle at 50% 35%,
-            #3a2a08 0%,
-            #120d02 48%,
-            #000 100%
-        );
-}
-
-.stillIcon {
-    font-size: 64px;
-
-    margin-bottom: 20px;
-
-    animation:
-        stillPulse 1.2s infinite;
-}
-
-@keyframes stillPulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.08);
-    }
-}
-
-.stillTitle {
-    font-size:
-        clamp(28px, 7vw, 48px);
-
-    font-weight: 900;
-}
-
-.stillText {
-    margin-top: 12px;
-
-    max-width: 500px;
-
-    color: #d8c99d;
-
-    line-height: 1.5;
-}
-
-.stillCounter {
-    margin-top: 28px;
-
-    font-size: 64px;
-
-    font-weight: 900;
-
-    font-variant-numeric:
-        tabular-nums;
-}
-
-
-/* =========================================================
-   CRASH SCREEN
-========================================================= */
-
-#crashScreen {
-    position: fixed;
-
     inset: 0;
 
     z-index: 100;
@@ -303,113 +309,227 @@ button {
     justify-content: center;
 
     padding:
-        max(24px, env(safe-area-inset-top))
-        24px
-        max(24px, env(safe-area-inset-bottom));
+        max(28px, env(safe-area-inset-top))
+        25px
+        max(28px, env(safe-area-inset-bottom));
 
     text-align: center;
 
     background:
         radial-gradient(
-            circle at 50% 25%,
-            #521313 0%,
-            #240707 42%,
-            #080101 75%,
+            circle at 50% 30%,
+            #3b2a08 0%,
+            #151003 45%,
             #000 100%
         );
-
-    overflow: hidden;
 }
 
-#crashScreen::before {
-    content: "";
+.stillIcon {
+    width: 86px;
+    height: 86px;
 
-    position: absolute;
-
-    width: 500px;
-    height: 500px;
-
-    top: -250px;
-    left: 50%;
-
-    transform:
-        translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     border-radius: 50%;
 
     background:
-        rgba(255,59,48,.15);
+        rgba(255,183,77,.12);
 
-    filter: blur(70px);
+    border:
+        1px solid
+        rgba(255,183,77,.25);
+
+    font-size: 43px;
 
     animation:
-        crashGlow 2s
-        infinite ease-in-out;
+        stillPulse 1.2s
+        infinite;
+}
+
+@keyframes stillPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+.stillTitle {
+    margin-top: 24px;
+
+    font-size:
+        clamp(29px, 7vw, 50px);
+
+    font-weight: 900;
+
+    letter-spacing: -1px;
+}
+
+.stillText {
+    max-width: 500px;
+
+    margin-top: 13px;
+
+    color: #d7c89e;
+
+    font-size: 15px;
+
+    line-height: 1.5;
+}
+
+.stillCounter {
+    margin-top: 27px;
+
+    font-size: 68px;
+
+    font-weight: 900;
+
+    line-height: 1;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+.stillCancel {
+    width:
+        min(430px, 90vw);
+
+    min-height: 56px;
+
+    margin-top: 28px;
+
+    border-radius: 29px;
+
+    background: #fff;
+
+    color: #000;
+
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   CRASH SCREEN
+========================================================= */
+
+#crashScreen {
+    position: fixed;
+    inset: 0;
+
+    z-index: 200;
+
+    width: 100%;
+    height: 100dvh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        max(22px, env(safe-area-inset-top))
+        22px
+        max(22px, env(safe-area-inset-bottom));
+
+    text-align: center;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 23%,
+            #5d1111 0%,
+            #290707 38%,
+            #090101 72%,
+            #000 100%
+        );
+}
+
+.crashGlow {
+    position: absolute;
+
+    width: 620px;
+    height: 620px;
+
+    top: -390px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,48,48,.20);
+
+    filter: blur(90px);
+
+    animation:
+        crashGlowAnimation
+        1.5s
+        infinite
+        ease-in-out;
 
     pointer-events: none;
 }
 
-@keyframes crashGlow {
+@keyframes crashGlowAnimation {
 
     0%,
     100% {
         opacity: .45;
-
-        transform:
-            translateX(-50%)
-            scale(.9);
+        transform: scale(.9);
     }
 
     50% {
-        opacity: .9;
-
-        transform:
-            translateX(-50%)
-            scale(1.15);
+        opacity: 1;
+        transform: scale(1.15);
     }
 }
 
 
 /* =========================================================
-   ALERT PILL
+   SAFETY PILL
 ========================================================= */
 
 .alertPill {
     position: relative;
-
-    z-index: 2;
+    z-index: 5;
 
     display: flex;
-
     align-items: center;
 
     gap: 8px;
 
-    padding: 8px 14px;
+    padding: 8px 15px;
 
-    border-radius: 20px;
+    border-radius: 22px;
 
     background:
-        rgba(255,255,255,.08);
+        rgba(255,255,255,.075);
 
     border:
         1px solid
         rgba(255,255,255,.12);
 
-    color: #ffb4ae;
+    color: #ffb5af;
 
-    font-size: 12px;
+    font-size: 11px;
 
     font-weight: 900;
 
-    letter-spacing: .8px;
+    letter-spacing: 1px;
 
     text-transform: uppercase;
 
     backdrop-filter:
-        blur(12px);
+        blur(16px);
 
-    margin-bottom: 17px;
+    margin-bottom: 14px;
 }
 
 .alertPillDot {
@@ -421,10 +541,12 @@ button {
     background: #ff453a;
 
     box-shadow:
-        0 0 10px #ff453a;
+        0 0 12px
+        #ff453a;
 
     animation:
-        alertDot 1s infinite;
+        alertDot 700ms
+        infinite;
 }
 
 @keyframes alertDot {
@@ -435,7 +557,7 @@ button {
     }
 
     50% {
-        opacity: .35;
+        opacity: .25;
     }
 }
 
@@ -446,39 +568,44 @@ button {
 
 .alertIcon {
     position: relative;
+    z-index: 5;
 
-    z-index: 2;
-
-    width: 78px;
-    height: 78px;
-
-    border-radius: 50%;
+    width: 76px;
+    height: 76px;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
-    background: #ff3b30;
+    border-radius: 50%;
 
-    font-size: 42px;
+    background:
+        linear-gradient(
+            145deg,
+            #ff554b,
+            #e52d27
+        );
+
+    color: #fff;
+
+    font-size: 43px;
 
     font-weight: 900;
 
-    margin-bottom: 20px;
-
     box-shadow:
         0 0 35px
-        rgba(255,59,48,.42),
+        rgba(255,59,48,.45),
 
-        0 0 80px
-        rgba(255,59,48,.14);
+        0 0 90px
+        rgba(255,59,48,.18);
 
     animation:
-        alertPulse 1.1s infinite;
+        alertIconPulse
+        1s
+        infinite;
 }
 
-@keyframes alertPulse {
+@keyframes alertIconPulse {
 
     0%,
     100% {
@@ -486,62 +613,59 @@ button {
     }
 
     50% {
-        transform: scale(1.06);
+        transform: scale(1.075);
     }
 }
 
 
 /* =========================================================
-   CRASH TEXT
+   CRASH TITLE
 ========================================================= */
 
 .crashTitle {
     position: relative;
+    z-index: 5;
 
-    z-index: 2;
-
-    margin: 0;
+    margin: 20px 0 0;
 
     font-size:
-        clamp(34px, 8vw, 58px);
+        clamp(34px, 9vw, 61px);
 
     font-weight: 900;
 
-    line-height: 1.04;
+    line-height: 1;
 
-    letter-spacing: -1.3px;
+    letter-spacing: -2px;
 }
 
 .crashText {
     position: relative;
-
-    z-index: 2;
-
-    margin-top: 13px;
+    z-index: 5;
 
     max-width: 520px;
 
-    color: #e8bdb9;
+    margin-top: 13px;
 
-    font-size: 16px;
+    color: #e7bcb8;
+
+    font-size: 15px;
 
     line-height: 1.45;
 }
 
 #voiceStatus {
     position: relative;
-
-    z-index: 2;
-
-    margin-top: 9px;
+    z-index: 5;
 
     min-height: 20px;
 
-    color: #ffb4ae;
+    margin-top: 8px;
+
+    color: #ffaaa4;
 
     font-size: 13px;
 
-    font-weight: 700;
+    font-weight: 800;
 }
 
 
@@ -551,17 +675,16 @@ button {
 
 .countdownWrap {
     position: relative;
-
-    z-index: 2;
+    z-index: 5;
 
     width:
-        min(235px, 58vw);
+        min(245px, 61vw);
 
     height:
-        min(235px, 58vw);
+        min(245px, 61vw);
 
     margin:
-        24px 0 25px;
+        22px 0 23px;
 }
 
 .countdownSvg {
@@ -571,10 +694,12 @@ button {
     transform:
         rotate(-90deg);
 
+    overflow: visible;
+
     filter:
         drop-shadow(
-            0 0 14px
-            rgba(255,69,58,.25)
+            0 0 18px
+            rgba(255,59,48,.27)
         );
 }
 
@@ -584,7 +709,7 @@ button {
     stroke:
         rgba(255,255,255,.10);
 
-    stroke-width: 12;
+    stroke-width: 10;
 }
 
 .circleProgress {
@@ -592,7 +717,7 @@ button {
 
     stroke: #ff453a;
 
-    stroke-width: 12;
+    stroke-width: 10;
 
     stroke-linecap: round;
 
@@ -601,79 +726,80 @@ button {
     stroke-dashoffset: 0;
 
     transition:
-        stroke-dashoffset .9s linear;
+        stroke-dashoffset 1s linear;
 }
 
-.countdownNumber {
+.countdownCenter {
     position: absolute;
 
     inset: 0;
 
     display: flex;
 
-    align-items: center;
-    justify-content: center;
-
     flex-direction: column;
 
+    align-items: center;
+    justify-content: center;
+}
+
+.countdownNumber {
     font-size:
-        clamp(55px, 15vw, 88px);
+        clamp(62px, 17vw, 94px);
 
     font-weight: 900;
 
+    line-height: .9;
+
+    letter-spacing: -4px;
+
     font-variant-numeric:
         tabular-nums;
-
-    letter-spacing: -3px;
 }
 
-.countdownNumber::after {
-    content: "SECONDS";
-
-    display: block;
-
-    margin-top: -8px;
-
-    font-size: 10px;
-
-    letter-spacing: 1.8px;
+.countdownLabel {
+    margin-top: 12px;
 
     color: #d69b97;
 
-    font-weight: 800;
+    font-size: 10px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
 }
 
 
 /* =========================================================
-   CRASH BUTTONS
+   BUTTONS
 ========================================================= */
 
 .buttons {
     position: relative;
-
-    z-index: 2;
+    z-index: 5;
 
     width:
-        min(500px, 100%);
+        min(520px, 100%);
 
-    display: flex;
+    display: grid;
 
-    gap: 12px;
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 11px;
 }
 
 .actionButton {
-    flex: 1;
+    min-height: 57px;
 
-    min-height: 56px;
-
-    border-radius: 29px;
+    border-radius: 30px;
 
     font-size: 16px;
 
     font-weight: 900;
 
     transition:
-        transform .15s;
+        transform .15s,
+        filter .15s;
 }
 
 .actionButton:active {
@@ -687,26 +813,30 @@ button {
 }
 
 .emergencyButton {
-    background: #ff3b30;
+    background:
+        linear-gradient(
+            145deg,
+            #ff4d43,
+            #e92e28
+        );
 
     color: #fff;
 
     box-shadow:
-        0 8px 25px
-        rgba(255,59,48,.2);
+        0 10px 30px
+        rgba(255,59,48,.22);
 }
 
 .restartButton {
     position: relative;
-
-    z-index: 2;
-
-    margin-top: 12px;
+    z-index: 5;
 
     width:
-        min(500px, 100%);
+        min(520px, 100%);
 
     min-height: 55px;
+
+    margin-top: 11px;
 
     border-radius: 28px;
 
@@ -714,34 +844,37 @@ button {
 
     color: #fff;
 
-    border: 1px solid #444;
+    border:
+        1px solid #414141;
+
+    font-size: 15px;
 
     font-weight: 900;
 }
 
 .result {
     position: relative;
+    z-index: 5;
 
-    z-index: 2;
+    min-height: 20px;
 
-    margin-top: 16px;
+    margin-top: 12px;
 
     color: #ddd;
 
-    font-size: 15px;
+    font-size: 14px;
 }
 
 
 /* =========================================================
-   EMERGENCY CONFIRMED SCREEN
+   EMERGENCY SUCCESS
 ========================================================= */
 
-.successScreen {
+#emergencySuccess {
     position: fixed;
-
     inset: 0;
 
-    z-index: 200;
+    z-index: 400;
 
     width: 100%;
     height: 100dvh;
@@ -762,75 +895,63 @@ button {
 
     background:
         radial-gradient(
-            circle at 50% 30%,
-            #123b23 0%,
-            #08170d 45%,
+            circle at 50% 25%,
+            #174d2c 0%,
+            #0a1b10 45%,
             #000 100%
         );
 
-    overflow: hidden;
-
     animation:
-        successAppear .45s ease-out;
+        successAppear .35s
+        ease-out;
 }
 
-.successScreen::before {
-    content: "";
+@keyframes successAppear {
 
-    position: absolute;
+    from {
+        opacity: 0;
+        transform: scale(1.03);
+    }
 
-    width: 430px;
-    height: 430px;
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
 
-    top: -210px;
-    left: 50%;
+.successCircle {
+    width: 126px;
+    height: 126px;
 
-    transform:
-        translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     border-radius: 50%;
 
     background:
-        rgba(52,211,153,.12);
-
-    filter: blur(70px);
-
-    pointer-events: none;
-}
-
-.successCircle {
-    position: relative;
-
-    z-index: 2;
-
-    width: 120px;
-    height: 120px;
-
-    border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    background: #34d399;
+        linear-gradient(
+            145deg,
+            #49e3a0,
+            #24bd79
+        );
 
     box-shadow:
-        0 0 35px
-        rgba(52,211,153,.28),
+        0 0 45px
+        rgba(52,211,153,.32),
 
-        0 0 100px
-        rgba(52,211,153,.12);
+        0 0 110px
+        rgba(52,211,153,.13);
 
     animation:
-        successCircle .65s
+        successCircle .55s
         cubic-bezier(.2,.8,.2,1);
 }
 
 @keyframes successCircle {
 
     0% {
-        transform: scale(.35);
+        transform: scale(.3);
 
         opacity: 0;
     }
@@ -849,7 +970,7 @@ button {
 .checkmark {
     color: #06130b;
 
-    font-size: 72px;
+    font-size: 75px;
 
     font-weight: 900;
 
@@ -857,114 +978,107 @@ button {
 }
 
 .successTitle {
-    position: relative;
-
-    z-index: 2;
-
-    margin-top: 32px;
+    margin-top: 30px;
 
     font-size:
-        clamp(30px, 7vw, 52px);
+        clamp(31px, 8vw, 54px);
 
     font-weight: 900;
 
-    letter-spacing: -1px;
+    letter-spacing: -1.3px;
 }
 
 .successSubtitle {
-    position: relative;
-
-    z-index: 2;
-
     margin-top: 12px;
 
-    color: #a9cbb6;
+    max-width: 430px;
+
+    color: #a9cdb7;
 
     font-size: 16px;
 
     line-height: 1.5;
 }
 
-.successRestart {
-    position: relative;
-
-    z-index: 2;
-
-    margin-top: 38px;
-
-    width:
-        min(420px, 90vw);
-
-    min-height: 59px;
-
-    border-radius: 30px;
-
-    background: #fff;
-
-    color: #000;
-
-    font-size: 17px;
-
-    font-weight: 900;
-}
-
 
 /* =========================================================
-   SMALL SCREENS
+   MOBILE
 ========================================================= */
 
-@media (max-height: 680px) {
+@media (max-height: 700px) {
 
     .logo {
-        width: 62px;
-        height: 62px;
+        width: 66px;
+        height: 66px;
 
-        font-size: 29px;
+        font-size: 31px;
 
-        margin-bottom: 14px;
+        margin-bottom: 0;
+    }
+
+    .title {
+        margin-top: 17px;
+
+        font-size: 31px;
+    }
+
+    .subtitle {
+        margin-top: 9px;
+
+        font-size: 13px;
     }
 
     .startButton {
-        margin-top: 20px;
+        margin-top: 21px;
+
+        min-height: 54px;
+    }
+
+    .testButton {
+        min-height: 46px;
     }
 
     .status {
-        margin-top: 15px;
+        margin-top: 14px;
     }
 
     .alertPill {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
 
     .alertIcon {
         width: 62px;
         height: 62px;
 
-        font-size: 32px;
+        font-size: 34px;
+    }
 
-        margin-bottom: 11px;
+    .crashTitle {
+        margin-top: 12px;
+
+        font-size: 33px;
     }
 
     .crashText {
         margin-top: 8px;
 
-        font-size: 14px;
+        font-size: 13px;
     }
 
     #voiceStatus {
-        margin-top: 5px;
+        margin-top: 4px;
     }
 
     .countdownWrap {
-        width: 175px;
-        height: 175px;
+        width: 178px;
+        height: 178px;
 
         margin:
-            14px 0 16px;
+            13px 0 14px;
     }
 
     .countdownNumber {
-        font-size: 58px;
+        font-size: 60px;
     }
 
     .buttons {
@@ -972,31 +1086,31 @@ button {
     }
 
     .actionButton {
-        min-height: 49px;
+        min-height: 50px;
+
+        font-size: 14px;
     }
 
     .successCircle {
-        width: 92px;
-        height: 92px;
+        width: 94px;
+        height: 94px;
     }
 
     .checkmark {
-        font-size: 55px;
+        font-size: 56px;
     }
 
     .successTitle {
         margin-top: 22px;
-    }
 
-    .successRestart {
-        margin-top: 25px;
+        font-size: 32px;
     }
 }
 
 @media (max-width: 360px) {
 
     .crashTitle {
-        font-size: 31px;
+        font-size: 30px;
     }
 
     .countdownWrap {
@@ -1004,8 +1118,12 @@ button {
         height: 165px;
     }
 
+    .countdownNumber {
+        font-size: 56px;
+    }
+
     .actionButton {
-        font-size: 14px;
+        font-size: 13px;
     }
 }
 
@@ -1021,6 +1139,8 @@ button {
 
 <div id="home">
 
+    <div class="homeGlow"></div>
+
     <div class="logo">
         🚗
     </div>
@@ -1030,8 +1150,8 @@ button {
     </div>
 
     <div class="subtitle">
-        Motion sensors monitor the device for a possible sudden
-        impact and prolonged lack of movement.
+        Motion sensors monitor the device for a possible
+        sudden impact and prolonged lack of movement.
     </div>
 
     <button
@@ -1065,7 +1185,7 @@ button {
 
 
 <!-- =======================================================
-     STILLNESS
+     POSSIBLE IMPACT
 ======================================================= -->
 
 <div
@@ -1082,8 +1202,7 @@ button {
     </div>
 
     <div class="stillText">
-        No significant movement detected.
-        Checking the situation...
+        The device is checking whether movement has stopped.
     </div>
 
     <div
@@ -1095,7 +1214,7 @@ button {
 
     <button
         id="stillCancel"
-        class="restartButton"
+        class="stillCancel"
     >
         Cancel
     </button>
@@ -1111,6 +1230,8 @@ button {
     id="crashScreen"
     class="hidden"
 >
+
+    <div class="crashGlow"></div>
 
     <div class="alertPill">
 
@@ -1166,11 +1287,19 @@ button {
         </svg>
 
 
-        <div
-            id="countdownNumber"
-            class="countdownNumber"
-        >
-            60
+        <div class="countdownCenter">
+
+            <div
+                id="countdownNumber"
+                class="countdownNumber"
+            >
+                60
+            </div>
+
+            <div class="countdownLabel">
+                SECONDS
+            </div>
+
         </div>
 
     </div>
@@ -1217,7 +1346,7 @@ button {
 
 <div
     id="emergencySuccess"
-    class="hidden successScreen"
+    class="hidden"
 >
 
     <div class="successCircle">
@@ -1294,25 +1423,39 @@ const crashScreen =
     document.getElementById("crashScreen");
 
 const countdownNumber =
-    document.getElementById("countdownNumber");
+    document.getElementById(
+        "countdownNumber"
+    );
 
 const circleProgress =
-    document.getElementById("circleProgress");
+    document.getElementById(
+        "circleProgress"
+    );
 
 const cancelButton =
-    document.getElementById("cancelButton");
+    document.getElementById(
+        "cancelButton"
+    );
 
 const emergencyButton =
-    document.getElementById("emergencyButton");
+    document.getElementById(
+        "emergencyButton"
+    );
 
 const restartButton =
-    document.getElementById("restartButton");
+    document.getElementById(
+        "restartButton"
+    );
 
 const result =
-    document.getElementById("result");
+    document.getElementById(
+        "result"
+    );
 
 const voiceStatus =
-    document.getElementById("voiceStatus");
+    document.getElementById(
+        "voiceStatus"
+    );
 
 const emergencySuccess =
     document.getElementById(
@@ -1321,7 +1464,7 @@ const emergencySuccess =
 
 
 /* =========================================================
-   VARIABLES
+   STATE
 ========================================================= */
 
 let detectionActive = false;
@@ -1342,9 +1485,18 @@ let beepInterval = null;
 
 let wakeLock = null;
 
-let audioContext = null;
-
 let recognition = null;
+
+
+/*
+    Audio element is intentionally used for the alarm.
+    This gives the browser a normal media element instead
+    of relying only on SpeechSynthesis audio routing.
+*/
+
+let alarmAudio = null;
+
+let alarmAudioURL = null;
 
 
 /* =========================================================
@@ -1436,6 +1588,659 @@ document.addEventListener(
 
 
 /* =========================================================
+   CREATE MEDIA ALARM
+========================================================= */
+
+function createAlarmAudio() {
+
+    try {
+
+        /*
+            Generate a short WAV file in memory.
+
+            Frequencies are deliberately lower:
+            430 Hz + 650 Hz.
+
+            This makes the alarm deeper than the
+            previous high-pitched version.
+        */
+
+        const sampleRate = 44100;
+
+        const duration = 0.62;
+
+        const samples =
+            Math.floor(
+                sampleRate *
+                duration
+            );
+
+        const buffer =
+            new ArrayBuffer(
+                44 +
+                samples * 2
+            );
+
+        const view =
+            new DataView(buffer);
+
+
+        function writeString(
+            offset,
+            text
+        ) {
+
+            for (
+                let i = 0;
+                i < text.length;
+                i++
+            ) {
+
+                view.setUint8(
+                    offset + i,
+                    text.charCodeAt(i)
+                );
+
+            }
+
+        }
+
+
+        writeString(
+            0,
+            "RIFF"
+        );
+
+        view.setUint32(
+            4,
+            36 + samples * 2,
+            true
+        );
+
+        writeString(
+            8,
+            "WAVE"
+        );
+
+        writeString(
+            12,
+            "fmt "
+        );
+
+        view.setUint32(
+            16,
+            16,
+            true
+        );
+
+        view.setUint16(
+            20,
+            1,
+            true
+        );
+
+        view.setUint16(
+            22,
+            1,
+            true
+        );
+
+        view.setUint32(
+            24,
+            sampleRate,
+            true
+        );
+
+        view.setUint32(
+            28,
+            sampleRate * 2,
+            true
+        );
+
+        view.setUint16(
+            32,
+            2,
+            true
+        );
+
+        view.setUint16(
+            34,
+            16,
+            true
+        );
+
+        writeString(
+            36,
+            "data"
+        );
+
+        view.setUint32(
+            40,
+            samples * 2,
+            true
+        );
+
+
+        for (
+            let i = 0;
+            i < samples;
+            i++
+        ) {
+
+            const time =
+                i / sampleRate;
+
+            let frequency;
+
+
+            /*
+                Two deep tones.
+            */
+
+            if (
+                time < .29
+            ) {
+
+                frequency = 430;
+
+            } else if (
+                time < .34
+            ) {
+
+                frequency = 0;
+
+            } else {
+
+                frequency = 650;
+
+            }
+
+
+            let value = 0;
+
+
+            if (
+                frequency > 0
+            ) {
+
+                const envelope =
+                    Math.min(
+                        1,
+                        time / .018
+                    ) *
+                    Math.min(
+                        1,
+                        (
+                            duration -
+                            time
+                        ) / .035
+                    );
+
+
+                value =
+                    Math.sin(
+                        2 *
+                        Math.PI *
+                        frequency *
+                        time
+                    ) *
+                    envelope *
+                    0.68;
+
+            }
+
+
+            view.setInt16(
+                44 + i * 2,
+                Math.max(
+                    -1,
+                    Math.min(
+                        1,
+                        value
+                    )
+                ) *
+                32767,
+                true
+            );
+
+        }
+
+
+        const blob =
+            new Blob(
+                [buffer],
+                {
+                    type:
+                        "audio/wav"
+                }
+            );
+
+
+        alarmAudioURL =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        alarmAudio =
+            new Audio(
+                alarmAudioURL
+            );
+
+
+        alarmAudio.preload =
+            "auto";
+
+        alarmAudio.volume =
+            1.0;
+
+    } catch (error) {
+
+        console.log(
+            "Alarm media:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   PLAY MEDIA ALARM
+========================================================= */
+
+function playAlarmTone() {
+
+    try {
+
+        if (!alarmAudio) {
+
+            createAlarmAudio();
+
+        }
+
+        if (!alarmAudio) {
+            return;
+        }
+
+
+        alarmAudio.pause();
+
+        alarmAudio.currentTime = 0;
+
+        alarmAudio.volume = 1.0;
+
+
+        const promise =
+            alarmAudio.play();
+
+
+        if (
+            promise &&
+            typeof promise.catch ===
+                "function"
+        ) {
+
+            promise.catch(
+                error => {
+
+                    console.log(
+                        "Alarm playback:",
+                        error
+                    );
+
+                }
+            );
+
+        }
+
+    } catch (error) {
+
+        console.log(
+            "Alarm:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CONFIRMATION SOUND
+========================================================= */
+
+function playConfirmationSound() {
+
+    /*
+        Small confirmation sound using the same
+        media-audio approach.
+    */
+
+    try {
+
+        const sampleRate = 44100;
+
+        const duration = .55;
+
+        const samples =
+            Math.floor(
+                sampleRate *
+                duration
+            );
+
+        const buffer =
+            new ArrayBuffer(
+                44 +
+                samples * 2
+            );
+
+        const view =
+            new DataView(buffer);
+
+
+        function writeString(
+            offset,
+            text
+        ) {
+
+            for (
+                let i = 0;
+                i < text.length;
+                i++
+            ) {
+
+                view.setUint8(
+                    offset + i,
+                    text.charCodeAt(i)
+                );
+
+            }
+
+        }
+
+
+        writeString(0, "RIFF");
+
+        view.setUint32(
+            4,
+            36 + samples * 2,
+            true
+        );
+
+        writeString(
+            8,
+            "WAVE"
+        );
+
+        writeString(
+            12,
+            "fmt "
+        );
+
+        view.setUint32(
+            16,
+            16,
+            true
+        );
+
+        view.setUint16(
+            20,
+            1,
+            true
+        );
+
+        view.setUint16(
+            22,
+            1,
+            true
+        );
+
+        view.setUint32(
+            24,
+            sampleRate,
+            true
+        );
+
+        view.setUint32(
+            28,
+            sampleRate * 2,
+            true
+        );
+
+        view.setUint16(
+            32,
+            2,
+            true
+        );
+
+        view.setUint16(
+            34,
+            16,
+            true
+        );
+
+        writeString(
+            36,
+            "data"
+        );
+
+        view.setUint32(
+            40,
+            samples * 2,
+            true
+        );
+
+
+        const notes = [
+            523.25,
+            659.25,
+            783.99
+        ];
+
+
+        for (
+            let i = 0;
+            i < samples;
+            i++
+        ) {
+
+            const time =
+                i / sampleRate;
+
+            const noteIndex =
+                Math.min(
+                    2,
+                    Math.floor(
+                        time / .17
+                    )
+                );
+
+            const frequency =
+                notes[noteIndex];
+
+            const envelope =
+                Math.min(
+                    1,
+                    time / .015
+                ) *
+                Math.min(
+                    1,
+                    (
+                        duration -
+                        time
+                    ) / .04
+                );
+
+
+            const value =
+                Math.sin(
+                    2 *
+                    Math.PI *
+                    frequency *
+                    time
+                ) *
+                envelope *
+                0.32;
+
+
+            view.setInt16(
+                44 + i * 2,
+                value * 32767,
+                true
+            );
+
+        }
+
+
+        const blob =
+            new Blob(
+                [buffer],
+                {
+                    type:
+                        "audio/wav"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const audio =
+            new Audio(url);
+
+
+        audio.volume = 1.0;
+
+
+        audio.play()
+            .catch(
+                error => {
+                    console.log(
+                        "Confirmation:",
+                        error
+                    );
+                }
+            );
+
+
+        setTimeout(
+            () => {
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+            },
+            1500
+        );
+
+    } catch (error) {
+
+        console.log(
+            "Confirmation sound:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   START BEEPING
+========================================================= */
+
+function startBeeping() {
+
+    stopBeeping();
+
+
+    playAlarmTone();
+
+
+    vibrate([
+        350,
+        100,
+        350
+    ]);
+
+
+    beepInterval =
+        setInterval(
+            () => {
+
+                if (
+                    !crashActive
+                ) {
+                    return;
+                }
+
+
+                playAlarmTone();
+
+
+                vibrate([
+                    350,
+                    100,
+                    350
+                ]);
+
+            },
+            BEEP_INTERVAL
+        );
+
+}
+
+
+/* =========================================================
+   STOP BEEPING
+========================================================= */
+
+function stopBeeping() {
+
+    if (
+        beepInterval !== null
+    ) {
+
+        clearInterval(
+            beepInterval
+        );
+
+        beepInterval =
+            null;
+
+    }
+
+
+    if (alarmAudio) {
+
+        try {
+
+            alarmAudio.pause();
+
+            alarmAudio.currentTime =
+                0;
+
+        } catch (e) {}
+
+    }
+
+
+    try {
+
+        navigator.vibrate(0);
+
+    } catch (e) {}
+
+}
+
+
+/* =========================================================
    MICROPHONE
 ========================================================= */
 
@@ -1453,6 +2258,7 @@ async function requestMicrophone() {
 
         }
 
+
         const stream =
             await navigator.mediaDevices
                 .getUserMedia({
@@ -1469,7 +2275,7 @@ async function requestMicrophone() {
     } catch (error) {
 
         console.log(
-            "Microphone permission:",
+            "Microphone:",
             error
         );
 
@@ -1514,11 +2320,15 @@ async function requestMotionPermission() {
 
         }
 
+
         return true;
 
     } catch (error) {
 
-        console.log(error);
+        console.log(
+            "Motion permission:",
+            error
+        );
 
         return false;
 
@@ -1528,7 +2338,7 @@ async function requestMotionPermission() {
 
 
 /* =========================================================
-   SPEECH
+   SPEECH SYNTHESIS
 ========================================================= */
 
 function speakAndWait(text) {
@@ -1537,8 +2347,10 @@ function speakAndWait(text) {
         resolve => {
 
             if (
-                !("speechSynthesis"
-                    in window)
+                !(
+                    "speechSynthesis"
+                    in window
+                )
             ) {
 
                 resolve();
@@ -1548,8 +2360,12 @@ function speakAndWait(text) {
             }
 
 
-            window.speechSynthesis
-                .cancel();
+            try {
+
+                window.speechSynthesis
+                    .cancel();
+
+            } catch (e) {}
 
 
             const utterance =
@@ -1565,17 +2381,26 @@ function speakAndWait(text) {
                 .92;
 
             utterance.pitch =
-                1;
+                .95;
 
             utterance.volume =
                 1;
 
 
             utterance.onend =
-                () => resolve();
+                () => {
+
+                    resolve();
+
+                };
+
 
             utterance.onerror =
-                () => resolve();
+                () => {
+
+                    resolve();
+
+                };
 
 
             window.speechSynthesis
@@ -1601,7 +2426,12 @@ function startVoiceRecognition() {
 
 
     if (!Recognition) {
+
+        voiceStatus.textContent =
+            "Voice control unavailable";
+
         return;
+
     }
 
 
@@ -1624,6 +2454,11 @@ function startVoiceRecognition() {
         recognition.onresult =
             function(event) {
 
+                if (!crashActive) {
+                    return;
+                }
+
+
                 const index =
                     event.results.length -
                     1;
@@ -1634,6 +2469,12 @@ function startVoiceRecognition() {
                         .transcript
                         .toLowerCase()
                         .trim();
+
+
+                console.log(
+                    "Voice:",
+                    text
+                );
 
 
                 if (
@@ -1680,7 +2521,8 @@ function startVoiceRecognition() {
             function() {
 
                 if (
-                    crashActive
+                    crashActive &&
+                    recognition
                 ) {
 
                     try {
@@ -1696,11 +2538,12 @@ function startVoiceRecognition() {
 
         recognition.start();
 
-    } catch (e) {
+
+    } catch (error) {
 
         console.log(
             "Recognition:",
-            e
+            error
         );
 
     }
@@ -1730,357 +2573,51 @@ function stopVoiceRecognition() {
 
 
 /* =========================================================
-   LOUD ALARM
+   MOTION MAGNITUDE
 ========================================================= */
 
-function playAlarmTone() {
-
-    try {
-
-        if (!audioContext) {
-
-            audioContext =
-                new (
-                    window.AudioContext ||
-                    window.webkitAudioContext
-                )();
-
-        }
-
-
-        if (
-            audioContext.state ===
-            "suspended"
-        ) {
-
-            audioContext.resume();
-
-        }
-
-
-        const now =
-            audioContext.currentTime;
-
-
-        const tones = [
-    {
-        frequency: 520,
-        start: 0,
-        duration: .30
-    },
-    {
-        frequency: 780,
-        start: .34,
-        duration: .30
-    }
-];
-
-
-        tones.forEach(
-            tone => {
-
-                const osc =
-                    audioContext
-                        .createOscillator();
-
-                const gain =
-                    audioContext
-                        .createGain();
-
-
-                osc.type =
-                    "square";
-
-
-                osc.frequency
-                    .setValueAtTime(
-                        tone.frequency,
-                        now + tone.start
-                    );
-
-
-                gain.gain
-                    .setValueAtTime(
-                        .0001,
-                        now + tone.start
-                    );
-
-
-                gain.gain
-                    .exponentialRampToValueAtTime(
-                        .72,
-                        now +
-                        tone.start +
-                        .015
-                    );
-
-
-                gain.gain
-                    .exponentialRampToValueAtTime(
-                        .0001,
-                        now +
-                        tone.start +
-                        tone.duration
-                    );
-
-
-                osc.connect(gain);
-
-                gain.connect(
-                    audioContext
-                        .destination
-                );
-
-
-                osc.start(
-                    now + tone.start
-                );
-
-
-                osc.stop(
-                    now +
-                    tone.start +
-                    tone.duration +
-                    .03
-                );
-
-            }
-        );
-
-    } catch (e) {
-
-        console.log(
-            "Alarm sound:",
-            e
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   EMERGENCY CONFIRMATION SOUND
-========================================================= */
-
-function playConfirmationSound() {
-
-    try {
-
-        if (!audioContext) {
-
-            audioContext =
-                new (
-                    window.AudioContext ||
-                    window.webkitAudioContext
-                )();
-
-        }
-
-
-        if (
-            audioContext.state ===
-            "suspended"
-        ) {
-
-            audioContext.resume();
-
-        }
-
-
-        const now =
-            audioContext.currentTime;
-
-
-        const frequencies = [
-            523.25,
-            659.25,
-            783.99
-        ];
-
-
-        frequencies.forEach(
-            (frequency, index) => {
-
-                const start =
-                    now +
-                    index * .13;
-
-
-                const osc =
-                    audioContext
-                        .createOscillator();
-
-                const gain =
-                    audioContext
-                        .createGain();
-
-
-                osc.type =
-                    "sine";
-
-
-                osc.frequency.setValueAtTime(
-                    frequency,
-                    start
-                );
-
-
-                gain.gain.setValueAtTime(
-                    .0001,
-                    start
-                );
-
-
-                gain.gain
-                    .exponentialRampToValueAtTime(
-                        .32,
-                        start + .025
-                    );
-
-
-                gain.gain
-                    .exponentialRampToValueAtTime(
-                        .0001,
-                        start + .22
-                    );
-
-
-                osc.connect(gain);
-
-                gain.connect(
-                    audioContext.destination
-                );
-
-
-                osc.start(start);
-
-                osc.stop(
-                    start + .25
-                );
-
-            }
-        );
-
-
-    } catch (e) {
-
-        console.log(
-            "Confirmation sound:",
-            e
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   START ALARM
-========================================================= */
-
-function startBeeping() {
-
-    stopBeeping();
-
-
-    playAlarmTone();
-
-
-    vibrate([
-        300,
-        100,
-        300
-    ]);
-
-
-    beepInterval =
-        setInterval(
-            () => {
-
-                playAlarmTone();
-
-
-                vibrate([
-                    300,
-                    100,
-                    300
-                ]);
-
-            },
-            BEEP_INTERVAL
-        );
-
-}
-
-
-/* =========================================================
-   STOP ALARM
-========================================================= */
-
-function stopBeeping() {
-
-    if (
-        beepInterval !== null
-    ) {
-
-        clearInterval(
-            beepInterval
-        );
-
-        beepInterval =
-            null;
-
-    }
-
-
-    try {
-
-        navigator.vibrate(0);
-
-    } catch (e) {}
-
-}
-
-
-/* =========================================================
-   MOTION
-========================================================= */
-
-function getMotionMagnitude(event) {
-
-    let a =
+function getMotionMagnitude(
+    event
+) {
+
+    let acceleration =
         event.acceleration;
 
 
     if (
-        !a ||
+        !acceleration ||
         (
-            a.x === null &&
-            a.y === null &&
-            a.z === null
+            acceleration.x === null &&
+            acceleration.y === null &&
+            acceleration.z === null
         )
     ) {
 
-        a =
+        acceleration =
             event.accelerationIncludingGravity;
 
     }
 
 
-    if (!a) {
+    if (!acceleration) {
         return 0;
     }
 
 
     const x =
-        Number(a.x) || 0;
+        Number(
+            acceleration.x
+        ) || 0;
 
     const y =
-        Number(a.y) || 0;
+        Number(
+            acceleration.y
+        ) || 0;
 
     const z =
-        Number(a.z) || 0;
+        Number(
+            acceleration.z
+        ) || 0;
 
 
     return Math.sqrt(
@@ -2096,7 +2633,9 @@ function getMotionMagnitude(event) {
    MOTION HANDLER
 ========================================================= */
 
-function handleMotion(event) {
+function handleMotion(
+    event
+) {
 
     if (
         !detectionActive ||
@@ -2182,6 +2721,10 @@ function startImpactSequence() {
         true;
 
 
+    detectionActive =
+        false;
+
+
     stillScreen
         .classList
         .remove("hidden");
@@ -2192,9 +2735,9 @@ function startImpactSequence() {
 
 
     vibrate([
-        350,
+        300,
         120,
-        350
+        300
     ]);
 
 
@@ -2230,6 +2773,57 @@ function startImpactSequence() {
                     );
 
 
+                /*
+                    If movement resumes,
+                    cancel the possible impact.
+                */
+
+                if (
+                    Date.now() -
+                    lastMovementTime <
+                    STILL_REQUIRED
+                ) {
+
+                    if (
+                        elapsed >=
+                        STILL_REQUIRED
+                    ) {
+
+                        clearInterval(
+                            stillTimer
+                        );
+
+                        stillTimer =
+                            null;
+
+                        impactChecking =
+                            false;
+
+                        stillScreen
+                            .classList
+                            .add("hidden");
+
+                        detectionActive =
+                            true;
+
+                        lastMagnitude =
+                            null;
+
+                        lastMovementTime =
+                            Date.now();
+
+                        return;
+
+                    }
+
+                }
+
+
+                /*
+                    Ten seconds without
+                    significant movement.
+                */
+
                 if (
                     Date.now() -
                     lastMovementTime >=
@@ -2244,43 +2838,19 @@ function startImpactSequence() {
                         null;
 
 
+                    impactChecking =
+                        false;
+
+
                     stillScreen
                         .classList
                         .add("hidden");
-
-
-                    impactChecking =
-                        false;
 
 
                     showCrashScreen();
 
 
                     return;
-
-                }
-
-
-                if (
-                    elapsed >=
-                    STILL_REQUIRED
-                ) {
-
-                    clearInterval(
-                        stillTimer
-                    );
-
-                    stillTimer =
-                        null;
-
-
-                    impactChecking =
-                        false;
-
-
-                    stillScreen
-                        .classList
-                        .add("hidden");
 
                 }
 
@@ -2347,15 +2917,27 @@ async function showCrashScreen() {
         CRASH_COUNTDOWN;
 
 
-    circleProgress.style.strokeDashoffset =
+    circleProgress.style
+        .strokeDashoffset =
         "0";
 
 
     await keepScreenAwake();
 
 
+    /*
+        Voice recognition listens while
+        the warning is spoken.
+    */
+
     startVoiceRecognition();
 
+
+    /*
+        IMPORTANT:
+        Countdown does NOT begin until
+        the entire spoken sentence ends.
+    */
 
     await speakAndWait(
         "Car crash detected. Say emergency to call 911, or say cancel to cancel the alarm."
@@ -2398,7 +2980,8 @@ function startCountdown() {
         remaining;
 
 
-    circleProgress.style.strokeDashoffset =
+    circleProgress.style
+        .strokeDashoffset =
         "0";
 
 
@@ -2406,11 +2989,19 @@ function startCountdown() {
         setInterval(
             () => {
 
+                if (!crashActive) {
+                    return;
+                }
+
+
                 remaining--;
 
 
                 countdownNumber.textContent =
-                    remaining;
+                    Math.max(
+                        0,
+                        remaining
+                    );
 
 
                 const progress =
@@ -2418,9 +3009,30 @@ function startCountdown() {
                     CRASH_COUNTDOWN;
 
 
-                circleProgress.style.strokeDashoffset =
+                circleProgress.style
+                    .strokeDashoffset =
                     CIRCUMFERENCE *
-                    (1 - progress);
+                    (
+                        1 -
+                        progress
+                    );
+
+
+                /*
+                    Stronger vibration
+                    during the final 10 seconds.
+                */
+
+                if (
+                    remaining <= 10 &&
+                    remaining > 0
+                ) {
+
+                    vibrate(
+                        [180, 80, 180]
+                    );
+
+                }
 
 
                 if (
@@ -2464,15 +3076,15 @@ function finishCountdown() {
 
 
     voiceStatus.textContent =
-        "Emergency was reported";
+        "Countdown finished";
 
 
     result.textContent =
-        "Emergency was reported.";
+        "Alarm countdown finished.";
 
 
     speakAndWait(
-        "Emergency was reported."
+        "Alarm countdown finished."
     );
 
 
@@ -2484,12 +3096,16 @@ function finishCountdown() {
 
 
 /* =========================================================
-   CANCEL
+   CANCEL CRASH
 ========================================================= */
 
 function cancelCrash() {
 
     crashActive =
+        false;
+
+
+    detectionActive =
         false;
 
 
@@ -2507,6 +3123,20 @@ function cancelCrash() {
     }
 
 
+    if (
+        stillTimer !== null
+    ) {
+
+        clearInterval(
+            stillTimer
+        );
+
+        stillTimer =
+            null;
+
+    }
+
+
     stopBeeping();
 
     stopVoiceRecognition();
@@ -2514,9 +3144,14 @@ function cancelCrash() {
 
     try {
 
-        window.speechSynthesis.cancel();
+        window.speechSynthesis
+            .cancel();
 
     } catch (e) {}
+
+
+    impactChecking =
+        false;
 
 
     crashScreen
@@ -2525,6 +3160,11 @@ function cancelCrash() {
 
 
     emergencySuccess
+        .classList
+        .add("hidden");
+
+
+    stillScreen
         .classList
         .add("hidden");
 
@@ -2559,13 +3199,17 @@ function cancelCrash() {
         "1";
 
 
+    startButton.textContent =
+        "Start Detection";
+
+
     vibrate(100);
 
 }
 
 
 /* =========================================================
-   EMERGENCY
+   EMERGENCY CONFIRMATION
 ========================================================= */
 
 function confirmEmergency() {
@@ -2574,6 +3218,10 @@ function confirmEmergency() {
         return;
     }
 
+
+    /*
+        Stop countdown.
+    */
 
     if (
         countdownTimer !== null
@@ -2589,14 +3237,28 @@ function confirmEmergency() {
     }
 
 
+    /*
+        Stop alarm.
+    */
+
     stopBeeping();
+
+
+    /*
+        Stop voice recognition.
+    */
 
     stopVoiceRecognition();
 
 
+    /*
+        Stop spoken warning.
+    */
+
     try {
 
-        window.speechSynthesis.cancel();
+        window.speechSynthesis
+            .cancel();
 
     } catch (e) {}
 
@@ -2609,6 +3271,10 @@ function confirmEmergency() {
         false;
 
 
+    /*
+        Show green confirmation.
+    */
+
     crashScreen
         .classList
         .add("hidden");
@@ -2620,7 +3286,7 @@ function confirmEmergency() {
 
 
     /*
-       Strong confirmation vibration.
+        Confirmation vibration.
     */
 
     vibrate([
@@ -2633,15 +3299,15 @@ function confirmEmergency() {
 
 
     /*
-       Confirmation sound.
+        Confirmation sound.
     */
 
     playConfirmationSound();
 
 
     /*
-       After the confirmation sound,
-       automatically return home.
+        Automatically return home
+        after confirmation sound.
     */
 
     setTimeout(
@@ -2657,13 +3323,13 @@ function confirmEmergency() {
                 .remove("hidden");
 
 
+            statusText.textContent =
+                "Emergency was reported";
+
+
             statusDot
                 .classList
                 .add("active");
-
-
-            statusText.textContent =
-                "Emergency was reported";
 
 
             startButton.textContent =
@@ -2686,6 +3352,10 @@ function confirmEmergency() {
                 Date.now();
 
 
+            impactChecking =
+                false;
+
+
             detectionActive =
                 true;
 
@@ -2693,7 +3363,7 @@ function confirmEmergency() {
             keepScreenAwake();
 
         },
-        900
+        850
     );
 
 }
@@ -2740,18 +3410,19 @@ async function restartDetection() {
 
     try {
 
-        window.speechSynthesis.cancel();
+        window.speechSynthesis
+            .cancel();
 
     } catch (e) {}
 
 
-    crashActive =
+    detectionActive =
         false;
 
     impactChecking =
         false;
 
-    detectionActive =
+    crashActive =
         false;
 
     lastMagnitude =
@@ -2829,6 +3500,10 @@ async function startDetection() {
     }
 
 
+    /*
+        Request motion permission.
+    */
+
     const motionAllowed =
         await requestMotionPermission();
 
@@ -2838,7 +3513,23 @@ async function startDetection() {
     }
 
 
+    /*
+        Request microphone.
+    */
+
     await requestMicrophone();
+
+
+    /*
+        Create alarm media while
+        we have a user interaction.
+    */
+
+    if (!alarmAudio) {
+
+        createAlarmAudio();
+
+    }
 
 
     await keepScreenAwake();
@@ -2847,10 +3538,8 @@ async function startDetection() {
     detectionActive =
         true;
 
-
     impactChecking =
         false;
-
 
     crashActive =
         false;
@@ -2885,6 +3574,10 @@ async function startDetection() {
         ".55";
 
 
+    /*
+        Small startup voice.
+    */
+
     speakAndWait(
         "Crash detection is active."
     );
@@ -2893,7 +3586,7 @@ async function startDetection() {
 
 
 /* =========================================================
-   EVENTS
+   BUTTON EVENTS
 ========================================================= */
 
 startButton.addEventListener(
@@ -2910,7 +3603,20 @@ testButton.addEventListener(
     "click",
     async () => {
 
+        /*
+            User interaction initializes
+            the media alarm.
+        */
+
+        if (!alarmAudio) {
+
+            createAlarmAudio();
+
+        }
+
+
         await keepScreenAwake();
+
 
         showCrashScreen();
 
@@ -2972,9 +3678,30 @@ stillCancel.addEventListener(
             false;
 
 
+        detectionActive =
+            true;
+
+
+        lastMagnitude =
+            null;
+
+
+        lastMovementTime =
+            Date.now();
+
+
         stillScreen
             .classList
             .add("hidden");
+
+
+        statusText.textContent =
+            "Detection active";
+
+
+        statusDot
+            .classList
+            .add("active");
 
 
         vibrate(100);
@@ -2984,7 +3711,7 @@ stillCancel.addEventListener(
 
 
 /* =========================================================
-   MOTION SENSOR
+   DEVICE MOTION
 ========================================================= */
 
 window.addEventListener(
