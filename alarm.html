@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SirTros Call</title>
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>Car Crash Detection</title>
 
 <style>
 * {
@@ -16,558 +19,282 @@
 html,
 body {
     margin: 0;
-    padding: 0;
     width: 100%;
     height: 100%;
-    font-family: Arial, Helvetica, sans-serif;
     background: #000;
-    color: white;
-}
-
-body {
+    color: #fff;
+    font-family:
+        "Google Sans",
+        "Segoe UI",
+        Arial,
+        sans-serif;
     overflow: hidden;
 }
 
-.app {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-/* HEADER */
-
-.header {
-    height: 70px;
+body {
     display: flex;
     align-items: center;
-    padding: 0 22px;
-    border-bottom: 1px solid #222;
-    background: #080808;
+    justify-content: center;
+}
+
+#app {
+    width: 100%;
+    max-width: 520px;
+    height: 100%;
+    padding: 30px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
 }
 
 .logo {
-    font-size: 24px;
-    font-weight: 800;
-}
+    width: 90px;
+    height: 90px;
 
-.logo span {
-    color: #25d366;
-}
-
-.status {
-    margin-left: auto;
-    font-size: 13px;
-    color: #777;
-}
-
-/* MAIN */
-
-.main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 35px 20px;
-    overflow-y: auto;
-}
-
-.avatar {
-    width: 100px;
-    height: 100px;
     border-radius: 50%;
-    background: #222;
+
+    background: #202124;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     font-size: 45px;
-    margin-bottom: 20px;
+
+    margin-bottom: 30px;
 }
 
-.name {
-    font-size: 27px;
-    font-weight: bold;
+h1 {
+    margin: 0;
+
+    font-size: 34px;
+    font-weight: 700;
 }
 
-.call-status {
-    margin-top: 8px;
-    color: #888;
-    min-height: 22px;
-}
+.description {
+    margin-top: 15px;
 
-.timer {
-    margin-top: 8px;
-    font-size: 16px;
     color: #aaa;
-}
 
-.target-box {
-    width: min(450px, 100%);
-    margin-top: 30px;
-}
+    font-size: 18px;
+    line-height: 1.5;
 
-.target-box label {
-    display: block;
-    color: #999;
-    font-size: 13px;
-    margin-bottom: 8px;
-}
-
-.target-box input {
-    width: 100%;
-    padding: 15px;
-    border: 1px solid #333;
-    border-radius: 12px;
-    background: #111;
-    color: white;
-    outline: none;
-    font-size: 16px;
-}
-
-.target-box input:focus {
-    border-color: #25d366;
-}
-
-/* BUTTONS */
-
-.buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 25px;
-    flex-wrap: wrap;
-    justify-content: center;
+    max-width: 400px;
 }
 
 button {
-    border: 0;
+    border: none;
+
+    border-radius: 30px;
+
+    padding: 16px 30px;
+
+    font-size: 18px;
+    font-weight: 700;
+
     cursor: pointer;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-}
 
-.call-btn {
-    background: #25d366;
+    margin-top: 25px;
+
+    background: #fff;
     color: #000;
-    padding: 15px 30px;
-    border-radius: 30px;
 }
 
-.end-btn {
-    background: #ff3b30;
-    padding: 15px 30px;
-    border-radius: 30px;
+button:active {
+    transform: scale(.97);
 }
 
-.control-btn {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    background: #222;
+button:disabled {
+    opacity: .5;
 }
 
-.control-btn.active {
-    background: white;
-    color: black;
-}
-
-/* HISTORY */
-
-.history {
-    width: min(600px, 100%);
-    margin-top: 40px;
-}
-
-.history-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 12px;
-}
-
-.history-item {
-    background: #111;
-    border: 1px solid #222;
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 8px;
-}
-
-.history-main {
-    font-weight: bold;
-}
-
-.history-info {
-    color: #777;
-    font-size: 13px;
-    margin-top: 5px;
-}
-
-/* PERMISSION */
-
-.permission-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.96);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 1000;
-}
-
-.permission-card {
-    width: min(430px, 100%);
-    background: #111;
-    border: 1px solid #292929;
-    border-radius: 22px;
-    padding: 30px;
-    text-align: center;
-}
-
-.permission-icon {
-    font-size: 55px;
-    margin-bottom: 15px;
-}
-
-.permission-card h1 {
-    margin: 0;
-    font-size: 25px;
-}
-
-.permission-card p {
-    color: #999;
-    line-height: 1.5;
-}
-
-.permission-btn {
-    width: 100%;
-    padding: 15px;
-    border-radius: 12px;
-    background: #25d366;
-    color: #000;
-    margin-top: 10px;
-}
-
-.permission-error {
-    margin-top: 15px;
-    color: #ff6259;
-    font-size: 13px;
-    line-height: 1.5;
-    word-break: break-word;
-}
-
-/* INCOMING */
-
-.incoming {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.96);
-    z-index: 900;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.incoming-card {
-    text-align: center;
-    width: min(400px, 100%);
-}
-
-.incoming-avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: #222;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 55px;
-}
-
-.incoming-title {
-    font-size: 28px;
-    font-weight: bold;
+#status {
     margin-top: 20px;
-}
 
-.incoming-subtitle {
     color: #888;
-    margin-top: 8px;
+
+    font-size: 16px;
 }
 
-.incoming-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-top: 40px;
-}
-
-.accept {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: #25d366;
-    color: #000;
-    font-size: 28px;
-}
-
-.reject {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: #ff3b30;
-    font-size: 28px;
-}
-
-/* CALL CONTROLS */
-
-.call-controls {
-    display: none;
-    margin-top: 35px;
-    gap: 15px;
-    justify-content: center;
-}
-
-.show {
-    display: flex;
-}
-
-/* NOTIFICATION */
-
-.notification {
+#debug {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #181818;
-    border: 1px solid #333;
-    padding: 13px 18px;
-    border-radius: 12px;
-    display: none;
-    z-index: 2000;
-    max-width: 90%;
+
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+
     text-align: center;
+
+    color: #444;
+
+    font-size: 11px;
 }
 
-@media(max-width:600px) {
 
-    .header {
-        height: 60px;
-        padding: 0 15px;
-    }
+/* ==============================
+   CRASH SCREEN
+============================== */
 
-    .logo {
-        font-size: 20px;
-    }
+#crashScreen {
+    display: none;
 
-    .main {
-        padding-top: 25px;
-    }
+    position: fixed;
 
-    .avatar {
-        width: 85px;
-        height: 85px;
-        font-size: 38px;
-    }
+    inset: 0;
 
-    .name {
-        font-size: 23px;
-    }
+    z-index: 100;
+
+    background: #000;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 30px;
+}
+
+.crashContent {
+    width: 100%;
+    max-width: 450px;
+}
+
+.warning {
+    font-size: 70px;
+
+    margin-bottom: 25px;
+}
+
+.crashTitle {
+    font-size: 38px;
+
+    font-weight: 700;
+
+    line-height: 1.15;
+
+    margin-bottom: 20px;
+}
+
+.crashText {
+    font-size: 19px;
+
+    color: #ddd;
+
+    line-height: 1.5;
+}
+
+#countdown {
+    font-size: 64px;
+
+    font-weight: 700;
+
+    margin: 25px 0;
+}
+
+#cancelButton {
+    display: inline-block;
+
+    background: #303134;
+    color: #fff;
+
+    margin-right: 8px;
+}
+
+#emergencyButton {
+    display: inline-block;
+
+    background: #fff;
+    color: #000;
+
+    margin-left: 8px;
+}
+
+#beepStatus {
+    margin-top: 15px;
+
+    color: #999;
+
+    font-size: 14px;
 }
 </style>
 </head>
 
+
 <body>
 
-<div class="app">
 
-    <div class="header">
-        <div class="logo">
-            SirTros <span>Call</span>
-        </div>
+<!-- =================================
+     MAIN SCREEN
+================================= -->
 
-        <div class="status" id="connectionStatus">
-            Nepřipojeno
-        </div>
+<div id="app">
+
+    <div class="logo">
+        🚗
     </div>
 
-    <div class="main">
+    <h1>
+        Car Crash Detection
+    </h1>
 
-        <div class="avatar">
-            📞
-        </div>
+    <div class="description">
+        Motion sensors can monitor the movement
+        of this device and detect a possible
+        sudden impact.
+    </div>
 
-        <div class="name" id="currentName">
-            SirTros Call
-        </div>
+    <button id="startButton">
+        Start detection
+    </button>
 
-        <div class="call-status" id="callStatus">
-            Připraven
-        </div>
-
-        <div class="timer" id="timer">
-            00:00
-        </div>
-
-        <div class="target-box">
-
-            <label for="target">
-                Komu volat
-            </label>
-
-            <input
-                id="target"
-                type="text"
-                placeholder="Uživatelské jméno"
-                autocomplete="off"
-            >
-
-        </div>
-
-        <div class="buttons">
-
-            <button
-                class="call-btn"
-                id="callButton"
-                onclick="startCall()"
-            >
-                📞 Zavolat
-            </button>
-
-            <button
-                class="end-btn"
-                id="endButton"
-                onclick="endCall()"
-                style="display:none"
-            >
-                📕 Ukončit
-            </button>
-
-        </div>
-
-        <div
-            class="call-controls"
-            id="callControls"
-        >
-
-            <button
-                class="control-btn"
-                id="muteButton"
-                onclick="toggleMute()"
-            >
-                🎤
-            </button>
-
-            <button
-                class="control-btn"
-                id="speakerButton"
-                onclick="toggleSpeaker()"
-            >
-                🔊
-            </button>
-
-        </div>
-
-        <div class="history">
-
-            <div class="history-title">
-                Historie hovorů
-            </div>
-
-            <div id="historyList">
-                <div style="color:#666">
-                    Žádné hovory
-                </div>
-            </div>
-
-        </div>
-
+    <div id="status">
+        Detection is off
     </div>
 
 </div>
 
 
-<!-- MICROPHONE PERMISSION -->
+<!-- =================================
+     CRASH SCREEN
+================================= -->
 
-<div
-    class="permission-overlay"
-    id="permissionOverlay"
->
+<div id="crashScreen">
 
-    <div class="permission-card">
+    <div class="crashContent">
 
-        <div class="permission-icon">
-            🎤
+        <div class="warning">
+            ⚠️
         </div>
 
-        <h1>
-            Povolení mikrofonu
-        </h1>
+        <div class="crashTitle">
+            Car crash detected
+        </div>
 
-        <p>
-            SirTros Call potřebuje přístup k mikrofonu,
-            aby mohl uskutečňovat hlasové hovory.
-        </p>
+        <div class="crashText">
+            We've detected a possible crash.
+            Stay calm.
+            <br>
+            Say <b>emergency</b> or <b>cancel</b>.
+        </div>
 
-        <button
-            class="permission-btn"
-            onclick="requestMicrophone()"
-        >
-            Povolit mikrofon
+        <div id="countdown">
+            10
+        </div>
+
+        <button id="cancelButton">
+            Cancel
         </button>
 
-        <div
-            class="permission-error"
-            id="permissionError"
-        ></div>
+        <button id="emergencyButton">
+            Emergency
+        </button>
 
-    </div>
-
-</div>
-
-
-<!-- INCOMING CALL -->
-
-<div
-    class="incoming"
-    id="incomingCall"
->
-
-    <div class="incoming-card">
-
-        <div class="incoming-avatar">
-            📞
-        </div>
-
-        <div
-            class="incoming-title"
-            id="incomingName"
-        >
-            Příchozí hovor
-        </div>
-
-        <div class="incoming-subtitle">
-            ti někdo volá
-        </div>
-
-        <div class="incoming-buttons">
-
-            <button
-                class="accept"
-                onclick="acceptCall()"
-            >
-                📞
-            </button>
-
-            <button
-                class="reject"
-                onclick="rejectCall()"
-            >
-                ✕
-            </button>
-
+        <div id="beepStatus">
+            Waiting for response...
         </div>
 
     </div>
@@ -575,1329 +302,600 @@ button {
 </div>
 
 
-<div
-    class="notification"
-    id="notification"
-></div>
+<div id="debug">
+    Waiting for sensors...
+</div>
 
-
-<audio
-    id="remoteAudio"
-    autoplay
-></audio>
 
 
 <script>
 
-/* =========================================================
-   SUPABASE
-   ========================================================= */
 
-/*
-   SEM VLOŽ SVÉ ÚDAJE ZE SUPABASE.
-*/
-
-const SUPABASE_URL = "https://oxfviwqkxtpxjjnogdhh.supabase.co";
-const SUPABASE_KEY = "sb_publishable_hkaAJrtiV_Isz6BzxAPHtA_hZfFDEYX";
-
-let supabaseClient = null;
-
-function initSupabase() {
-
-    if (
-        !SUPABASE_URL ||
-        !SUPABASE_URL.startsWith("http://") &&
-        !SUPABASE_URL.startsWith("https://")
-    ) {
-
-        console.warn(
-            "Supabase není nastavený. Vyplň SUPABASE_URL."
-        );
-
-        document.getElementById("connectionStatus").textContent =
-            "Supabase není nastavený";
-
-        return false;
-    }
-
-    try {
-
-        supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY
-            );
-
-        document.getElementById("connectionStatus").textContent =
-            "Supabase připraven";
-
-        return true;
-
-    } catch(error) {
-
-        console.error(
-            "Supabase chyba:",
-            error
-        );
-
-        document.getElementById("connectionStatus").textContent =
-            "Supabase chyba";
-
-        return false;
-    }
-}
-
-
-/* =========================================================
+/* =================================
    VARIABLES
-   ========================================================= */
+================================= */
 
-/*
-   DŮLEŽITÉ:
-   localStream musí být vytvořený PŘED funkcemi,
-   které ho používají.
-*/
+let detecting = false;
 
-let localStream = null;
-let remoteStream = null;
-let peerConnection = null;
+let crashDetected = false;
 
-let currentCallId = null;
-let currentCallStarted = null;
+let movementDetected = false;
 
-let incomingCallData = null;
+let lastAcceleration = 0;
 
-let timerInterval = null;
+let impactThreshold = 25;
 
-let isMuted = false;
-let speakerEnabled = true;
+let stillThreshold = 2;
 
+let countdown = 10;
 
-/* =========================================================
-   WEBRTC
-   ========================================================= */
+let countdownTimer = null;
 
-const rtcConfig = {
+let beepTimer = null;
 
-    iceServers: [
+let audioContext = null;
 
-        {
-            urls: "stun:stun.l.google.com:19302"
-        },
-
-        {
-            urls: "stun:stun1.l.google.com:19302"
-        }
-
-    ]
-
-};
+let recognition = null;
 
 
-/* =========================================================
-   MICROPHONE
-   ========================================================= */
+/* =================================
+   ELEMENTS
+================================= */
 
-async function requestMicrophone() {
+const startButton =
+    document.getElementById("startButton");
 
-    const errorBox =
-        document.getElementById("permissionError");
+const status =
+    document.getElementById("status");
 
-    errorBox.textContent = "";
+const debug =
+    document.getElementById("debug");
 
-    /*
-       Kontrola HTTPS / localhost.
-    */
+const crashScreen =
+    document.getElementById("crashScreen");
 
-    if (
-        !window.isSecureContext &&
-        location.hostname !== "localhost" &&
-        location.hostname !== "127.0.0.1"
-    ) {
+const countdownElement =
+    document.getElementById("countdown");
 
-        errorBox.innerHTML =
-            "❌ Tato stránka není spuštěná přes HTTPS.<br><br>" +
-            "Mikrofon v prohlížeči funguje přes HTTPS " +
-            "nebo localhost.<br><br>" +
-            "Pokud otevíráš index.html přímo jako " +
-            "<b>file:///...</b>, spusť ho přes localhost " +
-            "nebo nahraj na GitHub Pages.";
+const cancelButton =
+    document.getElementById("cancelButton");
 
+const emergencyButton =
+    document.getElementById("emergencyButton");
+
+const beepStatus =
+    document.getElementById("beepStatus");
+
+
+/* =================================
+   SPEECH
+================================= */
+
+function speak(text) {
+
+    if (!("speechSynthesis" in window)) {
         return;
     }
 
+    speechSynthesis.cancel();
 
-    /*
-       Kontrola podpory mikrofonu.
-    */
+    const voice =
+        new SpeechSynthesisUtterance(text);
+
+    voice.lang = "en-US";
+
+    voice.rate = 0.9;
+
+    voice.pitch = 1;
+
+    speechSynthesis.speak(voice);
+}
+
+
+/* =================================
+   MICROPHONE PERMISSION
+================================= */
+
+async function requestMicrophone() {
 
     if (
         !navigator.mediaDevices ||
         !navigator.mediaDevices.getUserMedia
     ) {
 
-        errorBox.innerHTML =
-            "❌ Tento prohlížeč nepodporuje přístup k mikrofonu.";
+        status.textContent =
+            "Microphone API is not available.";
 
-        return;
+        return false;
     }
 
+    try {
+
+        const stream =
+            await navigator.mediaDevices.getUserMedia({
+                audio: true
+            });
+
+        /*
+         * We only needed the permission.
+         * Speech recognition will use the microphone later.
+         */
+
+        stream
+            .getTracks()
+            .forEach(track => track.stop());
+
+        return true;
+
+    } catch (error) {
+
+        console.log(error);
+
+        status.textContent =
+            "Microphone permission denied.";
+
+        return false;
+    }
+}
+
+
+/* =================================
+   MOTION PERMISSION
+================================= */
+
+async function requestMotionPermission() {
 
     try {
 
         /*
-           Pokud už stream existuje,
-           mikrofon není potřeba žádat znovu.
-        */
+         * iPhone / iPad require an explicit
+         * permission request.
+         */
 
-        if (localStream) {
+        if (
+            typeof DeviceMotionEvent !== "undefined" &&
+            typeof DeviceMotionEvent.requestPermission ===
+                "function"
+        ) {
 
-            document.getElementById(
-                "permissionOverlay"
-            ).style.display = "none";
+            const permission =
+                await DeviceMotionEvent.requestPermission();
+
+            if (permission !== "granted") {
+
+                status.textContent =
+                    "Motion permission denied.";
+
+                return false;
+            }
+        }
+
+        return true;
+
+    } catch (error) {
+
+        console.log(error);
+
+        status.textContent =
+            "Motion permission denied.";
+
+        return false;
+    }
+}
+
+
+/* =================================
+   START DETECTION
+================================= */
+
+startButton.addEventListener(
+    "click",
+    async () => {
+
+        startButton.disabled = true;
+
+        status.textContent =
+            "Requesting microphone permission...";
+
+        const microphoneOK =
+            await requestMicrophone();
+
+        if (!microphoneOK) {
+
+            startButton.disabled = false;
+
+            return;
+        }
+
+
+        status.textContent =
+            "Requesting motion sensor permission...";
+
+
+        const motionOK =
+            await requestMotionPermission();
+
+
+        if (!motionOK) {
+
+            startButton.disabled = false;
 
             return;
         }
 
 
         /*
-           Žádost o mikrofon.
-        */
+         * Create audio context after user interaction.
+         * This allows the beep to work on mobile browsers.
+         */
 
-        localStream =
-            await navigator.mediaDevices.getUserMedia({
+        try {
 
-                audio: {
+            audioContext =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
 
-                    channelCount: {
-                        ideal: 1
-                    },
+        } catch (error) {
 
-                    sampleRate: {
-                        ideal: 16000
-                    },
-
-                    sampleSize: {
-                        ideal: 16
-                    },
-
-                    echoCancellation: true,
-
-                    noiseSuppression: true,
-
-                    autoGainControl: true
-
-                },
-
-                video: false
-
-            });
-
-
-        /*
-           Mikrofon úspěšně povolen.
-        */
-
-        document.getElementById(
-            "permissionOverlay"
-        ).style.display = "none";
-
-
-        document.getElementById(
-            "callStatus"
-        ).textContent =
-            "Mikrofon připraven 🎤";
-
-
-        showNotification(
-            "Mikrofon byl povolen ✅"
-        );
-
-
-        console.log(
-            "Mikrofon povolen:",
-            localStream
-        );
-
-    } catch(error) {
-
-        console.error(
-            "Mikrofon:",
-            error
-        );
-
-
-        let message =
-            "❌ Mikrofon se nepodařilo povolit.";
-
-
-        switch(error.name) {
-
-            case "NotAllowedError":
-
-                message =
-                    "❌ Přístup k mikrofonu byl zamítnut.<br><br>" +
-                    "Zkontroluj oprávnění mikrofonu pro tuto stránku.";
-
-                break;
-
-
-            case "NotFoundError":
-
-                message =
-                    "❌ Nebyl nalezen žádný mikrofon.";
-
-                break;
-
-
-            case "NotReadableError":
-
-                message =
-                    "❌ Mikrofon je používán jinou aplikací.<br><br>" +
-                    "Zavři například Discord, Teams nebo jinou aplikaci, " +
-                    "která mikrofon používá.";
-
-                break;
-
-
-            case "SecurityError":
-
-                message =
-                    "❌ Prohlížeč zablokoval přístup k mikrofonu.";
-
-                break;
-
-
-            case "AbortError":
-
-                message =
-                    "❌ Prohlížeč přerušil žádost o mikrofon.";
-
-                break;
-
-
-            case "TypeError":
-
-                message =
-                    "❌ Chyba nastavení mikrofonu.";
-
-                break;
-
-
-            default:
-
-                message =
-                    "❌ " +
-                    error.name +
-                    "<br>" +
-                    (error.message || "Neznámá chyba.");
-
+            console.log(
+                "AudioContext unavailable."
+            );
         }
 
 
-        errorBox.innerHTML =
-            message +
-            "<br><br><small>" +
-            "Technická chyba: " +
-            error.name +
-            "</small>";
+        detecting = true;
 
-    }
+        movementDetected = false;
 
-}
+        crashDetected = false;
 
 
-/* =========================================================
-   PEER CONNECTION
-   ========================================================= */
-
-function createPeerConnection() {
-
-    peerConnection =
-        new RTCPeerConnection(
-            rtcConfig
+        window.addEventListener(
+            "devicemotion",
+            handleMotion,
+            true
         );
 
 
-    remoteStream =
-        new MediaStream();
-
-
-    document.getElementById(
-        "remoteAudio"
-    ).srcObject =
-        remoteStream;
-
-
-    /*
-       Přidání mikrofonu.
-    */
-
-    if (localStream) {
-
-        localStream
-            .getTracks()
-            .forEach(track => {
-
-                peerConnection.addTrack(
-                    track,
-                    localStream
-                );
-
-            });
-
-    }
-
-
-    /*
-       Příchozí zvuk.
-    */
-
-    peerConnection.ontrack =
-        event => {
-
-            event.streams[0]
-                .getTracks()
-                .forEach(track => {
-
-                    remoteStream.addTrack(
-                        track
-                    );
-
-                });
-
-        };
-
-
-    /*
-       ICE kandidáti.
-    */
-
-    peerConnection.onicecandidate =
-        async event => {
-
-            if (!event.candidate) {
-                return;
-            }
-
-            if (!currentCallId) {
-                return;
-            }
-
-
-            try {
-
-                const { data } =
-                    await supabaseClient
-                        .from("calls")
-                        .select("ice_candidates")
-                        .eq("id", currentCallId)
-                        .single();
-
-
-                let candidates =
-                    data?.ice_candidates || [];
-
-
-                candidates.push(
-                    event.candidate.toJSON()
-                );
-
-
-                await supabaseClient
-                    .from("calls")
-                    .update({
-                        ice_candidates:
-                            candidates
-                    })
-                    .eq(
-                        "id",
-                        currentCallId
-                    );
-
-            } catch(error) {
-
-                console.error(
-                    "ICE chyba:",
-                    error
-                );
-
-            }
-
-        };
-
-
-    peerConnection.onconnectionstatechange =
-        () => {
-
-            const state =
-                peerConnection.connectionState;
-
-
-            console.log(
-                "WebRTC:",
-                state
-            );
-
-
-            if (state === "connected") {
-
-                document.getElementById(
-                    "callStatus"
-                ).textContent =
-                    "Hovor probíhá";
-
-                startTimer();
-
-            }
-
-
-            if (
-                state === "failed" ||
-                state === "disconnected"
-            ) {
-
-                document.getElementById(
-                    "callStatus"
-                ).textContent =
-                    "Spojení přerušeno";
-
-            }
-
-        };
-
-
-    return peerConnection;
-}
-
-
-/* =========================================================
-   START CALL
-   ========================================================= */
-
-async function startCall() {
-
-    if (!localStream) {
-
-        showNotification(
-            "Nejdříve povol mikrofon 🎤"
-        );
-
-        document.getElementById(
-            "permissionOverlay"
-        ).style.display =
-            "flex";
-
-        return;
-    }
-
-
-    if (!supabaseClient) {
-
-        showNotification(
-            "Nejdříve nastav Supabase."
-        );
-
-        return;
-    }
-
-
-    const target =
-        document
-            .getElementById("target")
-            .value
-            .trim();
-
-
-    if (!target) {
-
-        showNotification(
-            "Zadej uživatelské jméno."
-        );
-
-        return;
-    }
-
-
-    const myName =
-        getMyName();
-
-
-    try {
-
-        document.getElementById(
-            "callStatus"
-        ).textContent =
-            "Volám…";
-
-
-        document.getElementById(
-            "callButton"
-        ).style.display =
+        startButton.style.display =
             "none";
 
 
-        document.getElementById(
-            "endButton"
-        ).style.display =
-            "block";
+        status.textContent =
+            "Crash detection is active";
+
+        debug.textContent =
+            "Monitoring movement...";
 
 
-        document.getElementById(
-            "callControls"
-        ).classList.add("show");
+        speak(
+            "Car crash detection is now active."
+        );
+
+    }
+);
 
 
-        createPeerConnection();
+/* =================================
+   MOTION SENSOR
+================================= */
+
+function handleMotion(event) {
+
+    if (!detecting || crashDetected) {
+        return;
+    }
 
 
-        const offer =
-            await peerConnection
-                .createOffer();
+    const acceleration =
+        event.accelerationIncludingGravity;
 
 
-        await peerConnection
-            .setLocalDescription(
-                offer
-            );
+    if (!acceleration) {
+        return;
+    }
 
 
-        const { data, error } =
-            await supabaseClient
-                .from("calls")
-                .insert({
+    const x =
+        acceleration.x || 0;
 
-                    caller: myName,
+    const y =
+        acceleration.y || 0;
 
-                    receiver: target,
-
-                    status: "ringing",
-
-                    offer:
-                        JSON.stringify(
-                            offer
-                        ),
-
-                    ice_candidates: []
-
-                })
-                .select()
-                .single();
+    const z =
+        acceleration.z || 0;
 
 
-        if (error) {
-            throw error;
+    /*
+     * Calculate total acceleration.
+     */
+
+    const magnitude =
+        Math.sqrt(
+            x * x +
+            y * y +
+            z * z
+        );
+
+
+    lastAcceleration =
+        magnitude;
+
+
+    debug.textContent =
+        "Motion: " +
+        magnitude.toFixed(1) +
+        " m/s²";
+
+
+    /*
+     * Device is moving.
+     */
+
+    if (magnitude > stillThreshold) {
+
+        movementDetected = true;
+
+    }
+
+
+    /*
+     * Possible sudden impact.
+     */
+
+    if (
+        movementDetected &&
+        magnitude >= impactThreshold
+    ) {
+
+        detectPossibleCrash();
+
+    }
+
+}
+
+
+/* =================================
+   POSSIBLE CRASH
+================================= */
+
+function detectPossibleCrash() {
+
+    if (crashDetected) {
+        return;
+    }
+
+
+    crashDetected = true;
+
+
+    status.textContent =
+        "Possible impact detected";
+
+
+    debug.textContent =
+        "Impact detected — checking stillness...";
+
+
+    /*
+     * Give the device a moment after
+     * the impact before checking whether
+     * it becomes still.
+     */
+
+    setTimeout(
+        startStillnessCheck,
+        1500
+    );
+
+}
+
+
+/* =================================
+   STILLNESS CHECK
+================================= */
+
+function startStillnessCheck() {
+
+    let stillStart = null;
+
+
+    function check() {
+
+        if (!crashDetected) {
+            return;
         }
 
 
-        currentCallId =
-            data.id;
+        if (
+            lastAcceleration <=
+            stillThreshold
+        ) {
 
+            if (stillStart === null) {
 
-        currentCallStarted =
-            Date.now();
-
-
-        saveTarget(target);
-
-
-        subscribeToCall(
-            currentCallId
-        );
-
-
-    } catch(error) {
-
-        console.error(
-            "Start call error:",
-            error
-        );
-
-
-        showNotification(
-            "Chyba při vytváření hovoru."
-        );
-
-
-        resetCall();
-
-    }
-
-}
-
-
-/* =========================================================
-   SUBSCRIBE TO CALL
-   ========================================================= */
-
-function subscribeToCall(
-    callId
-) {
-
-    supabaseClient
-        .channel(
-            "call-" + callId
-        )
-        .on(
-            "postgres_changes",
-            {
-                event: "UPDATE",
-                schema: "public",
-                table: "calls",
-                filter:
-                    "id=eq." + callId
-            },
-            async payload => {
-
-                const call =
-                    payload.new;
-
-
-                /*
-                   Druhá strana přijala hovor.
-                */
-
-                if (
-                    call.status ===
-                    "accepted" &&
-                    call.answer &&
-                    peerConnection
-                ) {
-
-                    try {
-
-                        const answer =
-                            JSON.parse(
-                                call.answer
-                            );
-
-
-                        await peerConnection
-                            .setRemoteDescription(
-                                answer
-                            );
-
-                    } catch(error) {
-
-                        console.error(
-                            "Answer error:",
-                            error
-                        );
-
-                    }
-
-                }
-
-
-                /*
-                   Hovor byl odmítnut.
-                */
-
-                if (
-                    call.status ===
-                    "rejected"
-                ) {
-
-                    showNotification(
-                        "Hovor byl odmítnut."
-                    );
-
-                    resetCall();
-
-                }
-
-
-                /*
-                   Hovor byl ukončen.
-                */
-
-                if (
-                    call.status ===
-                    "ended"
-                ) {
-
-                    showNotification(
-                        "Hovor byl ukončen."
-                    );
-
-                    resetCall();
-
-                }
+                stillStart =
+                    Date.now();
 
             }
-        )
-        .subscribe();
+
+
+            const stillTime =
+                Date.now() -
+                stillStart;
+
+
+            debug.textContent =
+                "Device still for " +
+                Math.floor(
+                    stillTime / 1000
+                ) +
+                " seconds";
+
+
+            /*
+             * Five seconds of stillness.
+             */
+
+            if (stillTime >= 5000) {
+
+                showCrashAlert();
+
+                return;
+            }
+
+
+        } else {
+
+            stillStart = null;
+
+
+            debug.textContent =
+                "Movement detected after impact.";
+
+        }
+
+
+        requestAnimationFrame(check);
+
+    }
+
+
+    check();
 
 }
 
 
-/* =========================================================
-   INCOMING CALL CHECK
-   ========================================================= */
+/* =================================
+   SHOW CRASH ALERT
+================================= */
 
-async function checkIncomingCalls() {
+function showCrashAlert() {
 
-    if (!supabaseClient) {
-        return;
-    }
-
-
-    const myName =
-        getMyName();
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("calls")
-            .select("*")
-            .eq(
-                "receiver",
-                myName
-            )
-            .eq(
-                "status",
-                "ringing"
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            )
-            .limit(1);
-
-
-    if (error) {
-
-        console.error(
-            error
-        );
-
-        return;
-    }
-
-
-    if (
-        data &&
-        data.length > 0 &&
-        !incomingCallData &&
-        !currentCallId
-    ) {
-
-        incomingCallData =
-            data[0];
-
-
-        showIncomingCall(
-            incomingCallData
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   SHOW INCOMING
-   ========================================================= */
-
-function showIncomingCall(
-    call
-) {
-
-    document.getElementById(
-        "incomingName"
-    ).textContent =
-        call.caller;
-
-
-    document.getElementById(
-        "incomingCall"
-    ).style.display =
+    crashScreen.style.display =
         "flex";
 
 
-    /*
-       Zvuk příchozího hovoru
-       pomocí jednoduchého beepu.
-    */
-
-    playRing();
-
-}
+    countdown = 10;
 
 
-/* =========================================================
-   ACCEPT CALL
-   ========================================================= */
-
-async function acceptCall() {
-
-    if (!incomingCallData) {
-        return;
-    }
+    countdownElement.textContent =
+        countdown;
 
 
-    if (!localStream) {
-
-        document.getElementById(
-            "incomingCall"
-        ).style.display =
-            "none";
-
-        document.getElementById(
-            "permissionOverlay"
-        ).style.display =
-            "flex";
-
-        return;
-    }
+    beepStatus.textContent =
+        "Waiting for response...";
 
 
-    const call =
-        incomingCallData;
+    speak(
+        "Car crash detected. " +
+        "Say emergency to confirm, " +
+        "or say cancel."
+    );
 
 
-    try {
+    startBeeping();
 
-        currentCallId =
-            call.id;
+    startCountdown();
 
-
-        createPeerConnection();
-
-
-        const offer =
-            JSON.parse(
-                call.offer
-            );
-
-
-        await peerConnection
-            .setRemoteDescription(
-                offer
-            );
-
-
-        const answer =
-            await peerConnection
-                .createAnswer();
-
-
-        await peerConnection
-            .setLocalDescription(
-                answer
-            );
-
-
-        await supabaseClient
-            .from("calls")
-            .update({
-
-                status: "accepted",
-
-                answer:
-                    JSON.stringify(
-                        answer
-                    ),
-
-                started_at:
-                    new Date()
-                        .toISOString()
-
-            })
-            .eq(
-                "id",
-                call.id
-            );
-
-
-        document.getElementById(
-            "incomingCall"
-        ).style.display =
-            "none";
-
-
-        document.getElementById(
-            "callStatus"
-        ).textContent =
-            "Spojování…";
-
-
-        document.getElementById(
-            "callButton"
-        ).style.display =
-            "none";
-
-
-        document.getElementById(
-            "endButton"
-        ).style.display =
-            "block";
-
-
-        document.getElementById(
-            "callControls"
-        ).classList.add("show");
-
-
-        currentCallStarted =
-            Date.now();
-
-
-        subscribeToCall(
-            currentCallId
-        );
-
-
-        incomingCallData =
-            null;
-
-
-    } catch(error) {
-
-        console.error(
-            "Accept error:",
-            error
-        );
-
-
-        showNotification(
-            "Hovor se nepodařilo přijmout."
-        );
-
-    }
+    startVoiceRecognition();
 
 }
 
 
-/* =========================================================
-   REJECT CALL
-   ========================================================= */
+/* =================================
+   BEEP SOUND
+================================= */
 
-async function rejectCall() {
+function makeBeep() {
 
-    if (!incomingCallData) {
+    if (!audioContext) {
         return;
     }
 
 
     try {
 
-        await supabaseClient
-            .from("calls")
-            .update({
+        if (
+            audioContext.state ===
+            "suspended"
+        ) {
 
-                status:
-                    "rejected"
-
-            })
-            .eq(
-                "id",
-                incomingCallData.id
-            );
-
-    } catch(error) {
-
-        console.error(
-            error
-        );
-
-    }
-
-
-    document.getElementById(
-        "incomingCall"
-    ).style.display =
-        "none";
-
-
-    incomingCallData =
-        null;
-
-}
-
-
-/* =========================================================
-   END CALL
-   ========================================================= */
-
-async function endCall() {
-
-    if (currentCallId && supabaseClient) {
-
-        try {
-
-            const duration =
-                currentCallStarted
-                    ? Math.floor(
-                        (
-                            Date.now() -
-                            currentCallStarted
-                        ) / 1000
-                    )
-                    : 0;
-
-
-            await supabaseClient
-                .from("calls")
-                .update({
-
-                    status:
-                        "ended",
-
-                    ended_at:
-                        new Date()
-                            .toISOString(),
-
-                    duration:
-                        duration
-
-                })
-                .eq(
-                    "id",
-                    currentCallId
-                );
-
-        } catch(error) {
-
-            console.error(
-                "End call:",
-                error
-            );
+            audioContext.resume();
 
         }
 
+
+        const oscillator =
+            audioContext.createOscillator();
+
+        const gain =
+            audioContext.createGain();
+
+
+        oscillator.type =
+            "sine";
+
+
+        oscillator.frequency.value =
+            880;
+
+
+        gain.gain.value =
+            0.15;
+
+
+        oscillator.connect(gain);
+
+        gain.connect(
+            audioContext.destination
+        );
+
+
+        oscillator.start();
+
+
+        oscillator.stop(
+            audioContext.currentTime +
+            0.15
+        );
+
+    } catch (error) {
+
+        console.log(error);
+
     }
-
-
-    resetCall();
 
 }
 
 
-/* =========================================================
-   RESET
-   ========================================================= */
+/* =================================
+   START BEEPING
+================================= */
 
-function resetCall() {
+function startBeeping() {
 
-    if (timerInterval) {
+    stopBeeping();
 
-        clearInterval(
-            timerInterval
-        );
 
-        timerInterval =
-            null;
+    /*
+     * First beep immediately.
+     */
 
-    }
+    makeBeep();
 
 
-    if (peerConnection) {
+    /*
+     * Then beep every second.
+     */
 
-        try {
-
-            peerConnection.close();
-
-        } catch(e) {}
-
-        peerConnection =
-            null;
-
-    }
-
-
-    remoteStream =
-        null;
-
-
-    currentCallId =
-        null;
-
-
-    currentCallStarted =
-        null;
-
-
-    document.getElementById(
-        "callStatus"
-    ).textContent =
-        "Připraven";
-
-
-    document.getElementById(
-        "timer"
-    ).textContent =
-        "00:00";
-
-
-    document.getElementById(
-        "callButton"
-    ).style.display =
-        "block";
-
-
-    document.getElementById(
-        "endButton"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "callControls"
-    ).classList.remove(
-        "show"
-    );
-
-
-    loadHistory();
-
-}
-
-
-/* =========================================================
-   MUTE
-   ========================================================= */
-
-function toggleMute() {
-
-    if (!localStream) {
-        return;
-    }
-
-
-    isMuted =
-        !isMuted;
-
-
-    localStream
-        .getAudioTracks()
-        .forEach(
-            track => {
-
-                track.enabled =
-                    !isMuted;
-
-            }
-        );
-
-
-    const button =
-        document.getElementById(
-            "muteButton"
-        );
-
-
-    button.classList.toggle(
-        "active",
-        isMuted
-    );
-
-
-    button.textContent =
-        isMuted
-            ? "🔇"
-            : "🎤";
-
-}
-
-
-/* =========================================================
-   SPEAKER
-   ========================================================= */
-
-function toggleSpeaker() {
-
-    speakerEnabled =
-        !speakerEnabled;
-
-
-    const audio =
-        document.getElementById(
-            "remoteAudio"
-        );
-
-
-    audio.muted =
-        !speakerEnabled;
-
-
-    const button =
-        document.getElementById(
-            "speakerButton"
-        );
-
-
-    button.classList.toggle(
-        "active",
-        !speakerEnabled
-    );
-
-
-    button.textContent =
-        speakerEnabled
-            ? "🔊"
-            : "🔇";
-
-}
-
-
-/* =========================================================
-   TIMER
-   ========================================================= */
-
-function startTimer() {
-
-    if (timerInterval) {
-        return;
-    }
-
-
-    if (!currentCallStarted) {
-
-        currentCallStarted =
-            Date.now();
-
-    }
-
-
-    timerInterval =
+    beepTimer =
         setInterval(
             () => {
 
-                const seconds =
-                    Math.floor(
-                        (
-                            Date.now() -
-                            currentCallStarted
-                        ) / 1000
-                    );
-
-
-                const minutes =
-                    Math.floor(
-                        seconds / 60
-                    );
-
-
-                const sec =
-                    seconds % 60;
-
-
-                document.getElementById(
-                    "timer"
-                ).textContent =
-
-                    String(minutes)
-                        .padStart(2, "0")
-                    +
-                    ":" +
-                    String(sec)
-                        .padStart(2, "0");
+                makeBeep();
 
             },
             1000
@@ -1906,412 +904,324 @@ function startTimer() {
 }
 
 
-/* =========================================================
-   HISTORY
-   ========================================================= */
+/* =================================
+   STOP BEEPING
+================================= */
 
-async function loadHistory() {
+function stopBeeping() {
 
-    const list =
-        document.getElementById(
-            "historyList"
+    if (beepTimer !== null) {
+
+        clearInterval(
+            beepTimer
         );
 
+        beepTimer = null;
 
-    if (!supabaseClient) {
+    }
 
-        list.innerHTML =
-            "<div style='color:#666'>" +
-            "Supabase není nastavený" +
-            "</div>";
+}
+
+
+/* =================================
+   COUNTDOWN
+================================= */
+
+function startCountdown() {
+
+    clearInterval(
+        countdownTimer
+    );
+
+
+    countdownTimer =
+        setInterval(
+            () => {
+
+                countdown--;
+
+
+                countdownElement.textContent =
+                    countdown;
+
+
+                if (countdown <= 0) {
+
+                    clearInterval(
+                        countdownTimer
+                    );
+
+
+                    stopBeeping();
+
+
+                    countdownElement.textContent =
+                        "—";
+
+
+                    beepStatus.textContent =
+                        "Alarm ended.";
+
+
+                    speak(
+                        "The emergency alarm has ended."
+                    );
+
+                }
+
+            },
+            1000
+        );
+
+}
+
+
+/* =================================
+   CANCEL
+================================= */
+
+function cancelCrash() {
+
+    clearInterval(
+        countdownTimer
+    );
+
+
+    stopBeeping();
+
+
+    if (recognition) {
+
+        try {
+
+            recognition.stop();
+
+        } catch (error) {}
+
+    }
+
+
+    crashDetected = false;
+
+    movementDetected = false;
+
+
+    crashScreen.style.display =
+        "none";
+
+
+    status.textContent =
+        "Crash detection is active";
+
+
+    debug.textContent =
+        "Monitoring movement...";
+
+
+    speak(
+        "Cancelled."
+    );
+
+}
+
+
+/* =================================
+   VOICE RECOGNITION
+================================= */
+
+function startVoiceRecognition() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    if (!SpeechRecognition) {
+
+        beepStatus.textContent =
+            "Voice recognition is not supported.";
 
         return;
     }
 
 
-    const myName =
-        getMyName();
-
-
     try {
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("calls")
-                .select("*")
-                .or(
-                    "caller.eq." +
-                    myName +
-                    ",receiver.eq." +
-                    myName
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                )
-                .limit(20);
+        recognition =
+            new SpeechRecognition();
 
 
-        if (error) {
-            throw error;
-        }
+        recognition.lang =
+            "en-US";
 
 
-        if (!data || data.length === 0) {
-
-            list.innerHTML =
-                "<div style='color:#666'>" +
-                "Žádné hovory" +
-                "</div>";
-
-            return;
-        }
+        recognition.continuous =
+            true;
 
 
-        list.innerHTML = "";
+        recognition.interimResults =
+            false;
 
 
-        data.forEach(
-            call => {
+        recognition.onresult =
+            function(event) {
 
-                const other =
-                    call.caller === myName
-                        ? call.receiver
-                        : call.caller;
-
-
-                const direction =
-                    call.caller === myName
-                        ? "📤 Odchozí"
-                        : "📥 Příchozí";
+                const last =
+                    event.results[
+                        event.results.length - 1
+                    ];
 
 
-                const duration =
-                    call.duration || 0;
+                const text =
+                    last[0]
+                        .transcript
+                        .toLowerCase();
 
 
-                const minutes =
-                    Math.floor(
-                        duration / 60
-                    );
-
-
-                const seconds =
-                    duration % 60;
-
-
-                const item =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                item.className =
-                    "history-item";
-
-
-                item.innerHTML =
-
-                    "<div class='history-main'>" +
-                    direction +
-                    " • " +
-                    escapeHtml(other) +
-                    "</div>" +
-
-                    "<div class='history-info'>" +
-                    String(minutes)
-                        .padStart(2, "0") +
-                    ":" +
-                    String(seconds)
-                        .padStart(2, "0") +
-                    "</div>";
-
-
-                list.appendChild(
-                    item
+                console.log(
+                    "Heard:",
+                    text
                 );
 
-            }
-        );
+
+                /*
+                 * CANCEL
+                 */
+
+                if (
+                    text.includes("cancel") ||
+                    text.includes("cancelled") ||
+                    text.includes("canceled")
+                ) {
+
+                    cancelCrash();
+
+                    return;
+                }
 
 
-    } catch(error) {
+                /*
+                 * EMERGENCY
+                 */
 
-        console.error(
-            "History:",
-            error
-        );
+                if (
+                    text.includes("emergency")
+                ) {
+
+                    confirmEmergency();
+
+                }
+
+            };
 
 
-        list.innerHTML =
-            "<div style='color:#666'>" +
-            "Historii se nepodařilo načíst" +
-            "</div>";
+        recognition.onerror =
+            function(event) {
+
+                console.log(
+                    "Speech recognition:",
+                    event.error
+                );
+
+            };
+
+
+        recognition.onend =
+            function() {
+
+                /*
+                 * Keep listening while the
+                 * crash screen is active.
+                 */
+
+                if (crashDetected) {
+
+                    try {
+
+                        recognition.start();
+
+                    } catch (error) {}
+
+                }
+
+            };
+
+
+        recognition.start();
+
+
+    } catch (error) {
+
+        console.log(error);
 
     }
 
 }
 
 
-/* =========================================================
-   USERNAME
-   ========================================================= */
+/* =================================
+   EMERGENCY CONFIRMATION
+================================= */
 
-function getMyName() {
+function confirmEmergency() {
 
-    let name =
-        localStorage.getItem(
-            "sirtros_call_name"
-        );
-
-
-    if (!name) {
-
-        name =
-            prompt(
-                "Zadej své uživatelské jméno:"
-            );
-
-
-        if (!name) {
-
-            name =
-                "SirTros";
-
-        }
-
-
-        localStorage.setItem(
-            "sirtros_call_name",
-            name
-        );
-
-    }
-
-
-    document.getElementById(
-        "currentName"
-    ).textContent =
-        name;
-
-
-    return name;
-
-}
-
-
-/* =========================================================
-   TARGET
-   ========================================================= */
-
-function saveTarget(
-    target
-) {
-
-    localStorage.setItem(
-        "sirtros_call_target",
-        target
+    clearInterval(
+        countdownTimer
     );
 
-}
+
+    stopBeeping();
 
 
-function loadTarget() {
-
-    const target =
-        localStorage.getItem(
-            "sirtros_call_target"
-        );
+    countdownElement.textContent =
+        "✓";
 
 
-    if (target) {
-
-        document.getElementById(
-            "target"
-        ).value =
-            target;
-
-    }
-
-}
+    beepStatus.textContent =
+        "Emergency confirmed.";
 
 
-/* =========================================================
-   NOTIFICATION
-   ========================================================= */
-
-function showNotification(
-    text
-) {
-
-    const notification =
-        document.getElementById(
-            "notification"
-        );
-
-
-    notification.innerHTML =
-        text;
-
-
-    notification.style.display =
-        "block";
-
-
-    setTimeout(
-        () => {
-
-            notification.style.display =
-                "none";
-
-        },
-        3000
+    speak(
+        "Emergency confirmed."
     );
 
-}
 
+    if (recognition) {
 
-/* =========================================================
-   RING
-   ========================================================= */
+        try {
 
-function playRing() {
+            recognition.stop();
 
-    try {
-
-        const AudioContext =
-            window.AudioContext ||
-            window.webkitAudioContext;
-
-
-        if (!AudioContext) {
-            return;
-        }
-
-
-        const ctx =
-            new AudioContext();
-
-
-        const oscillator =
-            ctx.createOscillator();
-
-
-        const gain =
-            ctx.createGain();
-
-
-        oscillator.type =
-            "sine";
-
-
-        oscillator.frequency.value =
-            700;
-
-
-        gain.gain.value =
-            0.08;
-
-
-        oscillator.connect(
-            gain
-        );
-
-
-        gain.connect(
-            ctx.destination
-        );
-
-
-        oscillator.start();
-
-
-        setTimeout(
-            () => {
-
-                oscillator.stop();
-
-                ctx.close();
-
-            },
-            500
-        );
-
-    } catch(error) {
-
-        console.log(
-            "Ring není dostupný."
-        );
+        } catch (error) {}
 
     }
 
 }
 
 
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
+/* =================================
+   EMERGENCY BUTTON
+================================= */
 
-function escapeHtml(
-    text
-) {
-
-    return String(text)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-/* =========================================================
-   START
-   ========================================================= */
-
-window.addEventListener(
-    "load",
+emergencyButton.addEventListener(
+    "click",
     () => {
 
-        initSupabase();
+        confirmEmergency();
 
-        getMyName();
+    }
+);
 
-        loadTarget();
 
-        loadHistory();
+/* =================================
+   CANCEL BUTTON
+================================= */
 
-        /*
-           Nekoušíme mikrofon automaticky.
-           Uživatel klikne na "Povolit mikrofon",
-           což je spolehlivější způsob získání oprávnění.
-        */
+cancelButton.addEventListener(
+    "click",
+    () => {
 
-        setInterval(
-            checkIncomingCalls,
-            2000
-        );
+        cancelCrash();
 
     }
 );
