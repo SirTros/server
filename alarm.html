@@ -5,15 +5,17 @@
 
 <meta name="viewport"
       content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               user-scalable=no">
+      initial-scale=1.0,
+      maximum-scale=1.0,
+      user-scalable=no">
 
 <title>Car Crash Detection</title>
 
 <style>
+
 * {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -22,36 +24,30 @@ body {
     width: 100%;
     height: 100%;
     background: #000;
-    color: #fff;
-    font-family:
-        "Google Sans",
-        "Segoe UI",
-        Arial,
-        sans-serif;
-    overflow: hidden;
+    color: white;
+    font-family: "Google Sans", "Segoe UI", Arial, sans-serif;
 }
 
 body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
 }
 
-#app {
+#main {
     width: 100%;
-    max-width: 520px;
     height: 100%;
-    padding: 30px;
 
     display: flex;
     flex-direction: column;
+
     align-items: center;
     justify-content: center;
+
+    padding: 25px;
 
     text-align: center;
 }
 
-.logo {
+.carIcon {
     width: 90px;
     height: 90px;
 
@@ -65,175 +61,215 @@ body {
 
     font-size: 45px;
 
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
 h1 {
-    margin: 0;
-
-    font-size: 34px;
-    font-weight: 700;
+    font-size: 32px;
+    margin: 0 0 12px;
 }
 
-.description {
-    margin-top: 15px;
+.subtitle {
+    max-width: 390px;
 
     color: #aaa;
 
-    font-size: 18px;
+    font-size: 17px;
+
     line-height: 1.5;
 
-    max-width: 400px;
+    margin-bottom: 20px;
 }
 
 button {
-    border: none;
+    border: 0;
 
-    border-radius: 30px;
+    border-radius: 28px;
 
-    padding: 16px 30px;
+    padding: 15px 28px;
 
-    font-size: 18px;
+    font-size: 17px;
+
     font-weight: 700;
+
+    margin: 7px;
 
     cursor: pointer;
 
-    margin-top: 25px;
-
-    background: #fff;
-    color: #000;
+    background: white;
+    color: black;
 }
 
 button:active {
-    transform: scale(.97);
+    transform: scale(.96);
 }
 
-button:disabled {
-    opacity: .5;
+#start {
+    background: white;
+}
+
+#test {
+    background: #292a2d;
+    color: white;
 }
 
 #status {
-    margin-top: 20px;
+    margin-top: 15px;
 
     color: #888;
 
-    font-size: 16px;
+    font-size: 15px;
 }
 
-#debug {
-    position: fixed;
+#sensor {
+    margin-top: 12px;
 
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
+    color: #555;
 
-    text-align: center;
+    font-size: 12px;
 
-    color: #444;
-
-    font-size: 11px;
+    line-height: 1.5;
 }
 
 
-/* ==============================
+/* =========================
    CRASH SCREEN
-============================== */
+========================= */
 
 #crashScreen {
-    display: none;
 
     position: fixed;
 
     inset: 0;
 
-    z-index: 100;
+    z-index: 999;
 
     background: #000;
+
+    display: none;
 
     align-items: center;
     justify-content: center;
 
     text-align: center;
 
-    padding: 30px;
+    padding: 25px;
 }
 
-.crashContent {
+.crashBox {
     width: 100%;
-    max-width: 450px;
+    max-width: 460px;
 }
 
 .warning {
-    font-size: 70px;
+    font-size: 72px;
 
-    margin-bottom: 25px;
+    margin-bottom: 20px;
+
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
 }
 
 .crashTitle {
+
     font-size: 38px;
 
     font-weight: 700;
 
     line-height: 1.15;
 
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
-.crashText {
-    font-size: 19px;
+.crashDescription {
 
     color: #ddd;
+
+    font-size: 18px;
 
     line-height: 1.5;
 }
 
-#countdown {
-    font-size: 64px;
+#number {
+
+    font-size: 70px;
 
     font-weight: 700;
 
     margin: 25px 0;
 }
 
-#cancelButton {
-    display: inline-block;
-
-    background: #303134;
-    color: #fff;
-
-    margin-right: 8px;
-}
-
-#emergencyButton {
-    display: inline-block;
-
-    background: #fff;
-    color: #000;
-
-    margin-left: 8px;
-}
-
-#beepStatus {
-    margin-top: 15px;
+#beeping {
 
     color: #999;
 
     font-size: 14px;
+
+    margin-top: 10px;
 }
+
+#cancel {
+
+    background: #303134;
+
+    color: white;
+
+    min-width: 130px;
+}
+
+#emergency {
+
+    background: white;
+
+    color: black;
+
+    min-width: 130px;
+}
+
+
+/* =========================
+   CONFIRMED
+========================= */
+
+#confirmed {
+
+    display: none;
+
+    margin-top: 20px;
+
+    font-size: 18px;
+
+    color: #fff;
+}
+
 </style>
 </head>
-
 
 <body>
 
 
-<!-- =================================
-     MAIN SCREEN
-================================= -->
+<!-- =========================
+     MAIN
+========================= -->
 
-<div id="app">
+<div id="main">
 
-    <div class="logo">
+    <div class="carIcon">
         🚗
     </div>
 
@@ -241,30 +277,38 @@ button:disabled {
         Car Crash Detection
     </h1>
 
-    <div class="description">
-        Motion sensors can monitor the movement
-        of this device and detect a possible
-        sudden impact.
+    <div class="subtitle">
+        Motion sensors monitor the device for
+        sudden impacts followed by a period
+        of little movement.
     </div>
 
-    <button id="startButton">
+    <button id="start">
         Start detection
+    </button>
+
+    <button id="test">
+        Test crash
     </button>
 
     <div id="status">
         Detection is off
     </div>
 
+    <div id="sensor">
+        Sensor: waiting...
+    </div>
+
 </div>
 
 
-<!-- =================================
-     CRASH SCREEN
-================================= -->
+<!-- =========================
+     CRASH
+========================= -->
 
 <div id="crashScreen">
 
-    <div class="crashContent">
+    <div class="crashBox">
 
         <div class="warning">
             ⚠️
@@ -274,27 +318,30 @@ button:disabled {
             Car crash detected
         </div>
 
-        <div class="crashText">
+        <div class="crashDescription">
             We've detected a possible crash.
-            Stay calm.
             <br>
             Say <b>emergency</b> or <b>cancel</b>.
         </div>
 
-        <div id="countdown">
+        <div id="number">
             10
         </div>
 
-        <button id="cancelButton">
+        <button id="cancel">
             Cancel
         </button>
 
-        <button id="emergencyButton">
+        <button id="emergency">
             Emergency
         </button>
 
-        <div id="beepStatus">
-            Waiting for response...
+        <div id="beeping">
+            Beeping for 10 seconds
+        </div>
+
+        <div id="confirmed">
+            Emergency confirmed.
         </div>
 
     </div>
@@ -302,78 +349,92 @@ button:disabled {
 </div>
 
 
-<div id="debug">
-    Waiting for sensors...
-</div>
-
-
-
 <script>
 
 
-/* =================================
+/* ==================================================
    VARIABLES
-================================= */
+================================================== */
 
-let detecting = false;
+let detectionActive = false;
 
-let crashDetected = false;
+let crashActive = false;
 
-let movementDetected = false;
+let lastMotion = 0;
 
-let lastAcceleration = 0;
+let currentMotion = 0;
 
-let impactThreshold = 25;
+let motionDifference = 0;
 
-let stillThreshold = 2;
+let moving = false;
+
+let stillSince = null;
 
 let countdown = 10;
 
-let countdownTimer = null;
+let countdownInterval = null;
 
-let beepTimer = null;
+let beepInterval = null;
 
-let audioContext = null;
+let audio = null;
 
 let recognition = null;
 
 
-/* =================================
+/*
+   These values are easier to trigger than
+   the previous version.
+*/
+
+const IMPACT_CHANGE = 12;
+
+const STILL_LEVEL = 2.5;
+
+const STILL_TIME = 4000;
+
+
+/* ==================================================
    ELEMENTS
-================================= */
+================================================== */
 
 const startButton =
-    document.getElementById("startButton");
+    document.getElementById("start");
+
+const testButton =
+    document.getElementById("test");
 
 const status =
     document.getElementById("status");
 
-const debug =
-    document.getElementById("debug");
+const sensor =
+    document.getElementById("sensor");
 
 const crashScreen =
     document.getElementById("crashScreen");
 
-const countdownElement =
-    document.getElementById("countdown");
+const number =
+    document.getElementById("number");
 
 const cancelButton =
-    document.getElementById("cancelButton");
+    document.getElementById("cancel");
 
 const emergencyButton =
-    document.getElementById("emergencyButton");
+    document.getElementById("emergency");
 
-const beepStatus =
-    document.getElementById("beepStatus");
+const beeping =
+    document.getElementById("beeping");
+
+const confirmed =
+    document.getElementById("confirmed");
 
 
-/* =================================
-   SPEECH
-================================= */
+/* ==================================================
+   VOICE
+================================================== */
 
-function speak(text) {
+function say(text) {
 
-    if (!("speechSynthesis" in window)) {
+    if (!window.speechSynthesis) {
         return;
     }
 
@@ -392,11 +453,11 @@ function speak(text) {
 }
 
 
-/* =================================
-   MICROPHONE PERMISSION
-================================= */
+/* ==================================================
+   MICROPHONE
+================================================== */
 
-async function requestMicrophone() {
+async function microphonePermission() {
 
     if (
         !navigator.mediaDevices ||
@@ -404,7 +465,7 @@ async function requestMicrophone() {
     ) {
 
         status.textContent =
-            "Microphone API is not available.";
+            "Microphone is not available.";
 
         return false;
     }
@@ -415,11 +476,6 @@ async function requestMicrophone() {
             await navigator.mediaDevices.getUserMedia({
                 audio: true
             });
-
-        /*
-         * We only needed the permission.
-         * Speech recognition will use the microphone later.
-         */
 
         stream
             .getTracks()
@@ -439,23 +495,18 @@ async function requestMicrophone() {
 }
 
 
-/* =================================
+/* ==================================================
    MOTION PERMISSION
-================================= */
+================================================== */
 
-async function requestMotionPermission() {
+async function motionPermission() {
 
     try {
-
-        /*
-         * iPhone / iPad require an explicit
-         * permission request.
-         */
 
         if (
             typeof DeviceMotionEvent !== "undefined" &&
             typeof DeviceMotionEvent.requestPermission ===
-                "function"
+            "function"
         ) {
 
             const permission =
@@ -477,30 +528,30 @@ async function requestMotionPermission() {
         console.log(error);
 
         status.textContent =
-            "Motion permission denied.";
+            "Motion sensor permission failed.";
 
         return false;
     }
 }
 
 
-/* =================================
-   START DETECTION
-================================= */
+/* ==================================================
+   START
+================================================== */
 
 startButton.addEventListener(
     "click",
-    async () => {
+    async function() {
 
         startButton.disabled = true;
 
         status.textContent =
-            "Requesting microphone permission...";
+            "Requesting microphone...";
 
-        const microphoneOK =
-            await requestMicrophone();
+        const mic =
+            await microphonePermission();
 
-        if (!microphoneOK) {
+        if (!mic) {
 
             startButton.disabled = false;
 
@@ -509,14 +560,14 @@ startButton.addEventListener(
 
 
         status.textContent =
-            "Requesting motion sensor permission...";
+            "Requesting motion sensor...";
 
 
-        const motionOK =
-            await requestMotionPermission();
+        const motion =
+            await motionPermission();
 
 
-        if (!motionOK) {
+        if (!motion) {
 
             startButton.disabled = false;
 
@@ -525,36 +576,35 @@ startButton.addEventListener(
 
 
         /*
-         * Create audio context after user interaction.
-         * This allows the beep to work on mobile browsers.
-         */
+           Audio must be created after
+           a user interaction on mobile.
+        */
 
         try {
 
-            audioContext =
+            audio =
                 new (
                     window.AudioContext ||
                     window.webkitAudioContext
                 )();
 
-        } catch (error) {
+        } catch (e) {
 
-            console.log(
-                "AudioContext unavailable."
-            );
+            console.log(e);
+
         }
 
 
-        detecting = true;
+        detectionActive = true;
 
-        movementDetected = false;
+        moving = false;
 
-        crashDetected = false;
+        crashActive = false;
 
 
         window.addEventListener(
             "devicemotion",
-            handleMotion,
+            motionHandler,
             true
         );
 
@@ -564,55 +614,72 @@ startButton.addEventListener(
 
 
         status.textContent =
-            "Crash detection is active";
+            "🟢 Crash detection active";
 
-        debug.textContent =
-            "Monitoring movement...";
+        sensor.textContent =
+            "Sensor: active";
 
 
-        speak(
-            "Car crash detection is now active."
+        say(
+            "Car crash detection is active."
         );
 
     }
 );
 
 
-/* =================================
-   MOTION SENSOR
-================================= */
+/* ==================================================
+   MOTION
+================================================== */
 
-function handleMotion(event) {
+function motionHandler(event) {
 
-    if (!detecting || crashDetected) {
+    if (!detectionActive || crashActive) {
         return;
     }
 
 
-    const acceleration =
+    const a =
+        event.acceleration;
+
+
+    const g =
         event.accelerationIncludingGravity;
 
 
-    if (!acceleration) {
+    /*
+       Prefer acceleration without gravity.
+       If unavailable, use gravity-inclusive.
+    */
+
+    let x;
+    let y;
+    let z;
+
+
+    if (a && (
+        a.x !== null ||
+        a.y !== null ||
+        a.z !== null
+    )) {
+
+        x = a.x || 0;
+        y = a.y || 0;
+        z = a.z || 0;
+
+    } else if (g) {
+
+        x = g.x || 0;
+        y = g.y || 0;
+        z = g.z || 0;
+
+    } else {
+
         return;
     }
 
 
-    const x =
-        acceleration.x || 0;
-
-    const y =
-        acceleration.y || 0;
-
-    const z =
-        acceleration.z || 0;
-
-
-    /*
-     * Calculate total acceleration.
-     */
-
-    const magnitude =
+    currentMotion =
         Math.sqrt(
             x * x +
             y * y +
@@ -620,128 +687,168 @@ function handleMotion(event) {
         );
 
 
-    lastAcceleration =
-        magnitude;
+    /*
+       Difference from previous reading.
+    */
+
+    motionDifference =
+        Math.abs(
+            currentMotion -
+            lastMotion
+        );
 
 
-    debug.textContent =
+    lastMotion =
+        currentMotion;
+
+
+    sensor.innerHTML =
         "Motion: " +
-        magnitude.toFixed(1) +
-        " m/s²";
+        currentMotion.toFixed(2) +
+        " m/s²<br>" +
+        "Change: " +
+        motionDifference.toFixed(2);
 
 
     /*
-     * Device is moving.
-     */
+       Normal movement.
+    */
 
-    if (magnitude > stillThreshold) {
+    if (
+        currentMotion >
+        STILL_LEVEL
+    ) {
 
-        movementDetected = true;
+        moving = true;
+
+        stillSince = null;
+    }
+
+
+    /*
+       BIG SUDDEN CHANGE.
+    */
+
+    if (
+        moving &&
+        motionDifference >=
+        IMPACT_CHANGE
+    ) {
+
+        console.log(
+            "POSSIBLE IMPACT",
+            currentMotion,
+            motionDifference
+        );
+
+        possibleCrash();
 
     }
 
 
     /*
-     * Possible sudden impact.
-     */
+       If motion becomes very small,
+       start stillness timer.
+    */
 
     if (
-        movementDetected &&
-        magnitude >= impactThreshold
+        crashActive &&
+        currentMotion <
+        STILL_LEVEL
     ) {
 
-        detectPossibleCrash();
+        if (stillSince === null) {
+
+            stillSince =
+                Date.now();
+
+        }
 
     }
 
 }
 
 
-/* =================================
+/* ==================================================
    POSSIBLE CRASH
-================================= */
+================================================== */
 
-function detectPossibleCrash() {
+function possibleCrash() {
 
-    if (crashDetected) {
+    if (crashActive) {
         return;
     }
 
 
-    crashDetected = true;
-
+    crashActive = true;
 
     status.textContent =
-        "Possible impact detected";
-
-
-    debug.textContent =
-        "Impact detected — checking stillness...";
+        "⚠️ Possible impact detected";
 
 
     /*
-     * Give the device a moment after
-     * the impact before checking whether
-     * it becomes still.
-     */
+       Wait 1 second before checking
+       the stillness.
+    */
 
     setTimeout(
-        startStillnessCheck,
-        1500
+        checkStillness,
+        1000
     );
 
 }
 
 
-/* =================================
-   STILLNESS CHECK
-================================= */
+/* ==================================================
+   STILLNESS
+================================================== */
 
-function startStillnessCheck() {
+function checkStillness() {
 
-    let stillStart = null;
+    if (!crashActive) {
+        return;
+    }
 
 
-    function check() {
+    let stillStart =
+        Date.now();
 
-        if (!crashDetected) {
+
+    function loop() {
+
+        if (!crashActive) {
             return;
         }
 
 
+        /*
+           Current motion is low.
+        */
+
         if (
-            lastAcceleration <=
-            stillThreshold
+            currentMotion <=
+            STILL_LEVEL
         ) {
 
-            if (stillStart === null) {
-
-                stillStart =
-                    Date.now();
-
-            }
-
-
-            const stillTime =
+            const elapsed =
                 Date.now() -
                 stillStart;
 
 
-            debug.textContent =
-                "Device still for " +
+            sensor.textContent =
+                "Stillness: " +
                 Math.floor(
-                    stillTime / 1000
+                    elapsed / 1000
                 ) +
-                " seconds";
+                "s";
 
 
-            /*
-             * Five seconds of stillness.
-             */
+            if (
+                elapsed >=
+                STILL_TIME
+            ) {
 
-            if (stillTime >= 5000) {
-
-                showCrashAlert();
+                showCrash();
 
                 return;
             }
@@ -749,30 +856,31 @@ function startStillnessCheck() {
 
         } else {
 
-            stillStart = null;
+            /*
+               Movement happened again.
+            */
 
-
-            debug.textContent =
-                "Movement detected after impact.";
+            stillStart =
+                Date.now();
 
         }
 
 
-        requestAnimationFrame(check);
+        requestAnimationFrame(loop);
 
     }
 
 
-    check();
+    loop();
 
 }
 
 
-/* =================================
-   SHOW CRASH ALERT
-================================= */
+/* ==================================================
+   SHOW CRASH
+================================================== */
 
-function showCrashAlert() {
+function showCrash() {
 
     crashScreen.style.display =
         "flex";
@@ -780,19 +888,21 @@ function showCrashAlert() {
 
     countdown = 10;
 
-
-    countdownElement.textContent =
+    number.textContent =
         countdown;
 
 
-    beepStatus.textContent =
-        "Waiting for response...";
+    confirmed.style.display =
+        "none";
 
 
-    speak(
+    beeping.textContent =
+        "Beeping for 10 seconds";
+
+
+    say(
         "Car crash detected. " +
-        "Say emergency to confirm, " +
-        "or say cancel."
+        "Say emergency or cancel."
     );
 
 
@@ -800,18 +910,18 @@ function showCrashAlert() {
 
     startCountdown();
 
-    startVoiceRecognition();
+    startRecognition();
 
 }
 
 
-/* =================================
-   BEEP SOUND
-================================= */
+/* ==================================================
+   BEEP
+================================================== */
 
-function makeBeep() {
+function beep() {
 
-    if (!audioContext) {
+    if (!audio) {
         return;
     }
 
@@ -819,20 +929,19 @@ function makeBeep() {
     try {
 
         if (
-            audioContext.state ===
+            audio.state ===
             "suspended"
         ) {
 
-            audioContext.resume();
-
+            audio.resume();
         }
 
 
         const oscillator =
-            audioContext.createOscillator();
+            audio.createOscillator();
 
         const gain =
-            audioContext.createGain();
+            audio.createGain();
 
 
         oscillator.type =
@@ -840,17 +949,17 @@ function makeBeep() {
 
 
         oscillator.frequency.value =
-            880;
+            900;
 
 
         gain.gain.value =
-            0.15;
+            0.18;
 
 
         oscillator.connect(gain);
 
         gain.connect(
-            audioContext.destination
+            audio.destination
         );
 
 
@@ -858,44 +967,36 @@ function makeBeep() {
 
 
         oscillator.stop(
-            audioContext.currentTime +
-            0.15
+            audio.currentTime +
+            0.13
         );
 
-    } catch (error) {
+    } catch (e) {
 
-        console.log(error);
+        console.log(e);
 
     }
 
 }
 
 
-/* =================================
-   START BEEPING
-================================= */
+/* ==================================================
+   BEEPING
+================================================== */
 
 function startBeeping() {
 
     stopBeeping();
 
 
-    /*
-     * First beep immediately.
-     */
-
-    makeBeep();
+    beep();
 
 
-    /*
-     * Then beep every second.
-     */
-
-    beepTimer =
+    beepInterval =
         setInterval(
-            () => {
+            function() {
 
-                makeBeep();
+                beep();
 
             },
             1000
@@ -904,67 +1005,66 @@ function startBeeping() {
 }
 
 
-/* =================================
+/* ==================================================
    STOP BEEPING
-================================= */
+================================================== */
 
 function stopBeeping() {
 
-    if (beepTimer !== null) {
+    if (beepInterval !== null) {
 
         clearInterval(
-            beepTimer
+            beepInterval
         );
 
-        beepTimer = null;
+        beepInterval = null;
 
     }
 
 }
 
 
-/* =================================
+/* ==================================================
    COUNTDOWN
-================================= */
+================================================== */
 
 function startCountdown() {
 
     clearInterval(
-        countdownTimer
+        countdownInterval
     );
 
 
-    countdownTimer =
+    countdownInterval =
         setInterval(
-            () => {
+            function() {
 
                 countdown--;
 
-
-                countdownElement.textContent =
+                number.textContent =
                     countdown;
 
 
                 if (countdown <= 0) {
 
                     clearInterval(
-                        countdownTimer
+                        countdownInterval
                     );
 
 
                     stopBeeping();
 
 
-                    countdownElement.textContent =
-                        "—";
+                    number.textContent =
+                        "0";
 
 
-                    beepStatus.textContent =
-                        "Alarm ended.";
+                    beeping.textContent =
+                        "Beeping stopped";
 
 
-                    speak(
-                        "The emergency alarm has ended."
+                    say(
+                        "The alarm has ended."
                     );
 
                 }
@@ -976,34 +1076,28 @@ function startCountdown() {
 }
 
 
-/* =================================
+/* ==================================================
    CANCEL
-================================= */
+================================================== */
 
 function cancelCrash() {
 
+    crashActive = false;
+
+    moving = false;
+
+    stillSince = null;
+
+
     clearInterval(
-        countdownTimer
+        countdownInterval
     );
 
 
     stopBeeping();
 
 
-    if (recognition) {
-
-        try {
-
-            recognition.stop();
-
-        } catch (error) {}
-
-    }
-
-
-    crashDetected = false;
-
-    movementDetected = false;
+    stopRecognition();
 
 
     crashScreen.style.display =
@@ -1011,25 +1105,73 @@ function cancelCrash() {
 
 
     status.textContent =
-        "Crash detection is active";
+        "🟢 Crash detection active";
 
 
-    debug.textContent =
-        "Monitoring movement...";
+    sensor.textContent =
+        "Sensor: active";
 
 
-    speak(
+    say(
         "Cancelled."
     );
 
 }
 
 
-/* =================================
-   VOICE RECOGNITION
-================================= */
+cancelButton.addEventListener(
+    "click",
+    cancelCrash
+);
 
-function startVoiceRecognition() {
+
+/* ==================================================
+   EMERGENCY
+================================================== */
+
+function confirmEmergency() {
+
+    clearInterval(
+        countdownInterval
+    );
+
+
+    stopBeeping();
+
+
+    confirmed.style.display =
+        "block";
+
+
+    beeping.textContent =
+        "Alarm stopped";
+
+
+    number.textContent =
+        "✓";
+
+
+    say(
+        "Emergency confirmed."
+    );
+
+
+    stopRecognition();
+
+}
+
+
+emergencyButton.addEventListener(
+    "click",
+    confirmEmergency
+);
+
+
+/* ==================================================
+   VOICE RECOGNITION
+================================================== */
+
+function startRecognition() {
 
     const SpeechRecognition =
         window.SpeechRecognition ||
@@ -1038,8 +1180,8 @@ function startVoiceRecognition() {
 
     if (!SpeechRecognition) {
 
-        beepStatus.textContent =
-            "Voice recognition is not supported.";
+        beeping.textContent =
+            "Voice recognition unavailable.";
 
         return;
     }
@@ -1066,32 +1208,22 @@ function startVoiceRecognition() {
         recognition.onresult =
             function(event) {
 
-                const last =
+                const result =
                     event.results[
                         event.results.length - 1
-                    ];
-
-
-                const text =
-                    last[0]
-                        .transcript
-                        .toLowerCase();
+                    ][0]
+                    .transcript
+                    .toLowerCase();
 
 
                 console.log(
-                    "Heard:",
-                    text
+                    "Voice:",
+                    result
                 );
 
 
-                /*
-                 * CANCEL
-                 */
-
                 if (
-                    text.includes("cancel") ||
-                    text.includes("cancelled") ||
-                    text.includes("canceled")
+                    result.includes("cancel")
                 ) {
 
                     cancelCrash();
@@ -1100,12 +1232,8 @@ function startVoiceRecognition() {
                 }
 
 
-                /*
-                 * EMERGENCY
-                 */
-
                 if (
-                    text.includes("emergency")
+                    result.includes("emergency")
                 ) {
 
                     confirmEmergency();
@@ -1119,7 +1247,7 @@ function startVoiceRecognition() {
             function(event) {
 
                 console.log(
-                    "Speech recognition:",
+                    "Recognition:",
                     event.error
                 );
 
@@ -1129,18 +1257,16 @@ function startVoiceRecognition() {
         recognition.onend =
             function() {
 
-                /*
-                 * Keep listening while the
-                 * crash screen is active.
-                 */
-
-                if (crashDetected) {
+                if (
+                    crashActive &&
+                    recognition
+                ) {
 
                     try {
 
                         recognition.start();
 
-                    } catch (error) {}
+                    } catch (e) {}
 
                 }
 
@@ -1149,79 +1275,62 @@ function startVoiceRecognition() {
 
         recognition.start();
 
+    } catch (e) {
 
-    } catch (error) {
-
-        console.log(error);
-
-    }
-
-}
-
-
-/* =================================
-   EMERGENCY CONFIRMATION
-================================= */
-
-function confirmEmergency() {
-
-    clearInterval(
-        countdownTimer
-    );
-
-
-    stopBeeping();
-
-
-    countdownElement.textContent =
-        "✓";
-
-
-    beepStatus.textContent =
-        "Emergency confirmed.";
-
-
-    speak(
-        "Emergency confirmed."
-    );
-
-
-    if (recognition) {
-
-        try {
-
-            recognition.stop();
-
-        } catch (error) {}
+        console.log(e);
 
     }
 
 }
 
 
-/* =================================
-   EMERGENCY BUTTON
-================================= */
+/* ==================================================
+   STOP RECOGNITION
+================================================== */
 
-emergencyButton.addEventListener(
-    "click",
-    () => {
+function stopRecognition() {
 
-        confirmEmergency();
-
+    if (!recognition) {
+        return;
     }
-);
 
 
-/* =================================
-   CANCEL BUTTON
-================================= */
+    try {
 
-cancelButton.addEventListener(
+        recognition.onend = null;
+
+        recognition.stop();
+
+    } catch (e) {}
+
+
+    recognition = null;
+
+}
+
+
+/* ==================================================
+   TEST CRASH
+================================================== */
+
+testButton.addEventListener(
     "click",
-    () => {
+    function() {
 
-        cancelCrash();
+        /*
+           This lets you test the complete
+           crash screen without moving the phone.
+        */
+
+        if (crashActive) {
+            return;
+        }
+
+
+        crashActive = true;
+
+
+        showCrash();
 
     }
 );
