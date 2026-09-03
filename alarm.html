@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +13,6 @@
 <title>Car Crash Detection</title>
 
 <style>
-
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
@@ -24,7 +24,7 @@ body {
     width: 100%;
     height: 100%;
     background: #000;
-    color: white;
+    color: #fff;
     font-family: "Google Sans", "Segoe UI", Arial, sans-serif;
 }
 
@@ -32,24 +32,26 @@ body {
     overflow: hidden;
 }
 
-#main {
-    width: 100%;
-    height: 100%;
+/* =========================
+   HOME
+========================= */
+
+#home {
+    width: 100vw;
+    height: 100vh;
 
     display: flex;
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
 
-    padding: 25px;
-
     text-align: center;
+    padding: 25px;
 }
 
-.carIcon {
-    width: 90px;
-    height: 90px;
+.car {
+    width: 100px;
+    height: 100px;
 
     border-radius: 50%;
 
@@ -59,117 +61,122 @@ body {
     align-items: center;
     justify-content: center;
 
-    font-size: 45px;
+    font-size: 50px;
 
     margin-bottom: 25px;
 }
 
 h1 {
-    font-size: 32px;
-    margin: 0 0 12px;
+    margin: 0;
+
+    font-size: 34px;
+    font-weight: 700;
 }
 
-.subtitle {
-    max-width: 390px;
+.info {
+    max-width: 450px;
 
-    color: #aaa;
+    color: #999;
 
     font-size: 17px;
-
     line-height: 1.5;
 
-    margin-bottom: 20px;
+    margin: 15px 0 25px;
 }
 
 button {
-    border: 0;
+    border: none;
+    outline: none;
 
-    border-radius: 28px;
+    border-radius: 999px;
 
-    padding: 15px 28px;
+    padding: 16px 30px;
 
     font-size: 17px;
-
     font-weight: 700;
-
-    margin: 7px;
 
     cursor: pointer;
 
-    background: white;
-    color: black;
+    margin: 6px;
+
+    background: #fff;
+    color: #000;
 }
 
 button:active {
     transform: scale(.96);
 }
 
-#start {
-    background: white;
-}
-
-#test {
+#testButton {
     background: #292a2d;
-    color: white;
+    color: #fff;
 }
 
 #status {
     margin-top: 15px;
 
-    color: #888;
+    color: #777;
 
     font-size: 15px;
 }
 
 #sensor {
-    margin-top: 12px;
+    margin-top: 8px;
 
-    color: #555;
+    color: #444;
 
     font-size: 12px;
-
-    line-height: 1.5;
 }
 
 
 /* =========================
-   CRASH SCREEN
+   FULLSCREEN CRASH SCREEN
 ========================= */
 
 #crashScreen {
-
     position: fixed;
 
     inset: 0;
 
-    z-index: 999;
+    width: 100vw;
+    height: 100vh;
 
-    background: #000;
+    z-index: 9999;
 
     display: none;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #210000 0%,
+            #090000 42%,
+            #000 75%
+        );
+
+    flex-direction: column;
 
     align-items: center;
     justify-content: center;
 
     text-align: center;
 
-    padding: 25px;
+    padding: 20px;
 }
 
-.crashBox {
-    width: 100%;
-    max-width: 460px;
+
+/* =========================
+   TOP
+========================= */
+
+.crashIcon {
+    font-size: 70px;
+
+    margin-bottom: 15px;
+
+    animation: warningPulse 1s infinite;
 }
 
-.warning {
-    font-size: 72px;
-
-    margin-bottom: 20px;
-
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
+@keyframes warningPulse {
 
     0% {
         transform: scale(1);
@@ -185,60 +192,139 @@ button:active {
 
 }
 
+
+/* =========================
+   TITLE
+========================= */
+
 .crashTitle {
+    font-size: clamp(34px, 8vw, 58px);
 
-    font-size: 38px;
+    font-weight: 800;
 
-    font-weight: 700;
+    letter-spacing: -1px;
 
-    line-height: 1.15;
-
-    margin-bottom: 18px;
+    margin-bottom: 12px;
 }
 
-.crashDescription {
+.crashSubtitle {
+    font-size: clamp(17px, 4vw, 22px);
 
     color: #ddd;
 
-    font-size: 18px;
+    max-width: 600px;
 
-    line-height: 1.5;
+    line-height: 1.4;
 }
 
-#number {
 
-    font-size: 70px;
+/* =========================
+   COUNTDOWN
+========================= */
 
-    font-weight: 700;
+.countdownContainer {
+    position: relative;
 
-    margin: 25px 0;
+    width: min(270px, 65vw);
+    height: min(270px, 65vw);
+
+    margin: 30px 0;
 }
 
-#beeping {
+.countdownSvg {
+    width: 100%;
+    height: 100%;
 
-    color: #999;
-
-    font-size: 14px;
-
-    margin-top: 10px;
+    transform: rotate(-90deg);
 }
 
-#cancel {
+.countdownBackground {
+    fill: none;
+
+    stroke: #292929;
+
+    stroke-width: 10;
+}
+
+.countdownProgress {
+    fill: none;
+
+    stroke: #fff;
+
+    stroke-width: 10;
+
+    stroke-linecap: round;
+
+    stroke-dasharray: 691;
+
+    stroke-dashoffset: 0;
+
+    transition:
+        stroke-dashoffset 1s linear;
+}
+
+.countdownNumber {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: clamp(70px, 17vw, 110px);
+
+    font-weight: 800;
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+#beepText {
+    color: #aaa;
+
+    font-size: 15px;
+
+    min-height: 22px;
+
+    margin-bottom: 8px;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.crashButtons {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    max-width: 600px;
+}
+
+#cancelButton {
+    min-width: 145px;
 
     background: #303134;
 
-    color: white;
-
-    min-width: 130px;
+    color: #fff;
 }
 
-#emergency {
+#emergencyButton {
+    min-width: 145px;
 
-    background: white;
+    background: #fff;
 
-    color: black;
-
-    min-width: 130px;
+    color: #000;
 }
 
 
@@ -247,16 +333,43 @@ button:active {
 ========================= */
 
 #confirmed {
-
     display: none;
 
-    margin-top: 20px;
+    font-size: 22px;
 
-    font-size: 18px;
+    font-weight: 700;
 
-    color: #fff;
+    margin-top: 15px;
 }
 
+
+/* =========================
+   SMALL DEVICES
+========================= */
+
+@media (max-height: 650px) {
+
+    .crashIcon {
+        font-size: 45px;
+        margin-bottom: 5px;
+    }
+
+    .crashTitle {
+        font-size: 32px;
+    }
+
+    .countdownContainer {
+        width: 170px;
+        height: 170px;
+
+        margin: 15px 0;
+    }
+
+    .countdownNumber {
+        font-size: 65px;
+    }
+
+}
 </style>
 </head>
 
@@ -264,12 +377,12 @@ button:active {
 
 
 <!-- =========================
-     MAIN
+     HOME
 ========================= -->
 
-<div id="main">
+<div id="home">
 
-    <div class="carIcon">
+    <div class="car">
         🚗
     </div>
 
@@ -277,17 +390,17 @@ button:active {
         Car Crash Detection
     </h1>
 
-    <div class="subtitle">
-        Motion sensors monitor the device for
-        sudden impacts followed by a period
-        of little movement.
+    <div class="info">
+        The device monitors movement and looks
+        for a sudden impact followed by a period
+        of very little movement.
     </div>
 
-    <button id="start">
+    <button id="startButton">
         Start detection
     </button>
 
-    <button id="test">
+    <button id="testButton">
         Test crash
     </button>
 
@@ -303,47 +416,82 @@ button:active {
 
 
 <!-- =========================
-     CRASH
+     FULLSCREEN CRASH
 ========================= -->
 
 <div id="crashScreen">
 
-    <div class="crashBox">
+    <div class="crashIcon">
+        ⚠️
+    </div>
 
-        <div class="warning">
-            ⚠️
-        </div>
+    <div class="crashTitle">
+        Car crash detected
+    </div>
 
-        <div class="crashTitle">
-            Car crash detected
-        </div>
+    <div class="crashSubtitle">
+        We've detected a possible crash.
+        <br>
+        Say <b>emergency</b> or <b>cancel</b>.
+    </div>
 
-        <div class="crashDescription">
-            We've detected a possible crash.
-            <br>
-            Say <b>emergency</b> or <b>cancel</b>.
-        </div>
 
-        <div id="number">
+    <!-- COUNTDOWN -->
+
+    <div class="countdownContainer">
+
+        <svg
+            class="countdownSvg"
+            viewBox="0 0 250 250">
+
+            <circle
+                class="countdownBackground"
+                cx="125"
+                cy="125"
+                r="110">
+            </circle>
+
+            <circle
+                id="progress"
+                class="countdownProgress"
+                cx="125"
+                cy="125"
+                r="110">
+            </circle>
+
+        </svg>
+
+        <div
+            id="countdown"
+            class="countdownNumber">
             10
         </div>
 
-        <button id="cancel">
+    </div>
+
+
+    <div id="beepText">
+        Beeping...
+    </div>
+
+
+    <!-- BUTTONS -->
+
+    <div class="crashButtons">
+
+        <button id="cancelButton">
             Cancel
         </button>
 
-        <button id="emergency">
+        <button id="emergencyButton">
             Emergency
         </button>
 
-        <div id="beeping">
-            Beeping for 10 seconds
-        </div>
+    </div>
 
-        <div id="confirmed">
-            Emergency confirmed.
-        </div>
 
+    <div id="confirmed">
+        ✓ Emergency confirmed
     </div>
 
 </div>
@@ -351,57 +499,48 @@ button:active {
 
 <script>
 
-
 /* ==================================================
    VARIABLES
 ================================================== */
 
 let detectionActive = false;
-
 let crashActive = false;
-
-let lastMotion = 0;
-
-let currentMotion = 0;
-
-let motionDifference = 0;
 
 let moving = false;
 
-let stillSince = null;
+let previousAcceleration = 0;
+let currentAcceleration = 0;
 
 let countdown = 10;
 
 let countdownInterval = null;
-
 let beepInterval = null;
 
-let audio = null;
+let audioContext = null;
 
 let recognition = null;
 
-
-/*
-   These values are easier to trigger than
-   the previous version.
-*/
+let lastMotionTime = Date.now();
 
 const IMPACT_CHANGE = 12;
-
 const STILL_LEVEL = 2.5;
-
 const STILL_TIME = 4000;
+
+const CIRCUMFERENCE = 691;
 
 
 /* ==================================================
    ELEMENTS
 ================================================== */
 
+const home =
+    document.getElementById("home");
+
 const startButton =
-    document.getElementById("start");
+    document.getElementById("startButton");
 
 const testButton =
-    document.getElementById("test");
+    document.getElementById("testButton");
 
 const status =
     document.getElementById("status");
@@ -412,17 +551,20 @@ const sensor =
 const crashScreen =
     document.getElementById("crashScreen");
 
-const number =
-    document.getElementById("number");
+const countdownElement =
+    document.getElementById("countdown");
+
+const progress =
+    document.getElementById("progress");
+
+const beepText =
+    document.getElementById("beepText");
 
 const cancelButton =
-    document.getElementById("cancel");
+    document.getElementById("cancelButton");
 
 const emergencyButton =
-    document.getElementById("emergency");
-
-const beeping =
-    document.getElementById("beeping");
+    document.getElementById("emergencyButton");
 
 const confirmed =
     document.getElementById("confirmed");
@@ -432,7 +574,7 @@ const confirmed =
    VOICE
 ================================================== */
 
-function say(text) {
+function speak(text) {
 
     if (!window.speechSynthesis) {
         return;
@@ -445,7 +587,7 @@ function say(text) {
 
     voice.lang = "en-US";
 
-    voice.rate = 0.9;
+    voice.rate = 0.88;
 
     voice.pitch = 1;
 
@@ -457,7 +599,7 @@ function say(text) {
    MICROPHONE
 ================================================== */
 
-async function microphonePermission() {
+async function requestMicrophone() {
 
     if (
         !navigator.mediaDevices ||
@@ -465,7 +607,7 @@ async function microphonePermission() {
     ) {
 
         status.textContent =
-            "Microphone is not available.";
+            "Microphone is unavailable.";
 
         return false;
     }
@@ -499,7 +641,7 @@ async function microphonePermission() {
    MOTION PERMISSION
 ================================================== */
 
-async function motionPermission() {
+async function requestMotion() {
 
     try {
 
@@ -528,7 +670,7 @@ async function motionPermission() {
         console.log(error);
 
         status.textContent =
-            "Motion sensor permission failed.";
+            "Motion sensor unavailable.";
 
         return false;
     }
@@ -541,15 +683,17 @@ async function motionPermission() {
 
 startButton.addEventListener(
     "click",
-    async function() {
+    async () => {
 
         startButton.disabled = true;
 
         status.textContent =
             "Requesting microphone...";
 
+
         const mic =
-            await microphonePermission();
+            await requestMicrophone();
+
 
         if (!mic) {
 
@@ -564,7 +708,7 @@ startButton.addEventListener(
 
 
         const motion =
-            await motionPermission();
+            await requestMotion();
 
 
         if (!motion) {
@@ -575,14 +719,9 @@ startButton.addEventListener(
         }
 
 
-        /*
-           Audio must be created after
-           a user interaction on mobile.
-        */
-
         try {
 
-            audio =
+            audioContext =
                 new (
                     window.AudioContext ||
                     window.webkitAudioContext
@@ -604,7 +743,7 @@ startButton.addEventListener(
 
         window.addEventListener(
             "devicemotion",
-            motionHandler,
+            handleMotion,
             true
         );
 
@@ -620,7 +759,7 @@ startButton.addEventListener(
             "Sensor: active";
 
 
-        say(
+        speak(
             "Car crash detection is active."
         );
 
@@ -632,9 +771,12 @@ startButton.addEventListener(
    MOTION
 ================================================== */
 
-function motionHandler(event) {
+function handleMotion(event) {
 
-    if (!detectionActive || crashActive) {
+    if (
+        !detectionActive ||
+        crashActive
+    ) {
         return;
     }
 
@@ -647,21 +789,12 @@ function motionHandler(event) {
         event.accelerationIncludingGravity;
 
 
-    /*
-       Prefer acceleration without gravity.
-       If unavailable, use gravity-inclusive.
-    */
-
-    let x;
-    let y;
-    let z;
+    let x = 0;
+    let y = 0;
+    let z = 0;
 
 
-    if (a && (
-        a.x !== null ||
-        a.y !== null ||
-        a.z !== null
-    )) {
+    if (a) {
 
         x = a.x || 0;
         y = a.y || 0;
@@ -679,90 +812,51 @@ function motionHandler(event) {
     }
 
 
-    currentMotion =
+    currentAcceleration =
         Math.sqrt(
-            x * x +
-            y * y +
-            z * z
+            x*x +
+            y*y +
+            z*z
         );
 
 
-    /*
-       Difference from previous reading.
-    */
-
-    motionDifference =
+    const change =
         Math.abs(
-            currentMotion -
-            lastMotion
+            currentAcceleration -
+            previousAcceleration
         );
 
 
-    lastMotion =
-        currentMotion;
+    previousAcceleration =
+        currentAcceleration;
 
 
     sensor.innerHTML =
         "Motion: " +
-        currentMotion.toFixed(2) +
+        currentAcceleration.toFixed(2) +
         " m/s²<br>" +
         "Change: " +
-        motionDifference.toFixed(2);
+        change.toFixed(2);
 
-
-    /*
-       Normal movement.
-    */
 
     if (
-        currentMotion >
+        currentAcceleration >
         STILL_LEVEL
     ) {
 
         moving = true;
 
-        stillSince = null;
+        lastMotionTime =
+            Date.now();
     }
 
-
-    /*
-       BIG SUDDEN CHANGE.
-    */
 
     if (
         moving &&
-        motionDifference >=
-        IMPACT_CHANGE
+        change >= IMPACT_CHANGE
     ) {
-
-        console.log(
-            "POSSIBLE IMPACT",
-            currentMotion,
-            motionDifference
-        );
 
         possibleCrash();
-
-    }
-
-
-    /*
-       If motion becomes very small,
-       start stillness timer.
-    */
-
-    if (
-        crashActive &&
-        currentMotion <
-        STILL_LEVEL
-    ) {
-
-        if (stillSince === null) {
-
-            stillSince =
-                Date.now();
-
-        }
 
     }
 
@@ -782,13 +876,18 @@ function possibleCrash() {
 
     crashActive = true;
 
+
     status.textContent =
-        "⚠️ Possible impact detected";
+        "⚠️ Impact detected";
+
+
+    sensor.textContent =
+        "Checking for stillness...";
 
 
     /*
-       Wait 1 second before checking
-       the stillness.
+       Give the device a short moment
+       after the impact.
     */
 
     setTimeout(
@@ -821,12 +920,8 @@ function checkStillness() {
         }
 
 
-        /*
-           Current motion is low.
-        */
-
         if (
-            currentMotion <=
+            currentAcceleration <=
             STILL_LEVEL
         ) {
 
@@ -836,7 +931,7 @@ function checkStillness() {
 
 
             sensor.textContent =
-                "Stillness: " +
+                "Still: " +
                 Math.floor(
                     elapsed / 1000
                 ) +
@@ -848,17 +943,12 @@ function checkStillness() {
                 STILL_TIME
             ) {
 
-                showCrash();
+                showCrashScreen();
 
                 return;
             }
 
-
         } else {
-
-            /*
-               Movement happened again.
-            */
 
             stillStart =
                 Date.now();
@@ -877,10 +967,10 @@ function checkStillness() {
 
 
 /* ==================================================
-   SHOW CRASH
+   SHOW CRASH SCREEN
 ================================================== */
 
-function showCrash() {
+function showCrashScreen() {
 
     crashScreen.style.display =
         "flex";
@@ -888,19 +978,24 @@ function showCrash() {
 
     countdown = 10;
 
-    number.textContent =
+
+    countdownElement.textContent =
         countdown;
+
+
+    progress.style.strokeDashoffset =
+        "0";
 
 
     confirmed.style.display =
         "none";
 
 
-    beeping.textContent =
-        "Beeping for 10 seconds";
+    beepText.textContent =
+        "Beeping...";
 
 
-    say(
+    speak(
         "Car crash detected. " +
         "Say emergency or cancel."
     );
@@ -910,7 +1005,7 @@ function showCrash() {
 
     startCountdown();
 
-    startRecognition();
+    startVoiceRecognition();
 
 }
 
@@ -921,7 +1016,7 @@ function showCrash() {
 
 function beep() {
 
-    if (!audio) {
+    if (!audioContext) {
         return;
     }
 
@@ -929,19 +1024,19 @@ function beep() {
     try {
 
         if (
-            audio.state ===
+            audioContext.state ===
             "suspended"
         ) {
 
-            audio.resume();
+            audioContext.resume();
         }
 
 
         const oscillator =
-            audio.createOscillator();
+            audioContext.createOscillator();
 
         const gain =
-            audio.createGain();
+            audioContext.createGain();
 
 
         oscillator.type =
@@ -953,13 +1048,13 @@ function beep() {
 
 
         gain.gain.value =
-            0.18;
+            0.16;
 
 
         oscillator.connect(gain);
 
         gain.connect(
-            audio.destination
+            audioContext.destination
         );
 
 
@@ -967,7 +1062,7 @@ function beep() {
 
 
         oscillator.stop(
-            audio.currentTime +
+            audioContext.currentTime +
             0.13
         );
 
@@ -981,20 +1076,19 @@ function beep() {
 
 
 /* ==================================================
-   BEEPING
+   START BEEPING
 ================================================== */
 
 function startBeeping() {
 
     stopBeeping();
 
-
     beep();
 
 
     beepInterval =
         setInterval(
-            function() {
+            () => {
 
                 beep();
 
@@ -1011,14 +1105,15 @@ function startBeeping() {
 
 function stopBeeping() {
 
-    if (beepInterval !== null) {
+    if (
+        beepInterval !== null
+    ) {
 
         clearInterval(
             beepInterval
         );
 
         beepInterval = null;
-
     }
 
 }
@@ -1037,12 +1132,30 @@ function startCountdown() {
 
     countdownInterval =
         setInterval(
-            function() {
+            () => {
 
                 countdown--;
 
-                number.textContent =
+
+                countdownElement.textContent =
                     countdown;
+
+
+                /*
+                   Animate circular progress.
+                */
+
+                const percentage =
+                    countdown / 10;
+
+
+                const offset =
+                    CIRCUMFERENCE *
+                    (1 - percentage);
+
+
+                progress.style.strokeDashoffset =
+                    offset;
 
 
                 if (countdown <= 0) {
@@ -1055,15 +1168,15 @@ function startCountdown() {
                     stopBeeping();
 
 
-                    number.textContent =
+                    countdownElement.textContent =
                         "0";
 
 
-                    beeping.textContent =
-                        "Beeping stopped";
+                    beepText.textContent =
+                        "Alarm ended";
 
 
-                    say(
+                    speak(
                         "The alarm has ended."
                     );
 
@@ -1086,8 +1199,6 @@ function cancelCrash() {
 
     moving = false;
 
-    stillSince = null;
-
 
     clearInterval(
         countdownInterval
@@ -1095,7 +1206,6 @@ function cancelCrash() {
 
 
     stopBeeping();
-
 
     stopRecognition();
 
@@ -1112,7 +1222,7 @@ function cancelCrash() {
         "Sensor: active";
 
 
-    say(
+    speak(
         "Cancelled."
     );
 
@@ -1129,6 +1239,12 @@ cancelButton.addEventListener(
    EMERGENCY
 ================================================== */
 
+emergencyButton.addEventListener(
+    "click",
+    confirmEmergency
+);
+
+
 function confirmEmergency() {
 
     clearInterval(
@@ -1143,15 +1259,19 @@ function confirmEmergency() {
         "block";
 
 
-    beeping.textContent =
+    beepText.textContent =
         "Alarm stopped";
 
 
-    number.textContent =
+    countdownElement.textContent =
         "✓";
 
 
-    say(
+    progress.style.strokeDashoffset =
+        CIRCUMFERENCE;
+
+
+    speak(
         "Emergency confirmed."
     );
 
@@ -1161,17 +1281,11 @@ function confirmEmergency() {
 }
 
 
-emergencyButton.addEventListener(
-    "click",
-    confirmEmergency
-);
-
-
 /* ==================================================
    VOICE RECOGNITION
 ================================================== */
 
-function startRecognition() {
+function startVoiceRecognition() {
 
     const SpeechRecognition =
         window.SpeechRecognition ||
@@ -1180,7 +1294,7 @@ function startRecognition() {
 
     if (!SpeechRecognition) {
 
-        beeping.textContent =
+        beepText.textContent =
             "Voice recognition unavailable.";
 
         return;
@@ -1217,7 +1331,7 @@ function startRecognition() {
 
 
                 console.log(
-                    "Voice:",
+                    "Heard:",
                     result
                 );
 
@@ -1247,7 +1361,7 @@ function startRecognition() {
             function(event) {
 
                 console.log(
-                    "Recognition:",
+                    "Speech error:",
                     event.error
                 );
 
@@ -1257,10 +1371,7 @@ function startRecognition() {
         recognition.onend =
             function() {
 
-                if (
-                    crashActive &&
-                    recognition
-                ) {
+                if (crashActive) {
 
                     try {
 
@@ -1315,22 +1426,21 @@ function stopRecognition() {
 
 testButton.addEventListener(
     "click",
-    function() {
-
-        /*
-           This lets you test the complete
-           crash screen without moving the phone.
-        */
+    () => {
 
         if (crashActive) {
             return;
         }
 
 
+        /*
+           Test mode skips the sensor detection
+           and opens the complete alarm.
+        */
+
         crashActive = true;
 
-
-        showCrash();
+        showCrashScreen();
 
     }
 );
@@ -1339,3 +1449,4 @@ testButton.addEventListener(
 
 </body>
 </html>
+
