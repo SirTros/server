@@ -1,18 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width,
-      initial-scale=1.0,
-      maximum-scale=1.0,
-      user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>Car Crash Detection</title>
 
 <style>
+
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
@@ -23,235 +18,581 @@ body {
     margin: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;
     background: #000;
     color: #fff;
-    font-family: "Google Sans", "Segoe UI", Arial, sans-serif;
+
+    font-family:
+        "Google Sans",
+        "Segoe UI",
+        Arial,
+        sans-serif;
 }
 
-body {
-    overflow: hidden;
+button {
+    font: inherit;
+    border: 0;
+    cursor: pointer;
 }
 
-/* =========================
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================================================
    HOME
-========================= */
+========================================================= */
 
 #home {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100dvh;
+    min-height: 100vh;
 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 
+    padding: 30px;
+
     text-align: center;
-    padding: 25px;
+
+    background:
+        radial-gradient(
+            circle at 50% 40%,
+            #1c1c1c 0%,
+            #0b0b0b 48%,
+            #000 100%
+        );
 }
 
-.car {
-    width: 100px;
-    height: 100px;
+.logo {
+    width: 84px;
+    height: 84px;
 
     border-radius: 50%;
-
-    background: #202124;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    font-size: 50px;
+    background: #1b1b1b;
+
+    border: 1px solid #333;
+
+    font-size: 40px;
 
     margin-bottom: 25px;
+
+    box-shadow:
+        0 12px 40px rgba(0,0,0,.45);
 }
 
-h1 {
-    margin: 0;
+.title {
+    font-size:
+        clamp(30px, 7vw, 52px);
 
-    font-size: 34px;
-    font-weight: 700;
+    font-weight: 900;
+
+    letter-spacing: -1.2px;
 }
 
-.info {
-    max-width: 450px;
+.subtitle {
+    margin-top: 12px;
 
-    color: #999;
+    max-width: 600px;
 
-    font-size: 17px;
+    color: #aaa;
+
+    font-size: 16px;
+
     line-height: 1.5;
-
-    margin: 15px 0 25px;
 }
 
-button {
-    border: none;
-    outline: none;
+.startButton {
+    margin-top: 35px;
 
-    border-radius: 999px;
+    width: min(400px, 90vw);
 
-    padding: 16px 30px;
+    min-height: 60px;
 
-    font-size: 17px;
-    font-weight: 700;
-
-    cursor: pointer;
-
-    margin: 6px;
+    border-radius: 32px;
 
     background: #fff;
     color: #000;
+
+    font-size: 18px;
+
+    font-weight: 900;
+
+    transition:
+        transform .15s,
+        opacity .15s;
 }
 
-button:active {
+.startButton:active {
     transform: scale(.96);
 }
 
-#testButton {
-    background: #292a2d;
+.testButton {
+    margin-top: 14px;
+
+    width: min(400px, 90vw);
+
+    min-height: 52px;
+
+    border-radius: 28px;
+
+    background: #191919;
+
     color: #fff;
+
+    border: 1px solid #333;
+
+    font-weight: 700;
+
+    transition:
+        transform .15s,
+        background .15s;
 }
 
-#status {
-    margin-top: 15px;
+.testButton:active {
+    transform: scale(.97);
 
-    color: #777;
-
-    font-size: 15px;
+    background: #252525;
 }
 
-#sensor {
-    margin-top: 8px;
+.status {
+    margin-top: 25px;
 
-    color: #444;
+    display: flex;
 
-    font-size: 12px;
+    align-items: center;
+
+    gap: 9px;
+
+    color: #999;
+
+    font-size: 14px;
+}
+
+.statusDot {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #666;
+}
+
+.statusDot.active {
+    background: #34d399;
+
+    box-shadow:
+        0 0 14px #34d399;
 }
 
 
-/* =========================
-   FULLSCREEN CRASH SCREEN
-========================= */
+/* =========================================================
+   STILLNESS SCREEN
+========================================================= */
 
-#crashScreen {
+#stillScreen {
     position: fixed;
 
     inset: 0;
 
-    width: 100vw;
-    height: 100vh;
+    z-index: 90;
 
-    z-index: 9999;
+    width: 100%;
+    height: 100dvh;
 
-    display: none;
-
-    background:
-        radial-gradient(
-            circle at center,
-            #210000 0%,
-            #090000 42%,
-            #000 75%
-        );
+    display: flex;
 
     flex-direction: column;
 
     align-items: center;
     justify-content: center;
 
+    padding:
+        max(25px, env(safe-area-inset-top))
+        25px
+        max(25px, env(safe-area-inset-bottom));
+
     text-align: center;
 
-    padding: 20px;
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            #3a2a08 0%,
+            #120d02 48%,
+            #000 100%
+        );
 }
 
+.stillIcon {
+    font-size: 64px;
 
-/* =========================
-   TOP
-========================= */
+    margin-bottom: 20px;
 
-.crashIcon {
-    font-size: 70px;
-
-    margin-bottom: 15px;
-
-    animation: warningPulse 1s infinite;
+    animation:
+        stillPulse 1.2s infinite;
 }
 
-@keyframes warningPulse {
+@keyframes stillPulse {
 
-    0% {
+    0%,
+    100% {
         transform: scale(1);
     }
 
     50% {
         transform: scale(1.08);
     }
+}
 
+.stillTitle {
+    font-size:
+        clamp(28px, 7vw, 48px);
+
+    font-weight: 900;
+}
+
+.stillText {
+    margin-top: 12px;
+
+    max-width: 500px;
+
+    color: #d8c99d;
+
+    line-height: 1.5;
+}
+
+.stillCounter {
+    margin-top: 28px;
+
+    font-size: 64px;
+
+    font-weight: 900;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+/* =========================================================
+   CRASH SCREEN
+========================================================= */
+
+#crashScreen {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    width: 100%;
+    height: 100dvh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        max(24px, env(safe-area-inset-top))
+        24px
+        max(24px, env(safe-area-inset-bottom));
+
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at 50% 25%,
+            #521313 0%,
+            #240707 42%,
+            #080101 75%,
+            #000 100%
+        );
+
+    overflow: hidden;
+}
+
+#crashScreen::before {
+    content: "";
+
+    position: absolute;
+
+    width: 500px;
+    height: 500px;
+
+    top: -250px;
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,59,48,.15);
+
+    filter: blur(70px);
+
+    animation:
+        crashGlow 2s
+        infinite ease-in-out;
+
+    pointer-events: none;
+}
+
+@keyframes crashGlow {
+
+    0%,
+    100% {
+        opacity: .45;
+
+        transform:
+            translateX(-50%)
+            scale(.9);
+    }
+
+    50% {
+        opacity: .9;
+
+        transform:
+            translateX(-50%)
+            scale(1.15);
+    }
+}
+
+
+/* =========================================================
+   ALERT PILL
+========================================================= */
+
+.alertPill {
+    position: relative;
+
+    z-index: 2;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px 14px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(255,255,255,.08);
+
+    border:
+        1px solid
+        rgba(255,255,255,.12);
+
+    color: #ffb4ae;
+
+    font-size: 12px;
+
+    font-weight: 900;
+
+    letter-spacing: .8px;
+
+    text-transform: uppercase;
+
+    backdrop-filter:
+        blur(12px);
+
+    margin-bottom: 17px;
+}
+
+.alertPillDot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #ff453a;
+
+    box-shadow:
+        0 0 10px #ff453a;
+
+    animation:
+        alertDot 1s infinite;
+}
+
+@keyframes alertDot {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .35;
+    }
+}
+
+
+/* =========================================================
+   ALERT ICON
+========================================================= */
+
+.alertIcon {
+    position: relative;
+
+    z-index: 2;
+
+    width: 78px;
+    height: 78px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #ff3b30;
+
+    font-size: 42px;
+
+    font-weight: 900;
+
+    margin-bottom: 20px;
+
+    box-shadow:
+        0 0 35px
+        rgba(255,59,48,.42),
+
+        0 0 80px
+        rgba(255,59,48,.14);
+
+    animation:
+        alertPulse 1.1s infinite;
+}
+
+@keyframes alertPulse {
+
+    0%,
     100% {
         transform: scale(1);
     }
 
+    50% {
+        transform: scale(1.06);
+    }
 }
 
 
-/* =========================
-   TITLE
-========================= */
+/* =========================================================
+   CRASH TEXT
+========================================================= */
 
 .crashTitle {
-    font-size: clamp(34px, 8vw, 58px);
-
-    font-weight: 800;
-
-    letter-spacing: -1px;
-
-    margin-bottom: 12px;
-}
-
-.crashSubtitle {
-    font-size: clamp(17px, 4vw, 22px);
-
-    color: #ddd;
-
-    max-width: 600px;
-
-    line-height: 1.4;
-}
-
-
-/* =========================
-   COUNTDOWN
-========================= */
-
-.countdownContainer {
     position: relative;
 
-    width: min(270px, 65vw);
-    height: min(270px, 65vw);
+    z-index: 2;
 
-    margin: 30px 0;
+    margin: 0;
+
+    font-size:
+        clamp(34px, 8vw, 58px);
+
+    font-weight: 900;
+
+    line-height: 1.04;
+
+    letter-spacing: -1.3px;
+}
+
+.crashText {
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 13px;
+
+    max-width: 520px;
+
+    color: #e8bdb9;
+
+    font-size: 16px;
+
+    line-height: 1.45;
+}
+
+#voiceStatus {
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 9px;
+
+    min-height: 20px;
+
+    color: #ffb4ae;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
+
+.countdownWrap {
+    position: relative;
+
+    z-index: 2;
+
+    width:
+        min(235px, 58vw);
+
+    height:
+        min(235px, 58vw);
+
+    margin:
+        24px 0 25px;
 }
 
 .countdownSvg {
     width: 100%;
     height: 100%;
 
-    transform: rotate(-90deg);
+    transform:
+        rotate(-90deg);
+
+    filter:
+        drop-shadow(
+            0 0 14px
+            rgba(255,69,58,.25)
+        );
 }
 
-.countdownBackground {
+.circleBackground {
     fill: none;
 
-    stroke: #292929;
+    stroke:
+        rgba(255,255,255,.10);
 
-    stroke-width: 10;
+    stroke-width: 12;
 }
 
-.countdownProgress {
+.circleProgress {
     fill: none;
 
-    stroke: #fff;
+    stroke: #ff453a;
 
-    stroke-width: 10;
+    stroke-width: 12;
 
     stroke-linecap: round;
 
@@ -260,7 +601,7 @@ button:active {
     stroke-dashoffset: 0;
 
     transition:
-        stroke-dashoffset 1s linear;
+        stroke-dashoffset .9s linear;
 }
 
 .countdownNumber {
@@ -273,225 +614,628 @@ button:active {
     align-items: center;
     justify-content: center;
 
-    font-size: clamp(70px, 17vw, 110px);
+    flex-direction: column;
+
+    font-size:
+        clamp(55px, 15vw, 88px);
+
+    font-weight: 900;
+
+    font-variant-numeric:
+        tabular-nums;
+
+    letter-spacing: -3px;
+}
+
+.countdownNumber::after {
+    content: "SECONDS";
+
+    display: block;
+
+    margin-top: -8px;
+
+    font-size: 10px;
+
+    letter-spacing: 1.8px;
+
+    color: #d69b97;
 
     font-weight: 800;
 }
 
 
-/* =========================
-   MESSAGE
-========================= */
+/* =========================================================
+   CRASH BUTTONS
+========================================================= */
 
-#beepText {
-    color: #aaa;
+.buttons {
+    position: relative;
 
-    font-size: 15px;
+    z-index: 2;
 
-    min-height: 22px;
+    width:
+        min(500px, 100%);
 
-    margin-bottom: 8px;
-}
-
-
-/* =========================
-   BUTTONS
-========================= */
-
-.crashButtons {
     display: flex;
 
-    flex-wrap: wrap;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 8px;
-
-    max-width: 600px;
+    gap: 12px;
 }
 
-#cancelButton {
-    min-width: 145px;
+.actionButton {
+    flex: 1;
 
-    background: #303134;
+    min-height: 56px;
 
-    color: #fff;
+    border-radius: 29px;
+
+    font-size: 16px;
+
+    font-weight: 900;
+
+    transition:
+        transform .15s;
 }
 
-#emergencyButton {
-    min-width: 145px;
+.actionButton:active {
+    transform: scale(.96);
+}
 
+.cancelButton {
     background: #fff;
 
     color: #000;
 }
 
+.emergencyButton {
+    background: #ff3b30;
 
-/* =========================
-   CONFIRMED
-========================= */
+    color: #fff;
 
-#confirmed {
-    display: none;
+    box-shadow:
+        0 8px 25px
+        rgba(255,59,48,.2);
+}
 
-    font-size: 22px;
+.restartButton {
+    position: relative;
 
-    font-weight: 700;
+    z-index: 2;
 
-    margin-top: 15px;
+    margin-top: 12px;
+
+    width:
+        min(500px, 100%);
+
+    min-height: 55px;
+
+    border-radius: 28px;
+
+    background: #222;
+
+    color: #fff;
+
+    border: 1px solid #444;
+
+    font-weight: 900;
+}
+
+.result {
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 16px;
+
+    color: #ddd;
+
+    font-size: 15px;
 }
 
 
-/* =========================
-   SMALL DEVICES
-========================= */
+/* =========================================================
+   EMERGENCY CONFIRMED SCREEN
+========================================================= */
 
-@media (max-height: 650px) {
+.successScreen {
+    position: fixed;
 
-    .crashIcon {
-        font-size: 45px;
-        margin-bottom: 5px;
+    inset: 0;
+
+    z-index: 200;
+
+    width: 100%;
+    height: 100dvh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        max(30px, env(safe-area-inset-top))
+        30px
+        max(30px, env(safe-area-inset-bottom));
+
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #123b23 0%,
+            #08170d 45%,
+            #000 100%
+        );
+
+    overflow: hidden;
+
+    animation:
+        successAppear .45s ease-out;
+}
+
+.successScreen::before {
+    content: "";
+
+    position: absolute;
+
+    width: 430px;
+    height: 430px;
+
+    top: -210px;
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 50%;
+
+    background:
+        rgba(52,211,153,.12);
+
+    filter: blur(70px);
+
+    pointer-events: none;
+}
+
+.successCircle {
+    position: relative;
+
+    z-index: 2;
+
+    width: 120px;
+    height: 120px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #34d399;
+
+    box-shadow:
+        0 0 35px
+        rgba(52,211,153,.28),
+
+        0 0 100px
+        rgba(52,211,153,.12);
+
+    animation:
+        successCircle .65s
+        cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes successCircle {
+
+    0% {
+        transform: scale(.35);
+
+        opacity: 0;
     }
 
-    .crashTitle {
+    70% {
+        transform: scale(1.08);
+    }
+
+    100% {
+        transform: scale(1);
+
+        opacity: 1;
+    }
+}
+
+.checkmark {
+    color: #06130b;
+
+    font-size: 72px;
+
+    font-weight: 900;
+
+    line-height: 1;
+}
+
+.successTitle {
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 32px;
+
+    font-size:
+        clamp(30px, 7vw, 52px);
+
+    font-weight: 900;
+
+    letter-spacing: -1px;
+}
+
+.successSubtitle {
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 12px;
+
+    color: #a9cbb6;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+}
+
+.successRestart {
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 38px;
+
+    width:
+        min(420px, 90vw);
+
+    min-height: 59px;
+
+    border-radius: 30px;
+
+    background: #fff;
+
+    color: #000;
+
+    font-size: 17px;
+
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   SMALL SCREENS
+========================================================= */
+
+@media (max-height: 680px) {
+
+    .logo {
+        width: 62px;
+        height: 62px;
+
+        font-size: 29px;
+
+        margin-bottom: 14px;
+    }
+
+    .startButton {
+        margin-top: 20px;
+    }
+
+    .status {
+        margin-top: 15px;
+    }
+
+    .alertPill {
+        margin-bottom: 10px;
+    }
+
+    .alertIcon {
+        width: 62px;
+        height: 62px;
+
         font-size: 32px;
+
+        margin-bottom: 11px;
     }
 
-    .countdownContainer {
-        width: 170px;
-        height: 170px;
+    .crashText {
+        margin-top: 8px;
 
-        margin: 15px 0;
+        font-size: 14px;
+    }
+
+    #voiceStatus {
+        margin-top: 5px;
+    }
+
+    .countdownWrap {
+        width: 175px;
+        height: 175px;
+
+        margin:
+            14px 0 16px;
     }
 
     .countdownNumber {
-        font-size: 65px;
+        font-size: 58px;
     }
 
+    .buttons {
+        gap: 8px;
+    }
+
+    .actionButton {
+        min-height: 49px;
+    }
+
+    .successCircle {
+        width: 92px;
+        height: 92px;
+    }
+
+    .checkmark {
+        font-size: 55px;
+    }
+
+    .successTitle {
+        margin-top: 22px;
+    }
+
+    .successRestart {
+        margin-top: 25px;
+    }
 }
+
+@media (max-width: 360px) {
+
+    .crashTitle {
+        font-size: 31px;
+    }
+
+    .countdownWrap {
+        width: 165px;
+        height: 165px;
+    }
+
+    .actionButton {
+        font-size: 14px;
+    }
+}
+
 </style>
 </head>
 
 <body>
 
 
-<!-- =========================
+<!-- =======================================================
      HOME
-========================= -->
+======================================================= -->
 
 <div id="home">
 
-    <div class="car">
+    <div class="logo">
         🚗
     </div>
 
-    <h1>
+    <div class="title">
         Car Crash Detection
-    </h1>
-
-    <div class="info">
-        The device monitors movement and looks
-        for a sudden impact followed by a period
-        of very little movement.
     </div>
 
-    <button id="startButton">
-        Start detection
-    </button>
-
-    <button id="testButton">
-        Test crash
-    </button>
-
-    <div id="status">
-        Detection is off
+    <div class="subtitle">
+        Motion sensors monitor the device for a possible sudden
+        impact and prolonged lack of movement.
     </div>
 
-    <div id="sensor">
-        Sensor: waiting...
+    <button
+        id="startButton"
+        class="startButton"
+    >
+        Start Detection
+    </button>
+
+    <button
+        id="testButton"
+        class="testButton"
+    >
+        Test Crash Screen
+    </button>
+
+    <div class="status">
+
+        <span
+            id="statusDot"
+            class="statusDot"
+        ></span>
+
+        <span id="statusText">
+            Detection inactive
+        </span>
+
     </div>
 
 </div>
 
 
-<!-- =========================
-     FULLSCREEN CRASH
-========================= -->
+<!-- =======================================================
+     STILLNESS
+======================================================= -->
 
-<div id="crashScreen">
+<div
+    id="stillScreen"
+    class="hidden"
+>
 
-    <div class="crashIcon">
+    <div class="stillIcon">
         ⚠️
     </div>
 
-    <div class="crashTitle">
+    <div class="stillTitle">
+        Possible impact detected
+    </div>
+
+    <div class="stillText">
+        No significant movement detected.
+        Checking the situation...
+    </div>
+
+    <div
+        id="stillCounter"
+        class="stillCounter"
+    >
+        10
+    </div>
+
+    <button
+        id="stillCancel"
+        class="restartButton"
+    >
+        Cancel
+    </button>
+
+</div>
+
+
+<!-- =======================================================
+     CRASH
+======================================================= -->
+
+<div
+    id="crashScreen"
+    class="hidden"
+>
+
+    <div class="alertPill">
+
+        <span class="alertPillDot"></span>
+
+        Safety alert
+
+    </div>
+
+
+    <div class="alertIcon">
+        !
+    </div>
+
+
+    <h1 class="crashTitle">
         Car crash detected
+    </h1>
+
+
+    <div class="crashText">
+        A possible serious impact was detected.
     </div>
 
-    <div class="crashSubtitle">
-        We've detected a possible crash.
-        <br>
-        Say <b>emergency</b> or <b>cancel</b>.
+
+    <div id="voiceStatus">
+        Voice alert...
     </div>
 
 
-    <!-- COUNTDOWN -->
-
-    <div class="countdownContainer">
+    <div class="countdownWrap">
 
         <svg
             class="countdownSvg"
-            viewBox="0 0 250 250">
+            viewBox="0 0 250 250"
+        >
 
             <circle
-                class="countdownBackground"
+                class="circleBackground"
                 cx="125"
                 cy="125"
-                r="110">
-            </circle>
+                r="110"
+            ></circle>
 
             <circle
-                id="progress"
-                class="countdownProgress"
+                id="circleProgress"
+                class="circleProgress"
                 cx="125"
                 cy="125"
-                r="110">
-            </circle>
+                r="110"
+            ></circle>
 
         </svg>
 
+
         <div
-            id="countdown"
-            class="countdownNumber">
-            10
+            id="countdownNumber"
+            class="countdownNumber"
+        >
+            60
         </div>
 
     </div>
 
 
-    <div id="beepText">
-        Beeping...
-    </div>
+    <div class="buttons">
 
-
-    <!-- BUTTONS -->
-
-    <div class="crashButtons">
-
-        <button id="cancelButton">
+        <button
+            id="cancelButton"
+            class="actionButton cancelButton"
+        >
             Cancel
         </button>
 
-        <button id="emergencyButton">
+        <button
+            id="emergencyButton"
+            class="actionButton emergencyButton"
+        >
             Emergency
         </button>
 
     </div>
 
 
-    <div id="confirmed">
-        ✓ Emergency confirmed
+    <button
+        id="restartButton"
+        class="restartButton hidden"
+    >
+        Restart Detection
+    </button>
+
+
+    <div
+        id="result"
+        class="result"
+    ></div>
+
+</div>
+
+
+<!-- =======================================================
+     EMERGENCY CONFIRMED
+======================================================= -->
+
+<div
+    id="emergencySuccess"
+    class="hidden successScreen"
+>
+
+    <div class="successCircle">
+
+        <div class="checkmark">
+            ✓
+        </div>
+
+    </div>
+
+
+    <div class="successTitle">
+        Emergency confirmed
+    </div>
+
+
+    <div class="successSubtitle">
+        Emergency was reported.
     </div>
 
 </div>
@@ -499,39 +1243,28 @@ button:active {
 
 <script>
 
-/* ==================================================
-   VARIABLES
-================================================== */
+/* =========================================================
+   SETTINGS
+========================================================= */
 
-let detectionActive = false;
-let crashActive = false;
+const IMPACT_CHANGE = 10;
 
-let moving = false;
+const STILL_LEVEL = 3;
 
-let previousAcceleration = 0;
-let currentAcceleration = 0;
+const STILL_REQUIRED = 10000;
 
-let countdown = 10;
+const STILL_CHECK_INTERVAL = 500;
 
-let countdownInterval = null;
-let beepInterval = null;
+const CRASH_COUNTDOWN = 60;
 
-let audioContext = null;
-
-let recognition = null;
-
-let lastMotionTime = Date.now();
-
-const IMPACT_CHANGE = 12;
-const STILL_LEVEL = 2.5;
-const STILL_TIME = 4000;
+const BEEP_INTERVAL = 900;
 
 const CIRCUMFERENCE = 691;
 
 
-/* ==================================================
+/* =========================================================
    ELEMENTS
-================================================== */
+========================================================= */
 
 const home =
     document.getElementById("home");
@@ -542,23 +1275,29 @@ const startButton =
 const testButton =
     document.getElementById("testButton");
 
-const status =
-    document.getElementById("status");
+const statusDot =
+    document.getElementById("statusDot");
 
-const sensor =
-    document.getElementById("sensor");
+const statusText =
+    document.getElementById("statusText");
+
+const stillScreen =
+    document.getElementById("stillScreen");
+
+const stillCounter =
+    document.getElementById("stillCounter");
+
+const stillCancel =
+    document.getElementById("stillCancel");
 
 const crashScreen =
     document.getElementById("crashScreen");
 
-const countdownElement =
-    document.getElementById("countdown");
+const countdownNumber =
+    document.getElementById("countdownNumber");
 
-const progress =
-    document.getElementById("progress");
-
-const beepText =
-    document.getElementById("beepText");
+const circleProgress =
+    document.getElementById("circleProgress");
 
 const cancelButton =
     document.getElementById("cancelButton");
@@ -566,101 +1305,213 @@ const cancelButton =
 const emergencyButton =
     document.getElementById("emergencyButton");
 
-const confirmed =
-    document.getElementById("confirmed");
+const restartButton =
+    document.getElementById("restartButton");
+
+const result =
+    document.getElementById("result");
+
+const voiceStatus =
+    document.getElementById("voiceStatus");
+
+const emergencySuccess =
+    document.getElementById(
+        "emergencySuccess"
+    );
 
 
-/* ==================================================
-   VOICE
-================================================== */
+/* =========================================================
+   VARIABLES
+========================================================= */
 
-function speak(text) {
+let detectionActive = false;
 
-    if (!window.speechSynthesis) {
-        return;
-    }
+let impactChecking = false;
 
-    speechSynthesis.cancel();
+let crashActive = false;
 
-    const voice =
-        new SpeechSynthesisUtterance(text);
+let lastMagnitude = null;
 
-    voice.lang = "en-US";
+let lastMovementTime = 0;
 
-    voice.rate = 0.88;
+let stillTimer = null;
 
-    voice.pitch = 1;
+let countdownTimer = null;
 
-    speechSynthesis.speak(voice);
+let beepInterval = null;
+
+let wakeLock = null;
+
+let audioContext = null;
+
+let recognition = null;
+
+
+/* =========================================================
+   VIBRATION
+========================================================= */
+
+function vibrate(pattern) {
+
+    try {
+
+        if (
+            "vibrate" in navigator
+        ) {
+
+            navigator.vibrate(
+                pattern
+            );
+
+        }
+
+    } catch (e) {}
+
 }
 
 
-/* ==================================================
+/* =========================================================
+   WAKE LOCK
+========================================================= */
+
+async function keepScreenAwake() {
+
+    try {
+
+        if (
+            !("wakeLock" in navigator)
+        ) {
+            return;
+        }
+
+        if (wakeLock) {
+            return;
+        }
+
+        wakeLock =
+            await navigator.wakeLock.request(
+                "screen"
+            );
+
+        wakeLock.addEventListener(
+            "release",
+            () => {
+
+                wakeLock = null;
+
+            }
+        );
+
+    } catch (error) {
+
+        console.log(
+            "Wake Lock:",
+            error
+        );
+
+    }
+
+}
+
+
+document.addEventListener(
+    "visibilitychange",
+    async () => {
+
+        if (
+            document.visibilityState ===
+                "visible" &&
+            (
+                detectionActive ||
+                crashActive
+            )
+        ) {
+
+            await keepScreenAwake();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
    MICROPHONE
-================================================== */
+========================================================= */
 
 async function requestMicrophone() {
 
-    if (
-        !navigator.mediaDevices ||
-        !navigator.mediaDevices.getUserMedia
-    ) {
-
-        status.textContent =
-            "Microphone is unavailable.";
-
-        return false;
-    }
-
     try {
 
+        if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices
+                .getUserMedia
+        ) {
+
+            return;
+
+        }
+
         const stream =
-            await navigator.mediaDevices.getUserMedia({
-                audio: true
-            });
+            await navigator.mediaDevices
+                .getUserMedia({
+                    audio: true
+                });
+
 
         stream
             .getTracks()
-            .forEach(track => track.stop());
-
-        return true;
+            .forEach(
+                track => track.stop()
+            );
 
     } catch (error) {
 
-        console.log(error);
+        console.log(
+            "Microphone permission:",
+            error
+        );
 
-        status.textContent =
-            "Microphone permission denied.";
-
-        return false;
     }
+
 }
 
 
-/* ==================================================
+/* =========================================================
    MOTION PERMISSION
-================================================== */
+========================================================= */
 
-async function requestMotion() {
+async function requestMotionPermission() {
 
     try {
 
         if (
-            typeof DeviceMotionEvent !== "undefined" &&
-            typeof DeviceMotionEvent.requestPermission ===
-            "function"
+            typeof DeviceMotionEvent !==
+                "undefined" &&
+            typeof DeviceMotionEvent
+                .requestPermission ===
+                "function"
         ) {
 
             const permission =
-                await DeviceMotionEvent.requestPermission();
+                await DeviceMotionEvent
+                    .requestPermission();
 
-            if (permission !== "granted") {
 
-                status.textContent =
-                    "Motion permission denied.";
+            if (
+                permission !==
+                "granted"
+            ) {
+
+                alert(
+                    "Motion sensor permission was not granted."
+                );
 
                 return false;
+
             }
+
         }
 
         return true;
@@ -669,634 +1520,87 @@ async function requestMotion() {
 
         console.log(error);
 
-        status.textContent =
-            "Motion sensor unavailable.";
-
         return false;
-    }
-}
-
-
-/* ==================================================
-   START
-================================================== */
-
-startButton.addEventListener(
-    "click",
-    async () => {
-
-        startButton.disabled = true;
-
-        status.textContent =
-            "Requesting microphone...";
-
-
-        const mic =
-            await requestMicrophone();
-
-
-        if (!mic) {
-
-            startButton.disabled = false;
-
-            return;
-        }
-
-
-        status.textContent =
-            "Requesting motion sensor...";
-
-
-        const motion =
-            await requestMotion();
-
-
-        if (!motion) {
-
-            startButton.disabled = false;
-
-            return;
-        }
-
-
-        try {
-
-            audioContext =
-                new (
-                    window.AudioContext ||
-                    window.webkitAudioContext
-                )();
-
-        } catch (e) {
-
-            console.log(e);
-
-        }
-
-
-        detectionActive = true;
-
-        moving = false;
-
-        crashActive = false;
-
-
-        window.addEventListener(
-            "devicemotion",
-            handleMotion,
-            true
-        );
-
-
-        startButton.style.display =
-            "none";
-
-
-        status.textContent =
-            "🟢 Crash detection active";
-
-        sensor.textContent =
-            "Sensor: active";
-
-
-        speak(
-            "Car crash detection is active."
-        );
-
-    }
-);
-
-
-/* ==================================================
-   MOTION
-================================================== */
-
-function handleMotion(event) {
-
-    if (
-        !detectionActive ||
-        crashActive
-    ) {
-        return;
-    }
-
-
-    const a =
-        event.acceleration;
-
-
-    const g =
-        event.accelerationIncludingGravity;
-
-
-    let x = 0;
-    let y = 0;
-    let z = 0;
-
-
-    if (a) {
-
-        x = a.x || 0;
-        y = a.y || 0;
-        z = a.z || 0;
-
-    } else if (g) {
-
-        x = g.x || 0;
-        y = g.y || 0;
-        z = g.z || 0;
-
-    } else {
-
-        return;
-    }
-
-
-    currentAcceleration =
-        Math.sqrt(
-            x*x +
-            y*y +
-            z*z
-        );
-
-
-    const change =
-        Math.abs(
-            currentAcceleration -
-            previousAcceleration
-        );
-
-
-    previousAcceleration =
-        currentAcceleration;
-
-
-    sensor.innerHTML =
-        "Motion: " +
-        currentAcceleration.toFixed(2) +
-        " m/s²<br>" +
-        "Change: " +
-        change.toFixed(2);
-
-
-    if (
-        currentAcceleration >
-        STILL_LEVEL
-    ) {
-
-        moving = true;
-
-        lastMotionTime =
-            Date.now();
-    }
-
-
-    if (
-        moving &&
-        change >= IMPACT_CHANGE
-    ) {
-
-        possibleCrash();
 
     }
 
 }
 
 
-/* ==================================================
-   POSSIBLE CRASH
-================================================== */
+/* =========================================================
+   SPEECH
+========================================================= */
 
-function possibleCrash() {
+function speakAndWait(text) {
 
-    if (crashActive) {
-        return;
-    }
-
-
-    crashActive = true;
-
-
-    status.textContent =
-        "⚠️ Impact detected";
-
-
-    sensor.textContent =
-        "Checking for stillness...";
-
-
-    /*
-       Give the device a short moment
-       after the impact.
-    */
-
-    setTimeout(
-        checkStillness,
-        1000
-    );
-
-}
-
-
-/* ==================================================
-   STILLNESS
-================================================== */
-
-function checkStillness() {
-
-    if (!crashActive) {
-        return;
-    }
-
-
-    let stillStart =
-        Date.now();
-
-
-    function loop() {
-
-        if (!crashActive) {
-            return;
-        }
-
-
-        if (
-            currentAcceleration <=
-            STILL_LEVEL
-        ) {
-
-            const elapsed =
-                Date.now() -
-                stillStart;
-
-
-            sensor.textContent =
-                "Still: " +
-                Math.floor(
-                    elapsed / 1000
-                ) +
-                "s";
-
+    return new Promise(
+        resolve => {
 
             if (
-                elapsed >=
-                STILL_TIME
+                !("speechSynthesis"
+                    in window)
             ) {
 
-                showCrashScreen();
+                resolve();
 
                 return;
+
             }
 
-        } else {
 
-            stillStart =
-                Date.now();
+            window.speechSynthesis
+                .cancel();
+
+
+            const utterance =
+                new SpeechSynthesisUtterance(
+                    text
+                );
+
+
+            utterance.lang =
+                "en-US";
+
+            utterance.rate =
+                .92;
+
+            utterance.pitch =
+                1;
+
+            utterance.volume =
+                1;
+
+
+            utterance.onend =
+                () => resolve();
+
+            utterance.onerror =
+                () => resolve();
+
+
+            window.speechSynthesis
+                .speak(
+                    utterance
+                );
 
         }
-
-
-        requestAnimationFrame(loop);
-
-    }
-
-
-    loop();
-
-}
-
-
-/* ==================================================
-   SHOW CRASH SCREEN
-================================================== */
-
-function showCrashScreen() {
-
-    crashScreen.style.display =
-        "flex";
-
-
-    countdown = 10;
-
-
-    countdownElement.textContent =
-        countdown;
-
-
-    progress.style.strokeDashoffset =
-        "0";
-
-
-    confirmed.style.display =
-        "none";
-
-
-    beepText.textContent =
-        "Beeping...";
-
-
-    speak(
-        "Car crash detected. " +
-        "Say emergency or cancel."
-    );
-
-
-    startBeeping();
-
-    startCountdown();
-
-    startVoiceRecognition();
-
-}
-
-
-/* ==================================================
-   BEEP
-================================================== */
-
-function beep() {
-
-    if (!audioContext) {
-        return;
-    }
-
-
-    try {
-
-        if (
-            audioContext.state ===
-            "suspended"
-        ) {
-
-            audioContext.resume();
-        }
-
-
-        const oscillator =
-            audioContext.createOscillator();
-
-        const gain =
-            audioContext.createGain();
-
-
-        oscillator.type =
-            "sine";
-
-
-        oscillator.frequency.value =
-            900;
-
-
-        gain.gain.value =
-            0.16;
-
-
-        oscillator.connect(gain);
-
-        gain.connect(
-            audioContext.destination
-        );
-
-
-        oscillator.start();
-
-
-        oscillator.stop(
-            audioContext.currentTime +
-            0.13
-        );
-
-    } catch (e) {
-
-        console.log(e);
-
-    }
-
-}
-
-
-/* ==================================================
-   START BEEPING
-================================================== */
-
-function startBeeping() {
-
-    stopBeeping();
-
-    beep();
-
-
-    beepInterval =
-        setInterval(
-            () => {
-
-                beep();
-
-            },
-            1000
-        );
-
-}
-
-
-/* ==================================================
-   STOP BEEPING
-================================================== */
-
-function stopBeeping() {
-
-    if (
-        beepInterval !== null
-    ) {
-
-        clearInterval(
-            beepInterval
-        );
-
-        beepInterval = null;
-    }
-
-}
-
-
-/* ==================================================
-   COUNTDOWN
-================================================== */
-
-function startCountdown() {
-
-    clearInterval(
-        countdownInterval
-    );
-
-
-    countdownInterval =
-        setInterval(
-            () => {
-
-                countdown--;
-
-
-                countdownElement.textContent =
-                    countdown;
-
-
-                /*
-                   Animate circular progress.
-                */
-
-                const percentage =
-                    countdown / 10;
-
-
-                const offset =
-                    CIRCUMFERENCE *
-                    (1 - percentage);
-
-
-                progress.style.strokeDashoffset =
-                    offset;
-
-
-                if (countdown <= 0) {
-
-                    clearInterval(
-                        countdownInterval
-                    );
-
-
-                    stopBeeping();
-
-
-                    countdownElement.textContent =
-                        "0";
-
-
-                    beepText.textContent =
-                        "Alarm ended";
-
-
-                    speak(
-                        "The alarm has ended."
-                    );
-
-                }
-
-            },
-            1000
-        );
-
-}
-
-
-/* ==================================================
-   CANCEL
-================================================== */
-
-function cancelCrash() {
-
-    crashActive = false;
-
-    moving = false;
-
-
-    clearInterval(
-        countdownInterval
-    );
-
-
-    stopBeeping();
-
-    stopRecognition();
-
-
-    crashScreen.style.display =
-        "none";
-
-
-    status.textContent =
-        "🟢 Crash detection active";
-
-
-    sensor.textContent =
-        "Sensor: active";
-
-
-    speak(
-        "Cancelled."
     );
 
 }
 
 
-cancelButton.addEventListener(
-    "click",
-    cancelCrash
-);
-
-
-/* ==================================================
-   EMERGENCY
-================================================== */
-
-emergencyButton.addEventListener(
-    "click",
-    confirmEmergency
-);
-
-
-function confirmEmergency() {
-
-    clearInterval(
-        countdownInterval
-    );
-
-
-    stopBeeping();
-
-
-    confirmed.style.display =
-        "block";
-
-
-    beepText.textContent =
-        "Alarm stopped";
-
-
-    countdownElement.textContent =
-        "✓";
-
-
-    progress.style.strokeDashoffset =
-        CIRCUMFERENCE;
-
-
-    speak(
-        "Emergency confirmed."
-    );
-
-
-    stopRecognition();
-
-}
-
-
-/* ==================================================
+/* =========================================================
    VOICE RECOGNITION
-================================================== */
+========================================================= */
 
 function startVoiceRecognition() {
 
-    const SpeechRecognition =
+    const Recognition =
         window.SpeechRecognition ||
         window.webkitSpeechRecognition;
 
 
-    if (!SpeechRecognition) {
-
-        beepText.textContent =
-            "Voice recognition unavailable.";
-
+    if (!Recognition) {
         return;
     }
 
@@ -1304,16 +1608,14 @@ function startVoiceRecognition() {
     try {
 
         recognition =
-            new SpeechRecognition();
+            new Recognition();
 
 
         recognition.lang =
             "en-US";
 
-
         recognition.continuous =
             true;
-
 
         recognition.interimResults =
             false;
@@ -1322,32 +1624,38 @@ function startVoiceRecognition() {
         recognition.onresult =
             function(event) {
 
-                const result =
-                    event.results[
-                        event.results.length - 1
-                    ][0]
-                    .transcript
-                    .toLowerCase();
+                const index =
+                    event.results.length -
+                    1;
 
 
-                console.log(
-                    "Heard:",
-                    result
-                );
+                const text =
+                    event.results[index][0]
+                        .transcript
+                        .toLowerCase()
+                        .trim();
 
 
                 if (
-                    result.includes("cancel")
+                    text.includes(
+                        "cancel"
+                    ) ||
+                    text.includes(
+                        "stop"
+                    )
                 ) {
 
                     cancelCrash();
 
                     return;
+
                 }
 
 
                 if (
-                    result.includes("emergency")
+                    text.includes(
+                        "emergency"
+                    )
                 ) {
 
                     confirmEmergency();
@@ -1361,7 +1669,7 @@ function startVoiceRecognition() {
             function(event) {
 
                 console.log(
-                    "Speech error:",
+                    "Recognition:",
                     event.error
                 );
 
@@ -1371,7 +1679,9 @@ function startVoiceRecognition() {
         recognition.onend =
             function() {
 
-                if (crashActive) {
+                if (
+                    crashActive
+                ) {
 
                     try {
 
@@ -1388,60 +1698,1300 @@ function startVoiceRecognition() {
 
     } catch (e) {
 
-        console.log(e);
+        console.log(
+            "Recognition:",
+            e
+        );
 
     }
 
 }
 
 
-/* ==================================================
-   STOP RECOGNITION
-================================================== */
+function stopVoiceRecognition() {
 
-function stopRecognition() {
+    try {
 
-    if (!recognition) {
-        return;
+        if (recognition) {
+
+            recognition.onend =
+                null;
+
+            recognition.stop();
+
+            recognition =
+                null;
+
+        }
+
+    } catch (e) {}
+
+}
+
+
+/* =========================================================
+   LOUD ALARM
+========================================================= */
+
+function playAlarmTone() {
+
+    try {
+
+        if (!audioContext) {
+
+            audioContext =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
+
+        }
+
+
+        if (
+            audioContext.state ===
+            "suspended"
+        ) {
+
+            audioContext.resume();
+
+        }
+
+
+        const now =
+            audioContext.currentTime;
+
+
+        const tones = [
+    {
+        frequency: 520,
+        start: 0,
+        duration: .30
+    },
+    {
+        frequency: 780,
+        start: .34,
+        duration: .30
+    }
+];
+
+
+        tones.forEach(
+            tone => {
+
+                const osc =
+                    audioContext
+                        .createOscillator();
+
+                const gain =
+                    audioContext
+                        .createGain();
+
+
+                osc.type =
+                    "square";
+
+
+                osc.frequency
+                    .setValueAtTime(
+                        tone.frequency,
+                        now + tone.start
+                    );
+
+
+                gain.gain
+                    .setValueAtTime(
+                        .0001,
+                        now + tone.start
+                    );
+
+
+                gain.gain
+                    .exponentialRampToValueAtTime(
+                        .72,
+                        now +
+                        tone.start +
+                        .015
+                    );
+
+
+                gain.gain
+                    .exponentialRampToValueAtTime(
+                        .0001,
+                        now +
+                        tone.start +
+                        tone.duration
+                    );
+
+
+                osc.connect(gain);
+
+                gain.connect(
+                    audioContext
+                        .destination
+                );
+
+
+                osc.start(
+                    now + tone.start
+                );
+
+
+                osc.stop(
+                    now +
+                    tone.start +
+                    tone.duration +
+                    .03
+                );
+
+            }
+        );
+
+    } catch (e) {
+
+        console.log(
+            "Alarm sound:",
+            e
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   EMERGENCY CONFIRMATION SOUND
+========================================================= */
+
+function playConfirmationSound() {
+
+    try {
+
+        if (!audioContext) {
+
+            audioContext =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
+
+        }
+
+
+        if (
+            audioContext.state ===
+            "suspended"
+        ) {
+
+            audioContext.resume();
+
+        }
+
+
+        const now =
+            audioContext.currentTime;
+
+
+        const frequencies = [
+            523.25,
+            659.25,
+            783.99
+        ];
+
+
+        frequencies.forEach(
+            (frequency, index) => {
+
+                const start =
+                    now +
+                    index * .13;
+
+
+                const osc =
+                    audioContext
+                        .createOscillator();
+
+                const gain =
+                    audioContext
+                        .createGain();
+
+
+                osc.type =
+                    "sine";
+
+
+                osc.frequency.setValueAtTime(
+                    frequency,
+                    start
+                );
+
+
+                gain.gain.setValueAtTime(
+                    .0001,
+                    start
+                );
+
+
+                gain.gain
+                    .exponentialRampToValueAtTime(
+                        .32,
+                        start + .025
+                    );
+
+
+                gain.gain
+                    .exponentialRampToValueAtTime(
+                        .0001,
+                        start + .22
+                    );
+
+
+                osc.connect(gain);
+
+                gain.connect(
+                    audioContext.destination
+                );
+
+
+                osc.start(start);
+
+                osc.stop(
+                    start + .25
+                );
+
+            }
+        );
+
+
+    } catch (e) {
+
+        console.log(
+            "Confirmation sound:",
+            e
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   START ALARM
+========================================================= */
+
+function startBeeping() {
+
+    stopBeeping();
+
+
+    playAlarmTone();
+
+
+    vibrate([
+        300,
+        100,
+        300
+    ]);
+
+
+    beepInterval =
+        setInterval(
+            () => {
+
+                playAlarmTone();
+
+
+                vibrate([
+                    300,
+                    100,
+                    300
+                ]);
+
+            },
+            BEEP_INTERVAL
+        );
+
+}
+
+
+/* =========================================================
+   STOP ALARM
+========================================================= */
+
+function stopBeeping() {
+
+    if (
+        beepInterval !== null
+    ) {
+
+        clearInterval(
+            beepInterval
+        );
+
+        beepInterval =
+            null;
+
     }
 
 
     try {
 
-        recognition.onend = null;
-
-        recognition.stop();
+        navigator.vibrate(0);
 
     } catch (e) {}
-
-
-    recognition = null;
 
 }
 
 
-/* ==================================================
-   TEST CRASH
-================================================== */
+/* =========================================================
+   MOTION
+========================================================= */
 
-testButton.addEventListener(
+function getMotionMagnitude(event) {
+
+    let a =
+        event.acceleration;
+
+
+    if (
+        !a ||
+        (
+            a.x === null &&
+            a.y === null &&
+            a.z === null
+        )
+    ) {
+
+        a =
+            event.accelerationIncludingGravity;
+
+    }
+
+
+    if (!a) {
+        return 0;
+    }
+
+
+    const x =
+        Number(a.x) || 0;
+
+    const y =
+        Number(a.y) || 0;
+
+    const z =
+        Number(a.z) || 0;
+
+
+    return Math.sqrt(
+        x * x +
+        y * y +
+        z * z
+    );
+
+}
+
+
+/* =========================================================
+   MOTION HANDLER
+========================================================= */
+
+function handleMotion(event) {
+
+    if (
+        !detectionActive ||
+        impactChecking ||
+        crashActive
+    ) {
+
+        return;
+
+    }
+
+
+    const magnitude =
+        getMotionMagnitude(
+            event
+        );
+
+
+    const now =
+        Date.now();
+
+
+    if (
+        magnitude >
+        STILL_LEVEL
+    ) {
+
+        lastMovementTime =
+            now;
+
+    }
+
+
+    if (
+        lastMagnitude !== null
+    ) {
+
+        const change =
+            Math.abs(
+                magnitude -
+                lastMagnitude
+            );
+
+
+        if (
+            change >=
+                IMPACT_CHANGE &&
+            magnitude >
+                STILL_LEVEL
+        ) {
+
+            startImpactSequence();
+
+        }
+
+    }
+
+
+    lastMagnitude =
+        magnitude;
+
+}
+
+
+/* =========================================================
+   IMPACT SEQUENCE
+========================================================= */
+
+function startImpactSequence() {
+
+    if (
+        impactChecking ||
+        crashActive ||
+        !detectionActive
+    ) {
+
+        return;
+
+    }
+
+
+    impactChecking =
+        true;
+
+
+    stillScreen
+        .classList
+        .remove("hidden");
+
+
+    stillCounter.textContent =
+        "10";
+
+
+    vibrate([
+        350,
+        120,
+        350
+    ]);
+
+
+    speakAndWait(
+        "Possible impact detected."
+    );
+
+
+    let elapsed = 0;
+
+
+    stillTimer =
+        setInterval(
+            () => {
+
+                elapsed +=
+                    STILL_CHECK_INTERVAL;
+
+
+                const secondsLeft =
+                    Math.ceil(
+                        (
+                            STILL_REQUIRED -
+                            elapsed
+                        ) / 1000
+                    );
+
+
+                stillCounter.textContent =
+                    Math.max(
+                        0,
+                        secondsLeft
+                    );
+
+
+                if (
+                    Date.now() -
+                    lastMovementTime >=
+                    STILL_REQUIRED
+                ) {
+
+                    clearInterval(
+                        stillTimer
+                    );
+
+                    stillTimer =
+                        null;
+
+
+                    stillScreen
+                        .classList
+                        .add("hidden");
+
+
+                    impactChecking =
+                        false;
+
+
+                    showCrashScreen();
+
+
+                    return;
+
+                }
+
+
+                if (
+                    elapsed >=
+                    STILL_REQUIRED
+                ) {
+
+                    clearInterval(
+                        stillTimer
+                    );
+
+                    stillTimer =
+                        null;
+
+
+                    impactChecking =
+                        false;
+
+
+                    stillScreen
+                        .classList
+                        .add("hidden");
+
+                }
+
+            },
+            STILL_CHECK_INTERVAL
+        );
+
+}
+
+
+/* =========================================================
+   SHOW CRASH SCREEN
+========================================================= */
+
+async function showCrashScreen() {
+
+    if (crashActive) {
+        return;
+    }
+
+
+    crashActive =
+        true;
+
+
+    detectionActive =
+        false;
+
+
+    home
+        .classList
+        .add("hidden");
+
+
+    stillScreen
+        .classList
+        .add("hidden");
+
+
+    emergencySuccess
+        .classList
+        .add("hidden");
+
+
+    crashScreen
+        .classList
+        .remove("hidden");
+
+
+    restartButton
+        .classList
+        .add("hidden");
+
+
+    result.textContent =
+        "";
+
+
+    voiceStatus.textContent =
+        "Voice alert...";
+
+
+    countdownNumber.textContent =
+        CRASH_COUNTDOWN;
+
+
+    circleProgress.style.strokeDashoffset =
+        "0";
+
+
+    await keepScreenAwake();
+
+
+    startVoiceRecognition();
+
+
+    await speakAndWait(
+        "Car crash detected. Say emergency to call 911, or say cancel to cancel the alarm."
+    );
+
+
+    if (!crashActive) {
+        return;
+    }
+
+
+    voiceStatus.textContent =
+        "Alarm active";
+
+
+    startBeeping();
+
+
+    startCountdown();
+
+}
+
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
+
+function startCountdown() {
+
+    if (!crashActive) {
+        return;
+    }
+
+
+    let remaining =
+        CRASH_COUNTDOWN;
+
+
+    countdownNumber.textContent =
+        remaining;
+
+
+    circleProgress.style.strokeDashoffset =
+        "0";
+
+
+    countdownTimer =
+        setInterval(
+            () => {
+
+                remaining--;
+
+
+                countdownNumber.textContent =
+                    remaining;
+
+
+                const progress =
+                    remaining /
+                    CRASH_COUNTDOWN;
+
+
+                circleProgress.style.strokeDashoffset =
+                    CIRCUMFERENCE *
+                    (1 - progress);
+
+
+                if (
+                    remaining <= 0
+                ) {
+
+                    finishCountdown();
+
+                }
+
+            },
+            1000
+        );
+
+}
+
+
+/* =========================================================
+   COUNTDOWN FINISHED
+========================================================= */
+
+function finishCountdown() {
+
+    if (
+        countdownTimer !== null
+    ) {
+
+        clearInterval(
+            countdownTimer
+        );
+
+        countdownTimer =
+            null;
+
+    }
+
+
+    stopBeeping();
+
+    stopVoiceRecognition();
+
+
+    voiceStatus.textContent =
+        "Emergency was reported";
+
+
+    result.textContent =
+        "Emergency was reported.";
+
+
+    speakAndWait(
+        "Emergency was reported."
+    );
+
+
+    restartButton
+        .classList
+        .remove("hidden");
+
+}
+
+
+/* =========================================================
+   CANCEL
+========================================================= */
+
+function cancelCrash() {
+
+    crashActive =
+        false;
+
+
+    if (
+        countdownTimer !== null
+    ) {
+
+        clearInterval(
+            countdownTimer
+        );
+
+        countdownTimer =
+            null;
+
+    }
+
+
+    stopBeeping();
+
+    stopVoiceRecognition();
+
+
+    try {
+
+        window.speechSynthesis.cancel();
+
+    } catch (e) {}
+
+
+    crashScreen
+        .classList
+        .add("hidden");
+
+
+    emergencySuccess
+        .classList
+        .add("hidden");
+
+
+    home
+        .classList
+        .remove("hidden");
+
+
+    result.textContent =
+        "";
+
+
+    voiceStatus.textContent =
+        "";
+
+
+    statusText.textContent =
+        "Detection inactive";
+
+
+    statusDot
+        .classList
+        .remove("active");
+
+
+    startButton.disabled =
+        false;
+
+
+    startButton.style.opacity =
+        "1";
+
+
+    vibrate(100);
+
+}
+
+
+/* =========================================================
+   EMERGENCY
+========================================================= */
+
+function confirmEmergency() {
+
+    if (!crashActive) {
+        return;
+    }
+
+
+    if (
+        countdownTimer !== null
+    ) {
+
+        clearInterval(
+            countdownTimer
+        );
+
+        countdownTimer =
+            null;
+
+    }
+
+
+    stopBeeping();
+
+    stopVoiceRecognition();
+
+
+    try {
+
+        window.speechSynthesis.cancel();
+
+    } catch (e) {}
+
+
+    crashActive =
+        false;
+
+
+    detectionActive =
+        false;
+
+
+    crashScreen
+        .classList
+        .add("hidden");
+
+
+    emergencySuccess
+        .classList
+        .remove("hidden");
+
+
+    /*
+       Strong confirmation vibration.
+    */
+
+    vibrate([
+        180,
+        100,
+        180,
+        100,
+        350
+    ]);
+
+
+    /*
+       Confirmation sound.
+    */
+
+    playConfirmationSound();
+
+
+    /*
+       After the confirmation sound,
+       automatically return home.
+    */
+
+    setTimeout(
+        () => {
+
+            emergencySuccess
+                .classList
+                .add("hidden");
+
+
+            home
+                .classList
+                .remove("hidden");
+
+
+            statusDot
+                .classList
+                .add("active");
+
+
+            statusText.textContent =
+                "Emergency was reported";
+
+
+            startButton.textContent =
+                "Detection Running";
+
+
+            startButton.disabled =
+                true;
+
+
+            startButton.style.opacity =
+                ".55";
+
+
+            lastMagnitude =
+                null;
+
+
+            lastMovementTime =
+                Date.now();
+
+
+            detectionActive =
+                true;
+
+
+            keepScreenAwake();
+
+        },
+        900
+    );
+
+}
+
+
+/* =========================================================
+   RESTART DETECTION
+========================================================= */
+
+async function restartDetection() {
+
+    if (
+        stillTimer !== null
+    ) {
+
+        clearInterval(
+            stillTimer
+        );
+
+        stillTimer =
+            null;
+
+    }
+
+
+    if (
+        countdownTimer !== null
+    ) {
+
+        clearInterval(
+            countdownTimer
+        );
+
+        countdownTimer =
+            null;
+
+    }
+
+
+    stopBeeping();
+
+    stopVoiceRecognition();
+
+
+    try {
+
+        window.speechSynthesis.cancel();
+
+    } catch (e) {}
+
+
+    crashActive =
+        false;
+
+    impactChecking =
+        false;
+
+    detectionActive =
+        false;
+
+    lastMagnitude =
+        null;
+
+    lastMovementTime =
+        Date.now();
+
+
+    crashScreen
+        .classList
+        .add("hidden");
+
+
+    emergencySuccess
+        .classList
+        .add("hidden");
+
+
+    stillScreen
+        .classList
+        .add("hidden");
+
+
+    home
+        .classList
+        .remove("hidden");
+
+
+    result.textContent =
+        "";
+
+
+    voiceStatus.textContent =
+        "";
+
+
+    statusText.textContent =
+        "Detection inactive";
+
+
+    statusDot
+        .classList
+        .remove("active");
+
+
+    startButton.disabled =
+        false;
+
+
+    startButton.style.opacity =
+        "1";
+
+
+    startButton.textContent =
+        "Start Detection";
+
+
+    await keepScreenAwake();
+
+
+    startDetection();
+
+}
+
+
+/* =========================================================
+   START DETECTION
+========================================================= */
+
+async function startDetection() {
+
+    if (detectionActive) {
+        return;
+    }
+
+
+    const motionAllowed =
+        await requestMotionPermission();
+
+
+    if (!motionAllowed) {
+        return;
+    }
+
+
+    await requestMicrophone();
+
+
+    await keepScreenAwake();
+
+
+    detectionActive =
+        true;
+
+
+    impactChecking =
+        false;
+
+
+    crashActive =
+        false;
+
+
+    lastMagnitude =
+        null;
+
+
+    lastMovementTime =
+        Date.now();
+
+
+    statusDot
+        .classList
+        .add("active");
+
+
+    statusText.textContent =
+        "Detection active";
+
+
+    startButton.textContent =
+        "Detection Running";
+
+
+    startButton.disabled =
+        true;
+
+
+    startButton.style.opacity =
+        ".55";
+
+
+    speakAndWait(
+        "Crash detection is active."
+    );
+
+}
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+startButton.addEventListener(
     "click",
     () => {
 
-        if (crashActive) {
-            return;
-        }
+        startDetection();
+
+    }
+);
 
 
-        /*
-           Test mode skips the sensor detection
-           and opens the complete alarm.
-        */
+testButton.addEventListener(
+    "click",
+    async () => {
 
-        crashActive = true;
+        await keepScreenAwake();
 
         showCrashScreen();
 
+    }
+);
+
+
+cancelButton.addEventListener(
+    "click",
+    () => {
+
+        cancelCrash();
+
+        startDetection();
+
+    }
+);
+
+
+emergencyButton.addEventListener(
+    "click",
+    () => {
+
+        confirmEmergency();
+
+    }
+);
+
+
+restartButton.addEventListener(
+    "click",
+    () => {
+
+        restartDetection();
+
+    }
+);
+
+
+stillCancel.addEventListener(
+    "click",
+    () => {
+
+        if (
+            stillTimer !== null
+        ) {
+
+            clearInterval(
+                stillTimer
+            );
+
+            stillTimer =
+                null;
+
+        }
+
+
+        impactChecking =
+            false;
+
+
+        stillScreen
+            .classList
+            .add("hidden");
+
+
+        vibrate(100);
+
+    }
+);
+
+
+/* =========================================================
+   MOTION SENSOR
+========================================================= */
+
+window.addEventListener(
+    "devicemotion",
+    handleMotion,
+    {
+        passive: true
     }
 );
 
@@ -1449,4 +2999,3 @@ testButton.addEventListener(
 
 </body>
 </html>
-
