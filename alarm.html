@@ -1,226 +1,1929 @@
 <!DOCTYPE html>
-<html>
+<html lang="cs">
 <head>
 <meta charset="UTF-8">
-<title>AI Person Recorder</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SirTros Call</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body { margin:0; background:black; overflow:hidden; }
-
-video, canvas {
-  position:fixed;
-  width:100vw;
-  height:100vh;
-  object-fit:cover;
+*{
+    box-sizing:border-box;
 }
 
-#ui {
-  position:fixed;
-  top:20px; left:20px;
-  color:white;
-  font-family:sans-serif;
-  background:rgba(0,0,0,0.6);
-  padding:10px;
-  border-radius:10px;
-  z-index:10;
+html,body{
+    margin:0;
+    width:100%;
+    min-height:100%;
+    background:#050505;
+    color:white;
+    font-family:Arial,"Segoe UI",sans-serif;
 }
 
-button{
-  margin-top:10px;
-  padding:8px 12px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
+body{
+    display:flex;
+    justify-content:center;
+}
+
+.app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:#0d0d0d;
+    position:relative;
+    overflow:hidden;
+}
+
+header{
+    height:72px;
+    display:flex;
+    align-items:center;
+    padding:0 20px;
+    border-bottom:1px solid #242424;
+    font-size:22px;
+    font-weight:800;
+}
+
+.logo{
+    width:44px;
+    height:44px;
+    border-radius:14px;
+    background:white;
+    color:black;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-right:12px;
+    font-weight:900;
+}
+
+.content{
+    padding:22px;
+}
+
+.title{
+    font-size:32px;
+    font-weight:800;
+}
+
+.subtitle{
+    color:#888;
+    margin-top:5px;
+    margin-bottom:22px;
+}
+
+.card{
+    background:#171717;
+    border:1px solid #292929;
+    border-radius:20px;
+    padding:18px;
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    color:#aaa;
+    font-size:14px;
+    margin-bottom:7px;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #333;
+    background:#0a0a0a;
+    color:white;
+    outline:none;
+    margin-bottom:14px;
+    font-size:16px;
+}
+
+.primary{
+    width:100%;
+    border:0;
+    padding:14px;
+    border-radius:13px;
+    background:white;
+    color:black;
+    font-weight:800;
+    font-size:15px;
+    cursor:pointer;
+}
+
+.user{
+    display:flex;
+    align-items:center;
+    gap:13px;
+}
+
+.avatar{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    background:#292929;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:23px;
+}
+
+.userInfo{
+    flex:1;
+}
+
+.name{
+    font-size:18px;
+    font-weight:800;
+}
+
+.status{
+    color:#4cd964;
+    font-size:13px;
+    margin-top:4px;
+}
+
+.callButton{
+    width:54px;
+    height:54px;
+    border:0;
+    border-radius:50%;
+    background:#32d74b;
+    color:white;
+    font-size:23px;
+    cursor:pointer;
+}
+
+.historyTitle{
+    font-size:19px;
+    font-weight:800;
+    margin:25px 0 12px;
+}
+
+.history{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+}
+
+.historyItem{
+    background:#171717;
+    border:1px solid #292929;
+    border-radius:15px;
+    padding:13px;
+}
+
+.historyTop{
+    display:flex;
+    justify-content:space-between;
+    font-weight:700;
+}
+
+.historySmall{
+    color:#888;
+    font-size:13px;
+    margin-top:5px;
+}
+
+/* CALL */
+
+.screen{
+    position:absolute;
+    inset:0;
+    background:#080808;
+    z-index:20;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.screen.show{
+    display:flex;
+}
+
+.callAvatar{
+    width:125px;
+    height:125px;
+    border-radius:50%;
+    background:#202020;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:52px;
+    margin-bottom:24px;
+}
+
+.callName{
+    font-size:31px;
+    font-weight:800;
+}
+
+.callStatus{
+    color:#888;
+    margin-top:9px;
+}
+
+.timer{
+    color:#aaa;
+    margin-top:9px;
+    font-size:17px;
+}
+
+.controls{
+    position:absolute;
+    bottom:45px;
+    display:flex;
+    gap:18px;
+}
+
+.control{
+    width:63px;
+    height:63px;
+    border:0;
+    border-radius:50%;
+    background:#282828;
+    color:white;
+    font-size:24px;
+    cursor:pointer;
+}
+
+.control.active{
+    background:white;
+    color:black;
+}
+
+.end{
+    background:#ff3b30;
+}
+
+/* INCOMING */
+
+.incoming{
+    position:absolute;
+    inset:0;
+    z-index:30;
+    background:#080808;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.incoming.show{
+    display:flex;
+}
+
+.incomingSmall{
+    color:#888;
+    margin-bottom:12px;
+}
+
+.incomingName{
+    font-size:31px;
+    font-weight:800;
+    margin-bottom:40px;
+}
+
+.incomingButtons{
+    display:flex;
+    gap:30px;
+}
+
+.incomingButton{
+    width:72px;
+    height:72px;
+    border:0;
+    border-radius:50%;
+    color:white;
+    font-size:28px;
+    cursor:pointer;
+}
+
+.accept{
+    background:#32d74b;
+}
+
+.reject{
+    background:#ff3b30;
+}
+
+/* MICROPHONE */
+
+.permission{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    background:#050505;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:22px;
+}
+
+.permission.hide{
+    display:none;
+}
+
+.permissionBox{
+    width:100%;
+    max-width:390px;
+    padding:27px;
+    border-radius:24px;
+    background:#151515;
+    border:1px solid #292929;
+    text-align:center;
+}
+
+.permissionIcon{
+    font-size:52px;
+    margin-bottom:12px;
+}
+
+.permissionBox h2{
+    margin:0 0 10px;
+}
+
+.permissionBox p{
+    color:#999;
+    line-height:1.5;
+}
+
+.message{
+    margin-top:12px;
+    font-size:13px;
+}
+
+.good{
+    color:#4cd964;
+}
+
+.bad{
+    color:#ff453a;
+}
+
+.hidden{
+    display:none!important;
 }
 </style>
 </head>
 
 <body>
 
-<video id="video" autoplay playsinline></video>
-<canvas id="canvas"></canvas>
+<div class="app">
 
-<div id="ui">
-  <div id="status">Loading AI...</div>
-  <button id="toggleBtn">START SCANNING</button>
+<header>
+    <div class="logo">ST</div>
+    SirTros Call
+</header>
+
+<div class="content">
+
+    <div class="title">Volání</div>
+
+    <div class="subtitle">
+        Internetové hovory přes WebRTC
+    </div>
+
+    <div class="card">
+
+        <label>Tvoje jméno</label>
+
+        <input
+            id="myName"
+            placeholder="Např. SirTros"
+            maxlength="30"
+        >
+
+        <label>Komu zavolat</label>
+
+        <input
+            id="targetName"
+            placeholder="Např. Kamarad"
+            maxlength="30"
+        >
+
+        <button
+            class="primary"
+            onclick="saveSettings()"
+        >
+            💾 Uložit
+        </button>
+
+        <div id="setupMessage" class="message"></div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="user">
+
+            <div class="avatar">
+                👤
+            </div>
+
+            <div class="userInfo">
+
+                <div
+                    class="name"
+                    id="targetDisplay"
+                >
+                    Kamarad
+                </div>
+
+                <div class="status">
+                    ● Připraven
+                </div>
+
+            </div>
+
+            <button
+                class="callButton"
+                onclick="startCall()"
+            >
+                📞
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="historyTitle">
+        📋 Historie hovorů
+    </div>
+
+    <div
+        class="history"
+        id="history"
+    >
+        <div class="historyItem">
+            Zatím žádné hovory
+        </div>
+    </div>
+
 </div>
 
+
+<!-- CALL -->
+
+<div
+    class="screen"
+    id="callScreen"
+>
+
+    <div class="callAvatar">
+        👤
+    </div>
+
+    <div
+        class="callName"
+        id="callName"
+    >
+        Kamarad
+    </div>
+
+    <div
+        class="callStatus"
+        id="callStatus"
+    >
+        Ring…
+    </div>
+
+    <div
+        class="timer"
+        id="timer"
+    >
+        00:00
+    </div>
+
+    <div class="controls">
+
+        <button
+            class="control"
+            id="muteButton"
+            onclick="toggleMute()"
+        >
+            🎤
+        </button>
+
+        <button
+            class="control"
+            onclick="toggleSpeaker()"
+        >
+            🔊
+        </button>
+
+        <button
+            class="control end"
+            onclick="endCall('ended')"
+        >
+            📞
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- INCOMING -->
+
+<div
+    class="incoming"
+    id="incoming"
+>
+
+    <div class="incomingSmall">
+        📞 Příchozí hovor
+    </div>
+
+    <div class="callAvatar">
+        👤
+    </div>
+
+    <div
+        class="incomingName"
+        id="incomingName"
+    >
+        SirTros
+    </div>
+
+    <div class="incomingButtons">
+
+        <button
+            class="incomingButton reject"
+            onclick="rejectIncoming()"
+        >
+            ✕
+        </button>
+
+        <button
+            class="incomingButton accept"
+            onclick="acceptIncoming()"
+        >
+            📞
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- MICROPHONE -->
+
+<div
+    class="permission"
+    id="permission"
+>
+
+    <div class="permissionBox">
+
+        <div class="permissionIcon">
+            🎤
+        </div>
+
+        <h2>Povolit mikrofon?</h2>
+
+        <p>
+            SirTros Call potřebuje mikrofon
+            pro hlasové hovory.
+        </p>
+
+        <button
+            class="primary"
+            onclick="requestMicrophone()"
+        >
+            Povolit mikrofon
+        </button>
+
+        <div
+            id="permissionMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<audio
+    id="remoteAudio"
+    autoplay
+></audio>
+
+</div>
+
+
 <script>
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const ctx2 = canvas.getContext("2d");
 
-const statusEl = document.getElementById("status");
-const btn = document.getElementById("toggleBtn");
+/* =====================================================
+   SUPABASE NASTAVENÍ
+   ===================================================== */
 
-let model;
-let stream;
+const SUPABASE_URL = "oxfviwqkxtpxjjnogdhh.supabase.co";
 
-let recorder;
-let chunks = [];
-let recording = false;
+const SUPABASE_KEY = "sb_publishable_hkaAJrtiV_Isz6BzxAPHtA_hZfFDEYX";
 
-let scanning = false;
-let lastPerson = 0;
-let recordStart = 0;
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
-function pad(n){ return n < 10 ? "0"+n : n; }
 
-function getTime(){
-  const d = new Date();
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
+/* =====================================================
+   PROMĚNNÉ
+   ===================================================== */
 
-function getDate(){
-  const d = new Date();
-  return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`;
-}
+let localStream = null;
+let peerConnection = null;
 
-// sound
-const ctx = new (window.AudioContext || window.webkitAudioContext)();
+let currentCall = null;
+let currentCallId = null;
 
-function beep(freq=800, len=80, vol=0.05){
-  const o = ctx.createOscillator();
-  const g = ctx.createGain();
+let incomingCall = null;
 
-  o.frequency.value = freq;
-  g.gain.value = vol;
+let callStart = null;
+let timerInterval = null;
 
-  o.connect(g);
-  g.connect(ctx.destination);
+let muted = false;
+let speakerMuted = false;
 
-  o.start();
-  o.stop(ctx.currentTime + len/1000);
-}
+let pendingCandidates = [];
 
-// camera
-async function startCam(){
-  stream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
-  video.srcObject = stream;
-  await video.play();
+let callsChannel = null;
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-}
 
-// record canvas stream (NE video → canvas = timestamp included)
-function startRecord(){
-  if(!scanning) return;
+/* =====================================================
+   WEBRTC
+   ===================================================== */
 
-  const canvasStream = canvas.captureStream(30);
-  const audioTracks = stream.getAudioTracks();
+const rtcConfig = {
 
-  audioTracks.forEach(t => canvasStream.addTrack(t));
+    iceServers:[
+        {
+            urls:"stun:stun.l.google.com:19302"
+        }
+    ]
 
-  chunks = [];
-  recorder = new MediaRecorder(canvasStream);
-
-  recorder.ondataavailable = e => chunks.push(e.data);
-
-  recorder.onstop = () => {
-    const blob = new Blob(chunks, {type:"video/webm"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "record.webm";
-    a.click();
-  };
-
-  recorder.start();
-  recording = true;
-  recordStart = Date.now();
-}
-
-function stopRecord(){
-  if(recorder && recording){
-    recorder.stop();
-    recording = false;
-  }
-}
-
-// draw loop (video + timestamp)
-function draw(){
-  ctx2.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  const now = new Date();
-
-  const time = getTime();
-  const date = getDate();
-
-  let secs = recording ? Math.floor((Date.now() - recordStart)/1000) : 0;
-
-  ctx2.fillStyle = "rgba(0,0,0,0.6)";
-  ctx2.fillRect(10, 10, 300, 70);
-
-  ctx2.fillStyle = "white";
-  ctx2.font = "20px Arial";
-
-  ctx2.fillText("📅 " + date, 20, 35);
-  ctx2.fillText("⏰ " + time, 20, 60);
-  if(recording) ctx2.fillText("⏱ " + secs + "s REC", 180, 60);
-
-  requestAnimationFrame(draw);
-}
-
-// AI detect
-async function detect(){
-  const preds = await model.detect(video);
-
-  let person = preds.some(p => p.class === "person" && p.score > 0.6);
-
-  if(scanning){
-    if(person){
-      lastPerson = Date.now();
-      statusEl.innerText = "VIDÍM ČLOVĚKA 🔴";
-      beep(900, 60, 0.06);
-
-      if(!recording) startRecord();
-    } else {
-      statusEl.innerText = "NIC NEDETEKUJI ⚪";
-    }
-
-    if(recording && Date.now() - lastPerson > 3000){
-      statusEl.innerText = "STOP + DOWNLOAD ⛔";
-      stopRecord();
-    }
-  } else {
-    statusEl.innerText = "SCAN OFF 💤";
-    if(recording) stopRecord();
-  }
-
-  requestAnimationFrame(detect);
-}
-
-// button
-btn.onclick = () => {
-  scanning = !scanning;
-
-  if(scanning){
-    btn.innerText = "STOP SCANNING";
-    statusEl.innerText = "SCANNING...";
-    beep(1000, 100, 0.08);
-  } else {
-    btn.innerText = "START SCANNING";
-    statusEl.innerText = "SCAN OFF";
-    beep(200, 120, 0.05);
-    stopRecord();
-  }
 };
 
-// start
-async function main(){
-  await startCam();
-  model = await cocoSsd.load();
 
-  statusEl.innerText = "READY";
+/* =====================================================
+   START
+   ===================================================== */
 
-  draw();
-  detect();
+window.addEventListener(
+    "load",
+    async ()=>{
+
+        loadSettings();
+
+        await requestMicrophone();
+
+        setupRealtime();
+
+        loadHistory();
+
+    }
+);
+
+
+/* =====================================================
+   MICROFON
+   ===================================================== */
+
+async function requestMicrophone(){
+
+    try{
+
+        localStream =
+            await navigator.mediaDevices.getUserMedia({
+
+                audio:{
+                    channelCount:1,
+                    sampleRate:16000,
+                    sampleSize:16,
+
+                    echoCancellation:true,
+                    noiseSuppression:true,
+                    autoGainControl:true
+                },
+
+                video:false
+
+            });
+
+
+        document
+            .getElementById("permission")
+            .classList.add("hide");
+
+        document
+            .getElementById("permissionMessage")
+            .textContent="✓ Mikrofon povolen.";
+
+    }
+
+    catch(error){
+
+        document
+            .getElementById("permissionMessage")
+            .className="message bad";
+
+        document
+            .getElementById("permissionMessage")
+            .textContent=
+            "Mikrofon nebyl povolen.";
+
+        console.error(error);
+
+    }
+
 }
 
-main();
+
+/* =====================================================
+   NASTAVENÍ
+   ===================================================== */
+
+function saveSettings(){
+
+    const myName =
+        document
+        .getElementById("myName")
+        .value
+        .trim();
+
+    const target =
+        document
+        .getElementById("targetName")
+        .value
+        .trim();
+
+
+    if(!myName || !target){
+
+        showSetupMessage(
+            "Vyplň obě jména.",
+            false
+        );
+
+        return;
+    }
+
+
+    localStorage.setItem(
+        "sirtros_call_name",
+        myName
+    );
+
+    localStorage.setItem(
+        "sirtros_call_target",
+        target
+    );
+
+
+    document
+        .getElementById("targetDisplay")
+        .textContent=target;
+
+
+    showSetupMessage(
+        "✓ Nastavení uloženo.",
+        true
+    );
+
+}
+
+
+function loadSettings(){
+
+    const myName =
+        localStorage.getItem(
+            "sirtros_call_name"
+        );
+
+    const target =
+        localStorage.getItem(
+            "sirtros_call_target"
+        );
+
+
+    if(myName){
+
+        document
+            .getElementById("myName")
+            .value=myName;
+
+    }
+
+
+    if(target){
+
+        document
+            .getElementById("targetName")
+            .value=target;
+
+        document
+            .getElementById("targetDisplay")
+            .textContent=target;
+
+    }
+
+}
+
+
+function showSetupMessage(text,good){
+
+    const el =
+        document
+        .getElementById("setupMessage");
+
+    el.textContent=text;
+
+    el.className =
+        "message " +
+        (good ? "good" : "bad");
+
+}
+
+
+/* =====================================================
+   SUPABASE REALTIME
+   ===================================================== */
+
+function setupRealtime(){
+
+    callsChannel =
+        supabaseClient
+        .channel("sirtros-call-events")
+        .on(
+            "postgres_changes",
+            {
+                event:"INSERT",
+                schema:"public",
+                table:"calls"
+            },
+            payload=>{
+
+                const call =
+                    payload.new;
+
+                const me =
+                    getMyName();
+
+                if(
+                    call.receiver === me &&
+                    call.status === "ringing"
+                ){
+
+                    showIncoming(call);
+
+                }
+
+            }
+        )
+        .on(
+            "postgres_changes",
+            {
+                event:"UPDATE",
+                schema:"public",
+                table:"calls"
+            },
+            payload=>{
+
+                const call =
+                    payload.new;
+
+                handleCallUpdate(call);
+
+            }
+        )
+        .subscribe();
+
+}
+
+
+/* =====================================================
+   JMÉNO
+   ===================================================== */
+
+function getMyName(){
+
+    return (
+        localStorage.getItem(
+            "sirtros_call_name"
+        ) || ""
+    ).trim();
+
+}
+
+
+function getTargetName(){
+
+    return (
+        localStorage.getItem(
+            "sirtros_call_target"
+        ) || ""
+    ).trim();
+
+}
+
+
+/* =====================================================
+   START HOVORU
+   ===================================================== */
+
+async function startCall(){
+
+    const caller =
+        getMyName();
+
+    const receiver =
+        getTargetName();
+
+
+    if(!caller || !receiver){
+
+        alert(
+            "Nejdřív vyplň a ulož jméno."
+        );
+
+        return;
+    }
+
+
+    if(!localStream){
+
+        await requestMicrophone();
+
+    }
+
+
+    if(!localStream){
+
+        alert(
+            "Bez mikrofonu nelze volat."
+        );
+
+        return;
+    }
+
+
+    showCallScreen(
+        receiver,
+        "Ring…"
+    );
+
+
+    const {data,error} =
+        await supabaseClient
+        .from("calls")
+        .insert({
+
+            caller:caller,
+            receiver:receiver,
+            status:"ringing"
+
+        })
+        .select()
+        .single();
+
+
+    if(error){
+
+        console.error(error);
+
+        alert(
+            "Nepodařilo se vytvořit hovor.\n\n"+
+            error.message
+        );
+
+        hideCallScreen();
+
+        return;
+    }
+
+
+    currentCall=data;
+    currentCallId=data.id;
+
+
+    await createOffer();
+
+}
+
+
+/* =====================================================
+   WEBRTC OFFER
+   ===================================================== */
+
+async function createOffer(){
+
+    peerConnection =
+        createPeerConnection();
+
+
+    const offer =
+        await peerConnection.createOffer();
+
+
+    await peerConnection.setLocalDescription(
+        offer
+    );
+
+
+    await updateCall({
+
+        offer:JSON.stringify(offer)
+
+    });
+
+}
+
+
+/* =====================================================
+   PEER CONNECTION
+   ===================================================== */
+
+function createPeerConnection(){
+
+    const pc =
+        new RTCPeerConnection(
+            rtcConfig
+        );
+
+
+    localStream
+        .getTracks()
+        .forEach(track=>{
+
+            pc.addTrack(
+                track,
+                localStream
+            );
+
+        });
+
+
+    pc.ontrack = event=>{
+
+        const audio =
+            document.getElementById(
+                "remoteAudio"
+            );
+
+        audio.srcObject =
+            event.streams[0];
+
+        audio.play().catch(()=>{});
+
+    };
+
+
+    pc.onicecandidate = async event=>{
+
+        if(
+            event.candidate &&
+            currentCallId
+        ){
+
+            await sendCandidate(
+                event.candidate
+            );
+
+        }
+
+    };
+
+
+    pc.onconnectionstatechange=()=>{
+
+        console.log(
+            "WebRTC:",
+            pc.connectionState
+        );
+
+
+        if(
+            pc.connectionState ===
+            "connected"
+        ){
+
+            connected();
+
+        }
+
+
+        if(
+            [
+                "failed",
+                "disconnected",
+                "closed"
+            ].includes(
+                pc.connectionState
+            )
+        ){
+
+            if(
+                pc.connectionState ===
+                "failed"
+            ){
+
+                document
+                    .getElementById(
+                        "callStatus"
+                    )
+                    .textContent=
+                    "Spojení selhalo.";
+
+            }
+
+        }
+
+    };
+
+
+    return pc;
+
+}
+
+
+/* =====================================================
+   INCOMING
+   ===================================================== */
+
+function showIncoming(call){
+
+    incomingCall=call;
+
+
+    document
+        .getElementById("incomingName")
+        .textContent=call.caller;
+
+
+    document
+        .getElementById("incoming")
+        .classList.add("show");
+
+}
+
+
+async function acceptIncoming(){
+
+    if(!incomingCall){
+
+        return;
+    }
+
+
+    const call =
+        incomingCall;
+
+    incomingCall=null;
+
+
+    document
+        .getElementById("incoming")
+        .classList.remove("show");
+
+
+    if(!localStream){
+
+        await requestMicrophone();
+
+    }
+
+
+    currentCall=call;
+    currentCallId=call.id;
+
+
+    showCallScreen(
+        call.caller,
+        "Připojování…"
+    );
+
+
+    await updateCall({
+
+        status:"accepted",
+
+        started_at:
+            new Date().toISOString()
+
+    });
+
+
+    peerConnection =
+        createPeerConnection();
+
+
+    const offer =
+        JSON.parse(call.offer);
+
+
+    await peerConnection.setRemoteDescription(
+        offer
+    );
+
+
+    const answer =
+        await peerConnection.createAnswer();
+
+
+    await peerConnection.setLocalDescription(
+        answer
+    );
+
+
+    await updateCall({
+
+        answer:JSON.stringify(answer)
+
+    });
+
+
+    await flushCandidates();
+
+}
+
+
+async function rejectIncoming(){
+
+    if(!incomingCall){
+
+        return;
+    }
+
+
+    const id =
+        incomingCall.id;
+
+
+    incomingCall=null;
+
+
+    document
+        .getElementById("incoming")
+        .classList.remove("show");
+
+
+    await supabaseClient
+        .from("calls")
+        .update({
+            status:"rejected"
+        })
+        .eq("id",id);
+
+}
+
+
+/* =====================================================
+   CALL UPDATE
+   ===================================================== */
+
+async function updateCall(values){
+
+    if(!currentCallId){
+
+        return;
+    }
+
+
+    const {error} =
+        await supabaseClient
+        .from("calls")
+        .update(values)
+        .eq(
+            "id",
+            currentCallId
+        );
+
+
+    if(error){
+
+        console.error(
+            "Supabase update:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   CALL STATUS
+   ===================================================== */
+
+async function handleCallUpdate(call){
+
+    if(
+        !currentCallId ||
+        call.id !== currentCallId
+    ){
+
+        return;
+    }
+
+
+    if(
+        call.status ===
+        "rejected"
+    ){
+
+        document
+            .getElementById("callStatus")
+            .textContent=
+            "Hovor odmítnut.";
+
+        setTimeout(
+            hideCallScreen,
+            1200
+        );
+
+        return;
+
+    }
+
+
+    if(
+        call.status ===
+        "ended"
+    ){
+
+        hideCallScreen();
+
+        return;
+
+    }
+
+
+    if(
+        call.status ===
+        "accepted" &&
+        call.answer &&
+        peerConnection
+    ){
+
+        const answer =
+            JSON.parse(
+                call.answer
+            );
+
+
+        if(
+            !peerConnection
+            .currentRemoteDescription
+        ){
+
+            await peerConnection
+                .setRemoteDescription(
+                    answer
+                );
+
+            await flushCandidates();
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   ICE CANDIDÁTI
+   ===================================================== */
+
+async function sendCandidate(candidate){
+
+    /*
+       ICE kandidáti jsou pro tento jednoduchý
+       prototyp posíláni přes metadata hovoru.
+    */
+
+    const {data,error} =
+        await supabaseClient
+        .from("calls")
+        .select("ice_candidates")
+        .eq("id",currentCallId)
+        .single();
+
+
+    if(error){
+
+        console.error(error);
+        return;
+
+    }
+
+
+    let candidates =
+        data.ice_candidates || [];
+
+
+    candidates.push(
+        candidate.toJSON()
+    );
+
+
+    await supabaseClient
+        .from("calls")
+        .update({
+            ice_candidates:candidates
+        })
+        .eq(
+            "id",
+            currentCallId
+        );
+
+}
+
+
+/* =====================================================
+   ICE
+   ===================================================== */
+
+async function flushCandidates(){
+
+    if(!peerConnection || !currentCallId){
+
+        return;
+    }
+
+
+    const {data,error} =
+        await supabaseClient
+        .from("calls")
+        .select("ice_candidates")
+        .eq("id",currentCallId)
+        .single();
+
+
+    if(error || !data){
+
+        return;
+    }
+
+
+    const candidates =
+        data.ice_candidates || [];
+
+
+    for(
+        const candidate of candidates
+    ){
+
+        try{
+
+            await peerConnection
+                .addIceCandidate(
+                    new RTCIceCandidate(
+                        candidate
+                    )
+                );
+
+        }catch(e){
+
+            console.log(
+                "ICE candidate:",
+                e
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   CONNECTED
+   ===================================================== */
+
+function connected(){
+
+    document
+        .getElementById("callStatus")
+        .textContent=
+        "Probíhá hovor";
+
+
+    callStart =
+        Date.now();
+
+
+    clearInterval(
+        timerInterval
+    );
+
+
+    timerInterval =
+        setInterval(
+            updateTimer,
+            1000
+        );
+
+}
+
+
+function updateTimer(){
+
+    if(!callStart){
+
+        return;
+    }
+
+
+    const seconds =
+        Math.floor(
+            (Date.now()-callStart)
+            /1000
+        );
+
+
+    const minutes =
+        Math.floor(
+            seconds/60
+        );
+
+
+    const sec =
+        seconds%60;
+
+
+    document
+        .getElementById("timer")
+        .textContent=
+        String(minutes)
+        .padStart(2,"0")
+        + ":" +
+        String(sec)
+        .padStart(2,"0");
+
+}
+
+
+/* =====================================================
+   MUTE
+   ===================================================== */
+
+function toggleMute(){
+
+    if(!localStream){
+
+        return;
+    }
+
+
+    muted=!muted;
+
+
+    localStream
+        .getAudioTracks()
+        .forEach(
+            track=>{
+                track.enabled=!muted;
+            }
+        );
+
+
+    const button =
+        document.getElementById(
+            "muteButton"
+        );
+
+
+    button.textContent =
+        muted ? "🔇" : "🎤";
+
+
+    button.classList.toggle(
+        "active",
+        muted
+    );
+
+}
+
+
+/* =====================================================
+   SPEAKER
+   ===================================================== */
+
+function toggleSpeaker(){
+
+    speakerMuted=!speakerMuted;
+
+
+    document
+        .getElementById(
+            "remoteAudio"
+        )
+        .muted=
+        speakerMuted;
+
+}
+
+
+/* =====================================================
+   END CALL
+   ===================================================== */
+
+async function endCall(status="ended"){
+
+    if(currentCallId){
+
+        await supabaseClient
+            .from("calls")
+            .update({
+
+                status:status,
+
+                ended_at:
+                    new Date().toISOString(),
+
+                duration:
+                    callStart
+                    ? Math.floor(
+                        (Date.now()-callStart)
+                        /1000
+                    )
+                    : 0
+
+            })
+            .eq(
+                "id",
+                currentCallId
+            );
+
+    }
+
+
+    cleanupCall();
+
+    loadHistory();
+
+}
+
+
+/* =====================================================
+   CLEANUP
+   ===================================================== */
+
+function cleanupCall(){
+
+    clearInterval(
+        timerInterval
+    );
+
+
+    timerInterval=null;
+    callStart=null;
+
+
+    if(peerConnection){
+
+        peerConnection.close();
+
+        peerConnection=null;
+
+    }
+
+
+    if(localStream){
+
+        localStream
+            .getTracks()
+            .forEach(
+                track=>track.stop()
+            );
+
+        localStream=null;
+
+    }
+
+
+    currentCall=null;
+    currentCallId=null;
+
+    muted=false;
+    speakerMuted=false;
+
+
+    document
+        .getElementById("remoteAudio")
+        .srcObject=null;
+
+
+    document
+        .getElementById("timer")
+        .textContent="00:00";
+
+
+    document
+        .getElementById("muteButton")
+        .textContent="🎤";
+
+
+    hideCallScreen();
+
+}
+
+
+function hideCallScreen(){
+
+    document
+        .getElementById("callScreen")
+        .classList.remove("show");
+
+}
+
+
+/* =====================================================
+   CALL SCREEN
+   ===================================================== */
+
+function showCallScreen(
+    name,
+    status
+){
+
+    document
+        .getElementById("callName")
+        .textContent=name;
+
+
+    document
+        .getElementById("callStatus")
+        .textContent=status;
+
+
+    document
+        .getElementById("callScreen")
+        .classList.add("show");
+
+}
+
+
+/* =====================================================
+   HISTORIE
+   ===================================================== */
+
+async function loadHistory(){
+
+    const me =
+        getMyName();
+
+
+    if(!me){
+
+        return;
+    }
+
+
+    const {data,error} =
+        await supabaseClient
+        .from("calls")
+        .select("*")
+        .or(
+            `caller.eq.${me},receiver.eq.${me}`
+        )
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        )
+        .limit(20);
+
+
+    if(error){
+
+        console.error(
+            "Historie:",
+            error
+        );
+
+        return;
+    }
+
+
+    const history =
+        document.getElementById(
+            "history"
+        );
+
+
+    if(!data || data.length===0){
+
+        history.innerHTML=
+            `<div class="historyItem">
+                Zatím žádné hovory
+            </div>`;
+
+        return;
+    }
+
+
+    history.innerHTML="";
+
+
+    data.forEach(call=>{
+
+        const other =
+            call.caller === me
+            ? call.receiver
+            : call.caller;
+
+
+        const icon =
+            call.status === "rejected"
+            ? "❌"
+            : call.status === "ended"
+            ? "📞"
+            : "📲";
+
+
+        const duration =
+            formatDuration(
+                call.duration || 0
+            );
+
+
+        const item =
+            document.createElement(
+                "div"
+            );
+
+
+        item.className=
+            "historyItem";
+
+
+        item.innerHTML=`
+
+            <div class="historyTop">
+                <span>
+                    ${icon} ${escapeHTML(other)}
+                </span>
+
+                <span>
+                    ${duration}
+                </span>
+            </div>
+
+            <div class="historySmall">
+                ${escapeHTML(
+                    call.status
+                )}
+                ·
+                ${new Date(
+                    call.created_at
+                ).toLocaleString("cs-CZ")}
+            </div>
+
+        `;
+
+
+        history.appendChild(item);
+
+    });
+
+}
+
+
+function formatDuration(seconds){
+
+    const min =
+        Math.floor(seconds/60);
+
+    const sec =
+        seconds%60;
+
+
+    return (
+        String(min).padStart(2,"0")
+        + ":" +
+        String(sec).padStart(2,"0")
+    );
+
+}
+
+
+function escapeHTML(text){
+
+    return String(text)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
 </script>
 
 </body>
