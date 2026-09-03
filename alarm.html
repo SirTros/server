@@ -2,369 +2,379 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>SirTros Call</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{
-    box-sizing:border-box;
+* {
+    box-sizing: border-box;
 }
 
-html,body{
-    margin:0;
-    width:100%;
-    min-height:100%;
-    background:#050505;
-    color:white;
-    font-family:Arial,"Segoe UI",sans-serif;
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #000;
+    color: white;
 }
 
-body{
-    display:flex;
-    justify-content:center;
+body {
+    overflow: hidden;
 }
 
-.app{
-    width:100%;
-    max-width:480px;
-    min-height:100vh;
-    background:#0d0d0d;
-    position:relative;
-    overflow:hidden;
+.app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-header{
-    height:72px;
-    display:flex;
-    align-items:center;
-    padding:0 20px;
-    border-bottom:1px solid #242424;
-    font-size:22px;
-    font-weight:800;
+/* HEADER */
+
+.header {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 0 22px;
+    border-bottom: 1px solid #222;
+    background: #080808;
 }
 
-.logo{
-    width:44px;
-    height:44px;
-    border-radius:14px;
-    background:white;
-    color:black;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-right:12px;
-    font-weight:900;
+.logo {
+    font-size: 24px;
+    font-weight: 800;
 }
 
-.content{
-    padding:22px;
+.logo span {
+    color: #25d366;
 }
 
-.title{
-    font-size:32px;
-    font-weight:800;
+.status {
+    margin-left: auto;
+    font-size: 13px;
+    color: #777;
 }
 
-.subtitle{
-    color:#888;
-    margin-top:5px;
-    margin-bottom:22px;
+/* MAIN */
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 35px 20px;
+    overflow-y: auto;
 }
 
-.card{
-    background:#171717;
-    border:1px solid #292929;
-    border-radius:20px;
-    padding:18px;
-    margin-bottom:15px;
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 45px;
+    margin-bottom: 20px;
 }
 
-label{
-    display:block;
-    color:#aaa;
-    font-size:14px;
-    margin-bottom:7px;
+.name {
+    font-size: 27px;
+    font-weight: bold;
 }
 
-input{
-    width:100%;
-    padding:14px;
-    border-radius:12px;
-    border:1px solid #333;
-    background:#0a0a0a;
-    color:white;
-    outline:none;
-    margin-bottom:14px;
-    font-size:16px;
+.call-status {
+    margin-top: 8px;
+    color: #888;
+    min-height: 22px;
 }
 
-.primary{
-    width:100%;
-    border:0;
-    padding:14px;
-    border-radius:13px;
-    background:white;
-    color:black;
-    font-weight:800;
-    font-size:15px;
-    cursor:pointer;
+.timer {
+    margin-top: 8px;
+    font-size: 16px;
+    color: #aaa;
 }
 
-.user{
-    display:flex;
-    align-items:center;
-    gap:13px;
+.target-box {
+    width: min(450px, 100%);
+    margin-top: 30px;
 }
 
-.avatar{
-    width:55px;
-    height:55px;
-    border-radius:50%;
-    background:#292929;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:23px;
+.target-box label {
+    display: block;
+    color: #999;
+    font-size: 13px;
+    margin-bottom: 8px;
 }
 
-.userInfo{
-    flex:1;
+.target-box input {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #333;
+    border-radius: 12px;
+    background: #111;
+    color: white;
+    outline: none;
+    font-size: 16px;
 }
 
-.name{
-    font-size:18px;
-    font-weight:800;
+.target-box input:focus {
+    border-color: #25d366;
 }
 
-.status{
-    color:#4cd964;
-    font-size:13px;
-    margin-top:4px;
+/* BUTTONS */
+
+.buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.callButton{
-    width:54px;
-    height:54px;
-    border:0;
-    border-radius:50%;
-    background:#32d74b;
-    color:white;
-    font-size:23px;
-    cursor:pointer;
+button {
+    border: 0;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
 }
 
-.historyTitle{
-    font-size:19px;
-    font-weight:800;
-    margin:25px 0 12px;
+.call-btn {
+    background: #25d366;
+    color: #000;
+    padding: 15px 30px;
+    border-radius: 30px;
 }
 
-.history{
-    display:flex;
-    flex-direction:column;
-    gap:9px;
+.end-btn {
+    background: #ff3b30;
+    padding: 15px 30px;
+    border-radius: 30px;
 }
 
-.historyItem{
-    background:#171717;
-    border:1px solid #292929;
-    border-radius:15px;
-    padding:13px;
+.control-btn {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #222;
 }
 
-.historyTop{
-    display:flex;
-    justify-content:space-between;
-    font-weight:700;
+.control-btn.active {
+    background: white;
+    color: black;
 }
 
-.historySmall{
-    color:#888;
-    font-size:13px;
-    margin-top:5px;
+/* HISTORY */
+
+.history {
+    width: min(600px, 100%);
+    margin-top: 40px;
 }
 
-/* CALL */
-
-.screen{
-    position:absolute;
-    inset:0;
-    background:#080808;
-    z-index:20;
-    display:none;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
+.history-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
 }
 
-.screen.show{
-    display:flex;
+.history-item {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 8px;
 }
 
-.callAvatar{
-    width:125px;
-    height:125px;
-    border-radius:50%;
-    background:#202020;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:52px;
-    margin-bottom:24px;
+.history-main {
+    font-weight: bold;
 }
 
-.callName{
-    font-size:31px;
-    font-weight:800;
+.history-info {
+    color: #777;
+    font-size: 13px;
+    margin-top: 5px;
 }
 
-.callStatus{
-    color:#888;
-    margin-top:9px;
+/* PERMISSION */
+
+.permission-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
 }
 
-.timer{
-    color:#aaa;
-    margin-top:9px;
-    font-size:17px;
+.permission-card {
+    width: min(430px, 100%);
+    background: #111;
+    border: 1px solid #292929;
+    border-radius: 22px;
+    padding: 30px;
+    text-align: center;
 }
 
-.controls{
-    position:absolute;
-    bottom:45px;
-    display:flex;
-    gap:18px;
+.permission-icon {
+    font-size: 55px;
+    margin-bottom: 15px;
 }
 
-.control{
-    width:63px;
-    height:63px;
-    border:0;
-    border-radius:50%;
-    background:#282828;
-    color:white;
-    font-size:24px;
-    cursor:pointer;
+.permission-card h1 {
+    margin: 0;
+    font-size: 25px;
 }
 
-.control.active{
-    background:white;
-    color:black;
+.permission-card p {
+    color: #999;
+    line-height: 1.5;
 }
 
-.end{
-    background:#ff3b30;
+.permission-btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    background: #25d366;
+    color: #000;
+    margin-top: 10px;
+}
+
+.permission-error {
+    margin-top: 15px;
+    color: #ff6259;
+    font-size: 13px;
+    line-height: 1.5;
+    word-break: break-word;
 }
 
 /* INCOMING */
 
-.incoming{
-    position:absolute;
-    inset:0;
-    z-index:30;
-    background:#080808;
-    display:none;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
+.incoming {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.96);
+    z-index: 900;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
 }
 
-.incoming.show{
-    display:flex;
+.incoming-card {
+    text-align: center;
+    width: min(400px, 100%);
 }
 
-.incomingSmall{
-    color:#888;
-    margin-bottom:12px;
+.incoming-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #222;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 55px;
 }
 
-.incomingName{
-    font-size:31px;
-    font-weight:800;
-    margin-bottom:40px;
+.incoming-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 20px;
 }
 
-.incomingButtons{
-    display:flex;
-    gap:30px;
+.incoming-subtitle {
+    color: #888;
+    margin-top: 8px;
 }
 
-.incomingButton{
-    width:72px;
-    height:72px;
-    border:0;
-    border-radius:50%;
-    color:white;
-    font-size:28px;
-    cursor:pointer;
+.incoming-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
 }
 
-.accept{
-    background:#32d74b;
+.accept {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #25d366;
+    color: #000;
+    font-size: 28px;
 }
 
-.reject{
-    background:#ff3b30;
+.reject {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #ff3b30;
+    font-size: 28px;
 }
 
-/* MICROPHONE */
+/* CALL CONTROLS */
 
-.permission{
-    position:fixed;
-    inset:0;
-    z-index:100;
-    background:#050505;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:22px;
+.call-controls {
+    display: none;
+    margin-top: 35px;
+    gap: 15px;
+    justify-content: center;
 }
 
-.permission.hide{
-    display:none;
+.show {
+    display: flex;
 }
 
-.permissionBox{
-    width:100%;
-    max-width:390px;
-    padding:27px;
-    border-radius:24px;
-    background:#151515;
-    border:1px solid #292929;
-    text-align:center;
+/* NOTIFICATION */
+
+.notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #181818;
+    border: 1px solid #333;
+    padding: 13px 18px;
+    border-radius: 12px;
+    display: none;
+    z-index: 2000;
+    max-width: 90%;
+    text-align: center;
 }
 
-.permissionIcon{
-    font-size:52px;
-    margin-bottom:12px;
-}
+@media(max-width:600px) {
 
-.permissionBox h2{
-    margin:0 0 10px;
-}
+    .header {
+        height: 60px;
+        padding: 0 15px;
+    }
 
-.permissionBox p{
-    color:#999;
-    line-height:1.5;
-}
+    .logo {
+        font-size: 20px;
+    }
 
-.message{
-    margin-top:12px;
-    font-size:13px;
-}
+    .main {
+        padding-top: 25px;
+    }
 
-.good{
-    color:#4cd964;
-}
+    .avatar {
+        width: 85px;
+        height: 85px;
+        font-size: 38px;
+    }
 
-.bad{
-    color:#ff453a;
-}
-
-.hidden{
-    display:none!important;
+    .name {
+        font-size: 23px;
+    }
 }
 </style>
 </head>
@@ -373,232 +383,144 @@ input{
 
 <div class="app">
 
-<header>
-    <div class="logo">ST</div>
-    SirTros Call
-</header>
+    <div class="header">
+        <div class="logo">
+            SirTros <span>Call</span>
+        </div>
 
-<div class="content">
-
-    <div class="title">Volání</div>
-
-    <div class="subtitle">
-        Internetové hovory přes WebRTC
+        <div class="status" id="connectionStatus">
+            Nepřipojeno
+        </div>
     </div>
 
-    <div class="card">
+    <div class="main">
 
-        <label>Tvoje jméno</label>
+        <div class="avatar">
+            📞
+        </div>
 
-        <input
-            id="myName"
-            placeholder="Např. SirTros"
-            maxlength="30"
-        >
+        <div class="name" id="currentName">
+            SirTros Call
+        </div>
 
-        <label>Komu zavolat</label>
+        <div class="call-status" id="callStatus">
+            Připraven
+        </div>
 
-        <input
-            id="targetName"
-            placeholder="Např. Kamarad"
-            maxlength="30"
-        >
+        <div class="timer" id="timer">
+            00:00
+        </div>
 
-        <button
-            class="primary"
-            onclick="saveSettings()"
-        >
-            💾 Uložit
-        </button>
+        <div class="target-box">
 
-        <div id="setupMessage" class="message"></div>
+            <label for="target">
+                Komu volat
+            </label>
 
-    </div>
+            <input
+                id="target"
+                type="text"
+                placeholder="Uživatelské jméno"
+                autocomplete="off"
+            >
 
-    <div class="card">
+        </div>
 
-        <div class="user">
-
-            <div class="avatar">
-                👤
-            </div>
-
-            <div class="userInfo">
-
-                <div
-                    class="name"
-                    id="targetDisplay"
-                >
-                    Kamarad
-                </div>
-
-                <div class="status">
-                    ● Připraven
-                </div>
-
-            </div>
+        <div class="buttons">
 
             <button
-                class="callButton"
+                class="call-btn"
+                id="callButton"
                 onclick="startCall()"
             >
-                📞
+                📞 Zavolat
+            </button>
+
+            <button
+                class="end-btn"
+                id="endButton"
+                onclick="endCall()"
+                style="display:none"
+            >
+                📕 Ukončit
             </button>
 
         </div>
 
-    </div>
+        <div
+            class="call-controls"
+            id="callControls"
+        >
 
-    <div class="historyTitle">
-        📋 Historie hovorů
-    </div>
+            <button
+                class="control-btn"
+                id="muteButton"
+                onclick="toggleMute()"
+            >
+                🎤
+            </button>
 
-    <div
-        class="history"
-        id="history"
-    >
-        <div class="historyItem">
-            Zatím žádné hovory
+            <button
+                class="control-btn"
+                id="speakerButton"
+                onclick="toggleSpeaker()"
+            >
+                🔊
+            </button>
+
         </div>
-    </div>
 
-</div>
+        <div class="history">
 
+            <div class="history-title">
+                Historie hovorů
+            </div>
 
-<!-- CALL -->
+            <div id="historyList">
+                <div style="color:#666">
+                    Žádné hovory
+                </div>
+            </div>
 
-<div
-    class="screen"
-    id="callScreen"
->
-
-    <div class="callAvatar">
-        👤
-    </div>
-
-    <div
-        class="callName"
-        id="callName"
-    >
-        Kamarad
-    </div>
-
-    <div
-        class="callStatus"
-        id="callStatus"
-    >
-        Ring…
-    </div>
-
-    <div
-        class="timer"
-        id="timer"
-    >
-        00:00
-    </div>
-
-    <div class="controls">
-
-        <button
-            class="control"
-            id="muteButton"
-            onclick="toggleMute()"
-        >
-            🎤
-        </button>
-
-        <button
-            class="control"
-            onclick="toggleSpeaker()"
-        >
-            🔊
-        </button>
-
-        <button
-            class="control end"
-            onclick="endCall('ended')"
-        >
-            📞
-        </button>
+        </div>
 
     </div>
 
 </div>
 
 
-<!-- INCOMING -->
+<!-- MICROPHONE PERMISSION -->
 
 <div
-    class="incoming"
-    id="incoming"
+    class="permission-overlay"
+    id="permissionOverlay"
 >
 
-    <div class="incomingSmall">
-        📞 Příchozí hovor
-    </div>
+    <div class="permission-card">
 
-    <div class="callAvatar">
-        👤
-    </div>
-
-    <div
-        class="incomingName"
-        id="incomingName"
-    >
-        SirTros
-    </div>
-
-    <div class="incomingButtons">
-
-        <button
-            class="incomingButton reject"
-            onclick="rejectIncoming()"
-        >
-            ✕
-        </button>
-
-        <button
-            class="incomingButton accept"
-            onclick="acceptIncoming()"
-        >
-            📞
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- MICROPHONE -->
-
-<div
-    class="permission"
-    id="permission"
->
-
-    <div class="permissionBox">
-
-        <div class="permissionIcon">
+        <div class="permission-icon">
             🎤
         </div>
 
-        <h2>Povolit mikrofon?</h2>
+        <h1>
+            Povolení mikrofonu
+        </h1>
 
         <p>
-            SirTros Call potřebuje mikrofon
-            pro hlasové hovory.
+            SirTros Call potřebuje přístup k mikrofonu,
+            aby mohl uskutečňovat hlasové hovory.
         </p>
 
         <button
-            class="primary"
+            class="permission-btn"
             onclick="requestMicrophone()"
         >
             Povolit mikrofon
         </button>
 
         <div
-            id="permissionMessage"
-            class="message"
+            class="permission-error"
+            id="permissionError"
         ></div>
 
     </div>
@@ -606,297 +528,801 @@ input{
 </div>
 
 
+<!-- INCOMING CALL -->
+
+<div
+    class="incoming"
+    id="incomingCall"
+>
+
+    <div class="incoming-card">
+
+        <div class="incoming-avatar">
+            📞
+        </div>
+
+        <div
+            class="incoming-title"
+            id="incomingName"
+        >
+            Příchozí hovor
+        </div>
+
+        <div class="incoming-subtitle">
+            ti někdo volá
+        </div>
+
+        <div class="incoming-buttons">
+
+            <button
+                class="accept"
+                onclick="acceptCall()"
+            >
+                📞
+            </button>
+
+            <button
+                class="reject"
+                onclick="rejectCall()"
+            >
+                ✕
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    class="notification"
+    id="notification"
+></div>
+
+
 <audio
     id="remoteAudio"
     autoplay
 ></audio>
 
-</div>
-
 
 <script>
 
-/* =====================================================
-   SUPABASE NASTAVENÍ
-   ===================================================== */
+/* =========================================================
+   SUPABASE
+   ========================================================= */
 
-const SUPABASE_URL = "oxfviwqkxtpxjjnogdhh.supabase.co";
+/*
+   SEM VLOŽ SVÉ ÚDAJE ZE SUPABASE.
+*/
 
+const SUPABASE_URL = "https://oxfviwqkxtpxjjnogdhh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_hkaAJrtiV_Isz6BzxAPHtA_hZfFDEYX";
 
-const supabaseClient =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+let supabaseClient = null;
+
+function initSupabase() {
+
+    if (
+        !SUPABASE_URL ||
+        !SUPABASE_URL.startsWith("http://") &&
+        !SUPABASE_URL.startsWith("https://")
+    ) {
+
+        console.warn(
+            "Supabase není nastavený. Vyplň SUPABASE_URL."
+        );
+
+        document.getElementById("connectionStatus").textContent =
+            "Supabase není nastavený";
+
+        return false;
+    }
+
+    try {
+
+        supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+        document.getElementById("connectionStatus").textContent =
+            "Supabase připraven";
+
+        return true;
+
+    } catch(error) {
+
+        console.error(
+            "Supabase chyba:",
+            error
+        );
+
+        document.getElementById("connectionStatus").textContent =
+            "Supabase chyba";
+
+        return false;
+    }
+}
 
 
-/* =====================================================
-   PROMĚNNÉ
-   ===================================================== */
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+/*
+   DŮLEŽITÉ:
+   localStream musí být vytvořený PŘED funkcemi,
+   které ho používají.
+*/
 
 let localStream = null;
+let remoteStream = null;
 let peerConnection = null;
 
-let currentCall = null;
 let currentCallId = null;
+let currentCallStarted = null;
 
-let incomingCall = null;
+let incomingCallData = null;
 
-let callStart = null;
 let timerInterval = null;
 
-let muted = false;
-let speakerMuted = false;
-
-let pendingCandidates = [];
-
-let callsChannel = null;
+let isMuted = false;
+let speakerEnabled = true;
 
 
-/* =====================================================
+/* =========================================================
    WEBRTC
-   ===================================================== */
+   ========================================================= */
 
 const rtcConfig = {
 
-    iceServers:[
+    iceServers: [
+
         {
-            urls:"stun:stun.l.google.com:19302"
+            urls: "stun:stun.l.google.com:19302"
+        },
+
+        {
+            urls: "stun:stun1.l.google.com:19302"
         }
+
     ]
 
 };
 
 
-/* =====================================================
-   START
-   ===================================================== */
+/* =========================================================
+   MICROPHONE
+   ========================================================= */
 
-window.addEventListener(
-    "load",
-    async ()=>{
+async function requestMicrophone() {
 
-        loadSettings();
+    const errorBox =
+        document.getElementById("permissionError");
 
-        await requestMicrophone();
+    errorBox.textContent = "";
 
-        setupRealtime();
+    /*
+       Kontrola HTTPS / localhost.
+    */
 
-        loadHistory();
+    if (
+        !window.isSecureContext &&
+        location.hostname !== "localhost" &&
+        location.hostname !== "127.0.0.1"
+    ) {
 
+        errorBox.innerHTML =
+            "❌ Tato stránka není spuštěná přes HTTPS.<br><br>" +
+            "Mikrofon v prohlížeči funguje přes HTTPS " +
+            "nebo localhost.<br><br>" +
+            "Pokud otevíráš index.html přímo jako " +
+            "<b>file:///...</b>, spusť ho přes localhost " +
+            "nebo nahraj na GitHub Pages.";
+
+        return;
     }
-);
 
 
-/* =====================================================
-   MICROFON
-   ===================================================== */
+    /*
+       Kontrola podpory mikrofonu.
+    */
 
-async function requestMicrophone(){
+    if (
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ) {
 
-    try{
+        errorBox.innerHTML =
+            "❌ Tento prohlížeč nepodporuje přístup k mikrofonu.";
+
+        return;
+    }
+
+
+    try {
+
+        /*
+           Pokud už stream existuje,
+           mikrofon není potřeba žádat znovu.
+        */
+
+        if (localStream) {
+
+            document.getElementById(
+                "permissionOverlay"
+            ).style.display = "none";
+
+            return;
+        }
+
+
+        /*
+           Žádost o mikrofon.
+        */
 
         localStream =
             await navigator.mediaDevices.getUserMedia({
 
-                audio:{
-                    channelCount:1,
-                    sampleRate:16000,
-                    sampleSize:16,
+                audio: {
 
-                    echoCancellation:true,
-                    noiseSuppression:true,
-                    autoGainControl:true
+                    channelCount: {
+                        ideal: 1
+                    },
+
+                    sampleRate: {
+                        ideal: 16000
+                    },
+
+                    sampleSize: {
+                        ideal: 16
+                    },
+
+                    echoCancellation: true,
+
+                    noiseSuppression: true,
+
+                    autoGainControl: true
+
                 },
 
-                video:false
+                video: false
 
             });
 
 
-        document
-            .getElementById("permission")
-            .classList.add("hide");
+        /*
+           Mikrofon úspěšně povolen.
+        */
 
-        document
-            .getElementById("permissionMessage")
-            .textContent="✓ Mikrofon povolen.";
+        document.getElementById(
+            "permissionOverlay"
+        ).style.display = "none";
 
-    }
 
-    catch(error){
+        document.getElementById(
+            "callStatus"
+        ).textContent =
+            "Mikrofon připraven 🎤";
 
-        document
-            .getElementById("permissionMessage")
-            .className="message bad";
 
-        document
-            .getElementById("permissionMessage")
-            .textContent=
-            "Mikrofon nebyl povolen.";
+        showNotification(
+            "Mikrofon byl povolen ✅"
+        );
 
-        console.error(error);
+
+        console.log(
+            "Mikrofon povolen:",
+            localStream
+        );
+
+    } catch(error) {
+
+        console.error(
+            "Mikrofon:",
+            error
+        );
+
+
+        let message =
+            "❌ Mikrofon se nepodařilo povolit.";
+
+
+        switch(error.name) {
+
+            case "NotAllowedError":
+
+                message =
+                    "❌ Přístup k mikrofonu byl zamítnut.<br><br>" +
+                    "Zkontroluj oprávnění mikrofonu pro tuto stránku.";
+
+                break;
+
+
+            case "NotFoundError":
+
+                message =
+                    "❌ Nebyl nalezen žádný mikrofon.";
+
+                break;
+
+
+            case "NotReadableError":
+
+                message =
+                    "❌ Mikrofon je používán jinou aplikací.<br><br>" +
+                    "Zavři například Discord, Teams nebo jinou aplikaci, " +
+                    "která mikrofon používá.";
+
+                break;
+
+
+            case "SecurityError":
+
+                message =
+                    "❌ Prohlížeč zablokoval přístup k mikrofonu.";
+
+                break;
+
+
+            case "AbortError":
+
+                message =
+                    "❌ Prohlížeč přerušil žádost o mikrofon.";
+
+                break;
+
+
+            case "TypeError":
+
+                message =
+                    "❌ Chyba nastavení mikrofonu.";
+
+                break;
+
+
+            default:
+
+                message =
+                    "❌ " +
+                    error.name +
+                    "<br>" +
+                    (error.message || "Neznámá chyba.");
+
+        }
+
+
+        errorBox.innerHTML =
+            message +
+            "<br><br><small>" +
+            "Technická chyba: " +
+            error.name +
+            "</small>";
 
     }
 
 }
 
 
-/* =====================================================
-   NASTAVENÍ
-   ===================================================== */
+/* =========================================================
+   PEER CONNECTION
+   ========================================================= */
 
-function saveSettings(){
+function createPeerConnection() {
 
-    const myName =
-        document
-        .getElementById("myName")
-        .value
-        .trim();
-
-    const target =
-        document
-        .getElementById("targetName")
-        .value
-        .trim();
+    peerConnection =
+        new RTCPeerConnection(
+            rtcConfig
+        );
 
 
-    if(!myName || !target){
+    remoteStream =
+        new MediaStream();
 
-        showSetupMessage(
-            "Vyplň obě jména.",
-            false
+
+    document.getElementById(
+        "remoteAudio"
+    ).srcObject =
+        remoteStream;
+
+
+    /*
+       Přidání mikrofonu.
+    */
+
+    if (localStream) {
+
+        localStream
+            .getTracks()
+            .forEach(track => {
+
+                peerConnection.addTrack(
+                    track,
+                    localStream
+                );
+
+            });
+
+    }
+
+
+    /*
+       Příchozí zvuk.
+    */
+
+    peerConnection.ontrack =
+        event => {
+
+            event.streams[0]
+                .getTracks()
+                .forEach(track => {
+
+                    remoteStream.addTrack(
+                        track
+                    );
+
+                });
+
+        };
+
+
+    /*
+       ICE kandidáti.
+    */
+
+    peerConnection.onicecandidate =
+        async event => {
+
+            if (!event.candidate) {
+                return;
+            }
+
+            if (!currentCallId) {
+                return;
+            }
+
+
+            try {
+
+                const { data } =
+                    await supabaseClient
+                        .from("calls")
+                        .select("ice_candidates")
+                        .eq("id", currentCallId)
+                        .single();
+
+
+                let candidates =
+                    data?.ice_candidates || [];
+
+
+                candidates.push(
+                    event.candidate.toJSON()
+                );
+
+
+                await supabaseClient
+                    .from("calls")
+                    .update({
+                        ice_candidates:
+                            candidates
+                    })
+                    .eq(
+                        "id",
+                        currentCallId
+                    );
+
+            } catch(error) {
+
+                console.error(
+                    "ICE chyba:",
+                    error
+                );
+
+            }
+
+        };
+
+
+    peerConnection.onconnectionstatechange =
+        () => {
+
+            const state =
+                peerConnection.connectionState;
+
+
+            console.log(
+                "WebRTC:",
+                state
+            );
+
+
+            if (state === "connected") {
+
+                document.getElementById(
+                    "callStatus"
+                ).textContent =
+                    "Hovor probíhá";
+
+                startTimer();
+
+            }
+
+
+            if (
+                state === "failed" ||
+                state === "disconnected"
+            ) {
+
+                document.getElementById(
+                    "callStatus"
+                ).textContent =
+                    "Spojení přerušeno";
+
+            }
+
+        };
+
+
+    return peerConnection;
+}
+
+
+/* =========================================================
+   START CALL
+   ========================================================= */
+
+async function startCall() {
+
+    if (!localStream) {
+
+        showNotification(
+            "Nejdříve povol mikrofon 🎤"
+        );
+
+        document.getElementById(
+            "permissionOverlay"
+        ).style.display =
+            "flex";
+
+        return;
+    }
+
+
+    if (!supabaseClient) {
+
+        showNotification(
+            "Nejdříve nastav Supabase."
         );
 
         return;
     }
 
 
-    localStorage.setItem(
-        "sirtros_call_name",
-        myName
-    );
-
-    localStorage.setItem(
-        "sirtros_call_target",
-        target
-    );
+    const target =
+        document
+            .getElementById("target")
+            .value
+            .trim();
 
 
-    document
-        .getElementById("targetDisplay")
-        .textContent=target;
+    if (!target) {
 
+        showNotification(
+            "Zadej uživatelské jméno."
+        );
 
-    showSetupMessage(
-        "✓ Nastavení uloženo.",
-        true
-    );
+        return;
+    }
 
-}
-
-
-function loadSettings(){
 
     const myName =
-        localStorage.getItem(
-            "sirtros_call_name"
+        getMyName();
+
+
+    try {
+
+        document.getElementById(
+            "callStatus"
+        ).textContent =
+            "Volám…";
+
+
+        document.getElementById(
+            "callButton"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "endButton"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "callControls"
+        ).classList.add("show");
+
+
+        createPeerConnection();
+
+
+        const offer =
+            await peerConnection
+                .createOffer();
+
+
+        await peerConnection
+            .setLocalDescription(
+                offer
+            );
+
+
+        const { data, error } =
+            await supabaseClient
+                .from("calls")
+                .insert({
+
+                    caller: myName,
+
+                    receiver: target,
+
+                    status: "ringing",
+
+                    offer:
+                        JSON.stringify(
+                            offer
+                        ),
+
+                    ice_candidates: []
+
+                })
+                .select()
+                .single();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        currentCallId =
+            data.id;
+
+
+        currentCallStarted =
+            Date.now();
+
+
+        saveTarget(target);
+
+
+        subscribeToCall(
+            currentCallId
         );
 
-    const target =
-        localStorage.getItem(
-            "sirtros_call_target"
+
+    } catch(error) {
+
+        console.error(
+            "Start call error:",
+            error
         );
 
 
-    if(myName){
-
-        document
-            .getElementById("myName")
-            .value=myName;
-
-    }
+        showNotification(
+            "Chyba při vytváření hovoru."
+        );
 
 
-    if(target){
-
-        document
-            .getElementById("targetName")
-            .value=target;
-
-        document
-            .getElementById("targetDisplay")
-            .textContent=target;
+        resetCall();
 
     }
 
 }
 
 
-function showSetupMessage(text,good){
+/* =========================================================
+   SUBSCRIBE TO CALL
+   ========================================================= */
 
-    const el =
-        document
-        .getElementById("setupMessage");
+function subscribeToCall(
+    callId
+) {
 
-    el.textContent=text;
-
-    el.className =
-        "message " +
-        (good ? "good" : "bad");
-
-}
-
-
-/* =====================================================
-   SUPABASE REALTIME
-   ===================================================== */
-
-function setupRealtime(){
-
-    callsChannel =
-        supabaseClient
-        .channel("sirtros-call-events")
-        .on(
-            "postgres_changes",
-            {
-                event:"INSERT",
-                schema:"public",
-                table:"calls"
-            },
-            payload=>{
-
-                const call =
-                    payload.new;
-
-                const me =
-                    getMyName();
-
-                if(
-                    call.receiver === me &&
-                    call.status === "ringing"
-                ){
-
-                    showIncoming(call);
-
-                }
-
-            }
+    supabaseClient
+        .channel(
+            "call-" + callId
         )
         .on(
             "postgres_changes",
             {
-                event:"UPDATE",
-                schema:"public",
-                table:"calls"
+                event: "UPDATE",
+                schema: "public",
+                table: "calls",
+                filter:
+                    "id=eq." + callId
             },
-            payload=>{
+            async payload => {
 
                 const call =
                     payload.new;
 
-                handleCallUpdate(call);
+
+                /*
+                   Druhá strana přijala hovor.
+                */
+
+                if (
+                    call.status ===
+                    "accepted" &&
+                    call.answer &&
+                    peerConnection
+                ) {
+
+                    try {
+
+                        const answer =
+                            JSON.parse(
+                                call.answer
+                            );
+
+
+                        await peerConnection
+                            .setRemoteDescription(
+                                answer
+                            );
+
+                    } catch(error) {
+
+                        console.error(
+                            "Answer error:",
+                            error
+                        );
+
+                    }
+
+                }
+
+
+                /*
+                   Hovor byl odmítnut.
+                */
+
+                if (
+                    call.status ===
+                    "rejected"
+                ) {
+
+                    showNotification(
+                        "Hovor byl odmítnut."
+                    );
+
+                    resetCall();
+
+                }
+
+
+                /*
+                   Hovor byl ukončen.
+                */
+
+                if (
+                    call.status ===
+                    "ended"
+                ) {
+
+                    showNotification(
+                        "Hovor byl ukončen."
+                    );
+
+                    resetCall();
+
+                }
 
             }
         )
@@ -905,688 +1331,457 @@ function setupRealtime(){
 }
 
 
-/* =====================================================
-   JMÉNO
-   ===================================================== */
+/* =========================================================
+   INCOMING CALL CHECK
+   ========================================================= */
 
-function getMyName(){
+async function checkIncomingCalls() {
 
-    return (
-        localStorage.getItem(
-            "sirtros_call_name"
-        ) || ""
-    ).trim();
-
-}
+    if (!supabaseClient) {
+        return;
+    }
 
 
-function getTargetName(){
-
-    return (
-        localStorage.getItem(
-            "sirtros_call_target"
-        ) || ""
-    ).trim();
-
-}
-
-
-/* =====================================================
-   START HOVORU
-   ===================================================== */
-
-async function startCall(){
-
-    const caller =
+    const myName =
         getMyName();
 
-    const receiver =
-        getTargetName();
 
-
-    if(!caller || !receiver){
-
-        alert(
-            "Nejdřív vyplň a ulož jméno."
-        );
-
-        return;
-    }
-
-
-    if(!localStream){
-
-        await requestMicrophone();
-
-    }
-
-
-    if(!localStream){
-
-        alert(
-            "Bez mikrofonu nelze volat."
-        );
-
-        return;
-    }
-
-
-    showCallScreen(
-        receiver,
-        "Ring…"
-    );
-
-
-    const {data,error} =
+    const {
+        data,
+        error
+    } =
         await supabaseClient
-        .from("calls")
-        .insert({
+            .from("calls")
+            .select("*")
+            .eq(
+                "receiver",
+                myName
+            )
+            .eq(
+                "status",
+                "ringing"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
+            .limit(1);
 
-            caller:caller,
-            receiver:receiver,
-            status:"ringing"
 
-        })
-        .select()
-        .single();
+    if (error) {
 
-
-    if(error){
-
-        console.error(error);
-
-        alert(
-            "Nepodařilo se vytvořit hovor.\n\n"+
-            error.message
+        console.error(
+            error
         );
-
-        hideCallScreen();
 
         return;
     }
 
 
-    currentCall=data;
-    currentCallId=data.id;
+    if (
+        data &&
+        data.length > 0 &&
+        !incomingCallData &&
+        !currentCallId
+    ) {
+
+        incomingCallData =
+            data[0];
 
 
-    await createOffer();
-
-}
-
-
-/* =====================================================
-   WEBRTC OFFER
-   ===================================================== */
-
-async function createOffer(){
-
-    peerConnection =
-        createPeerConnection();
-
-
-    const offer =
-        await peerConnection.createOffer();
-
-
-    await peerConnection.setLocalDescription(
-        offer
-    );
-
-
-    await updateCall({
-
-        offer:JSON.stringify(offer)
-
-    });
-
-}
-
-
-/* =====================================================
-   PEER CONNECTION
-   ===================================================== */
-
-function createPeerConnection(){
-
-    const pc =
-        new RTCPeerConnection(
-            rtcConfig
+        showIncomingCall(
+            incomingCallData
         );
 
-
-    localStream
-        .getTracks()
-        .forEach(track=>{
-
-            pc.addTrack(
-                track,
-                localStream
-            );
-
-        });
-
-
-    pc.ontrack = event=>{
-
-        const audio =
-            document.getElementById(
-                "remoteAudio"
-            );
-
-        audio.srcObject =
-            event.streams[0];
-
-        audio.play().catch(()=>{});
-
-    };
-
-
-    pc.onicecandidate = async event=>{
-
-        if(
-            event.candidate &&
-            currentCallId
-        ){
-
-            await sendCandidate(
-                event.candidate
-            );
-
-        }
-
-    };
-
-
-    pc.onconnectionstatechange=()=>{
-
-        console.log(
-            "WebRTC:",
-            pc.connectionState
-        );
-
-
-        if(
-            pc.connectionState ===
-            "connected"
-        ){
-
-            connected();
-
-        }
-
-
-        if(
-            [
-                "failed",
-                "disconnected",
-                "closed"
-            ].includes(
-                pc.connectionState
-            )
-        ){
-
-            if(
-                pc.connectionState ===
-                "failed"
-            ){
-
-                document
-                    .getElementById(
-                        "callStatus"
-                    )
-                    .textContent=
-                    "Spojení selhalo.";
-
-            }
-
-        }
-
-    };
-
-
-    return pc;
+    }
 
 }
 
 
-/* =====================================================
-   INCOMING
-   ===================================================== */
+/* =========================================================
+   SHOW INCOMING
+   ========================================================= */
 
-function showIncoming(call){
+function showIncomingCall(
+    call
+) {
 
-    incomingCall=call;
+    document.getElementById(
+        "incomingName"
+    ).textContent =
+        call.caller;
 
 
-    document
-        .getElementById("incomingName")
-        .textContent=call.caller;
+    document.getElementById(
+        "incomingCall"
+    ).style.display =
+        "flex";
 
 
-    document
-        .getElementById("incoming")
-        .classList.add("show");
+    /*
+       Zvuk příchozího hovoru
+       pomocí jednoduchého beepu.
+    */
+
+    playRing();
 
 }
 
 
-async function acceptIncoming(){
+/* =========================================================
+   ACCEPT CALL
+   ========================================================= */
 
-    if(!incomingCall){
+async function acceptCall() {
+
+    if (!incomingCallData) {
+        return;
+    }
+
+
+    if (!localStream) {
+
+        document.getElementById(
+            "incomingCall"
+        ).style.display =
+            "none";
+
+        document.getElementById(
+            "permissionOverlay"
+        ).style.display =
+            "flex";
 
         return;
     }
 
 
     const call =
-        incomingCall;
-
-    incomingCall=null;
+        incomingCallData;
 
 
-    document
-        .getElementById("incoming")
-        .classList.remove("show");
+    try {
+
+        currentCallId =
+            call.id;
 
 
-    if(!localStream){
-
-        await requestMicrophone();
-
-    }
-
-
-    currentCall=call;
-    currentCallId=call.id;
-
-
-    showCallScreen(
-        call.caller,
-        "Připojování…"
-    );
-
-
-    await updateCall({
-
-        status:"accepted",
-
-        started_at:
-            new Date().toISOString()
-
-    });
-
-
-    peerConnection =
         createPeerConnection();
 
 
-    const offer =
-        JSON.parse(call.offer);
+        const offer =
+            JSON.parse(
+                call.offer
+            );
 
 
-    await peerConnection.setRemoteDescription(
-        offer
-    );
+        await peerConnection
+            .setRemoteDescription(
+                offer
+            );
 
 
-    const answer =
-        await peerConnection.createAnswer();
+        const answer =
+            await peerConnection
+                .createAnswer();
 
 
-    await peerConnection.setLocalDescription(
-        answer
-    );
+        await peerConnection
+            .setLocalDescription(
+                answer
+            );
 
 
-    await updateCall({
-
-        answer:JSON.stringify(answer)
-
-    });
-
-
-    await flushCandidates();
-
-}
-
-
-async function rejectIncoming(){
-
-    if(!incomingCall){
-
-        return;
-    }
-
-
-    const id =
-        incomingCall.id;
-
-
-    incomingCall=null;
-
-
-    document
-        .getElementById("incoming")
-        .classList.remove("show");
-
-
-    await supabaseClient
-        .from("calls")
-        .update({
-            status:"rejected"
-        })
-        .eq("id",id);
-
-}
-
-
-/* =====================================================
-   CALL UPDATE
-   ===================================================== */
-
-async function updateCall(values){
-
-    if(!currentCallId){
-
-        return;
-    }
-
-
-    const {error} =
         await supabaseClient
-        .from("calls")
-        .update(values)
-        .eq(
-            "id",
+            .from("calls")
+            .update({
+
+                status: "accepted",
+
+                answer:
+                    JSON.stringify(
+                        answer
+                    ),
+
+                started_at:
+                    new Date()
+                        .toISOString()
+
+            })
+            .eq(
+                "id",
+                call.id
+            );
+
+
+        document.getElementById(
+            "incomingCall"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "callStatus"
+        ).textContent =
+            "Spojování…";
+
+
+        document.getElementById(
+            "callButton"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "endButton"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "callControls"
+        ).classList.add("show");
+
+
+        currentCallStarted =
+            Date.now();
+
+
+        subscribeToCall(
             currentCallId
         );
 
 
-    if(error){
+        incomingCallData =
+            null;
+
+
+    } catch(error) {
 
         console.error(
-            "Supabase update:",
+            "Accept error:",
+            error
+        );
+
+
+        showNotification(
+            "Hovor se nepodařilo přijmout."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   REJECT CALL
+   ========================================================= */
+
+async function rejectCall() {
+
+    if (!incomingCallData) {
+        return;
+    }
+
+
+    try {
+
+        await supabaseClient
+            .from("calls")
+            .update({
+
+                status:
+                    "rejected"
+
+            })
+            .eq(
+                "id",
+                incomingCallData.id
+            );
+
+    } catch(error) {
+
+        console.error(
             error
         );
 
     }
 
-}
+
+    document.getElementById(
+        "incomingCall"
+    ).style.display =
+        "none";
 
 
-/* =====================================================
-   CALL STATUS
-   ===================================================== */
-
-async function handleCallUpdate(call){
-
-    if(
-        !currentCallId ||
-        call.id !== currentCallId
-    ){
-
-        return;
-    }
-
-
-    if(
-        call.status ===
-        "rejected"
-    ){
-
-        document
-            .getElementById("callStatus")
-            .textContent=
-            "Hovor odmítnut.";
-
-        setTimeout(
-            hideCallScreen,
-            1200
-        );
-
-        return;
-
-    }
-
-
-    if(
-        call.status ===
-        "ended"
-    ){
-
-        hideCallScreen();
-
-        return;
-
-    }
-
-
-    if(
-        call.status ===
-        "accepted" &&
-        call.answer &&
-        peerConnection
-    ){
-
-        const answer =
-            JSON.parse(
-                call.answer
-            );
-
-
-        if(
-            !peerConnection
-            .currentRemoteDescription
-        ){
-
-            await peerConnection
-                .setRemoteDescription(
-                    answer
-                );
-
-            await flushCandidates();
-
-        }
-
-    }
+    incomingCallData =
+        null;
 
 }
 
 
-/* =====================================================
-   ICE CANDIDÁTI
-   ===================================================== */
+/* =========================================================
+   END CALL
+   ========================================================= */
 
-async function sendCandidate(candidate){
+async function endCall() {
 
-    /*
-       ICE kandidáti jsou pro tento jednoduchý
-       prototyp posíláni přes metadata hovoru.
-    */
+    if (currentCallId && supabaseClient) {
 
-    const {data,error} =
-        await supabaseClient
-        .from("calls")
-        .select("ice_candidates")
-        .eq("id",currentCallId)
-        .single();
+        try {
 
-
-    if(error){
-
-        console.error(error);
-        return;
-
-    }
-
-
-    let candidates =
-        data.ice_candidates || [];
-
-
-    candidates.push(
-        candidate.toJSON()
-    );
-
-
-    await supabaseClient
-        .from("calls")
-        .update({
-            ice_candidates:candidates
-        })
-        .eq(
-            "id",
-            currentCallId
-        );
-
-}
-
-
-/* =====================================================
-   ICE
-   ===================================================== */
-
-async function flushCandidates(){
-
-    if(!peerConnection || !currentCallId){
-
-        return;
-    }
-
-
-    const {data,error} =
-        await supabaseClient
-        .from("calls")
-        .select("ice_candidates")
-        .eq("id",currentCallId)
-        .single();
-
-
-    if(error || !data){
-
-        return;
-    }
-
-
-    const candidates =
-        data.ice_candidates || [];
-
-
-    for(
-        const candidate of candidates
-    ){
-
-        try{
-
-            await peerConnection
-                .addIceCandidate(
-                    new RTCIceCandidate(
-                        candidate
+            const duration =
+                currentCallStarted
+                    ? Math.floor(
+                        (
+                            Date.now() -
+                            currentCallStarted
+                        ) / 1000
                     )
+                    : 0;
+
+
+            await supabaseClient
+                .from("calls")
+                .update({
+
+                    status:
+                        "ended",
+
+                    ended_at:
+                        new Date()
+                            .toISOString(),
+
+                    duration:
+                        duration
+
+                })
+                .eq(
+                    "id",
+                    currentCallId
                 );
 
-        }catch(e){
+        } catch(error) {
 
-            console.log(
-                "ICE candidate:",
-                e
+            console.error(
+                "End call:",
+                error
             );
 
         }
 
     }
 
+
+    resetCall();
+
 }
 
 
-/* =====================================================
-   CONNECTED
-   ===================================================== */
+/* =========================================================
+   RESET
+   ========================================================= */
 
-function connected(){
+function resetCall() {
 
-    document
-        .getElementById("callStatus")
-        .textContent=
-        "Probíhá hovor";
+    if (timerInterval) {
+
+        clearInterval(
+            timerInterval
+        );
+
+        timerInterval =
+            null;
+
+    }
 
 
-    callStart =
-        Date.now();
+    if (peerConnection) {
+
+        try {
+
+            peerConnection.close();
+
+        } catch(e) {}
+
+        peerConnection =
+            null;
+
+    }
 
 
-    clearInterval(
-        timerInterval
+    remoteStream =
+        null;
+
+
+    currentCallId =
+        null;
+
+
+    currentCallStarted =
+        null;
+
+
+    document.getElementById(
+        "callStatus"
+    ).textContent =
+        "Připraven";
+
+
+    document.getElementById(
+        "timer"
+    ).textContent =
+        "00:00";
+
+
+    document.getElementById(
+        "callButton"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "endButton"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "callControls"
+    ).classList.remove(
+        "show"
     );
 
 
-    timerInterval =
-        setInterval(
-            updateTimer,
-            1000
-        );
+    loadHistory();
 
 }
 
 
-function updateTimer(){
-
-    if(!callStart){
-
-        return;
-    }
-
-
-    const seconds =
-        Math.floor(
-            (Date.now()-callStart)
-            /1000
-        );
-
-
-    const minutes =
-        Math.floor(
-            seconds/60
-        );
-
-
-    const sec =
-        seconds%60;
-
-
-    document
-        .getElementById("timer")
-        .textContent=
-        String(minutes)
-        .padStart(2,"0")
-        + ":" +
-        String(sec)
-        .padStart(2,"0");
-
-}
-
-
-/* =====================================================
+/* =========================================================
    MUTE
-   ===================================================== */
+   ========================================================= */
 
-function toggleMute(){
+function toggleMute() {
 
-    if(!localStream){
-
+    if (!localStream) {
         return;
     }
 
 
-    muted=!muted;
+    isMuted =
+        !isMuted;
 
 
     localStream
         .getAudioTracks()
         .forEach(
-            track=>{
-                track.enabled=!muted;
+            track => {
+
+                track.enabled =
+                    !isMuted;
+
             }
         );
 
@@ -1597,332 +1792,529 @@ function toggleMute(){
         );
 
 
+    button.classList.toggle(
+        "active",
+        isMuted
+    );
+
+
     button.textContent =
-        muted ? "🔇" : "🎤";
+        isMuted
+            ? "🔇"
+            : "🎤";
+
+}
+
+
+/* =========================================================
+   SPEAKER
+   ========================================================= */
+
+function toggleSpeaker() {
+
+    speakerEnabled =
+        !speakerEnabled;
+
+
+    const audio =
+        document.getElementById(
+            "remoteAudio"
+        );
+
+
+    audio.muted =
+        !speakerEnabled;
+
+
+    const button =
+        document.getElementById(
+            "speakerButton"
+        );
 
 
     button.classList.toggle(
         "active",
-        muted
-    );
-
-}
-
-
-/* =====================================================
-   SPEAKER
-   ===================================================== */
-
-function toggleSpeaker(){
-
-    speakerMuted=!speakerMuted;
-
-
-    document
-        .getElementById(
-            "remoteAudio"
-        )
-        .muted=
-        speakerMuted;
-
-}
-
-
-/* =====================================================
-   END CALL
-   ===================================================== */
-
-async function endCall(status="ended"){
-
-    if(currentCallId){
-
-        await supabaseClient
-            .from("calls")
-            .update({
-
-                status:status,
-
-                ended_at:
-                    new Date().toISOString(),
-
-                duration:
-                    callStart
-                    ? Math.floor(
-                        (Date.now()-callStart)
-                        /1000
-                    )
-                    : 0
-
-            })
-            .eq(
-                "id",
-                currentCallId
-            );
-
-    }
-
-
-    cleanupCall();
-
-    loadHistory();
-
-}
-
-
-/* =====================================================
-   CLEANUP
-   ===================================================== */
-
-function cleanupCall(){
-
-    clearInterval(
-        timerInterval
+        !speakerEnabled
     );
 
 
-    timerInterval=null;
-    callStart=null;
+    button.textContent =
+        speakerEnabled
+            ? "🔊"
+            : "🔇";
+
+}
 
 
-    if(peerConnection){
+/* =========================================================
+   TIMER
+   ========================================================= */
 
-        peerConnection.close();
+function startTimer() {
 
-        peerConnection=null;
+    if (timerInterval) {
+        return;
+    }
+
+
+    if (!currentCallStarted) {
+
+        currentCallStarted =
+            Date.now();
 
     }
 
 
-    if(localStream){
+    timerInterval =
+        setInterval(
+            () => {
 
-        localStream
-            .getTracks()
-            .forEach(
-                track=>track.stop()
-            );
+                const seconds =
+                    Math.floor(
+                        (
+                            Date.now() -
+                            currentCallStarted
+                        ) / 1000
+                    );
 
-        localStream=null;
 
+                const minutes =
+                    Math.floor(
+                        seconds / 60
+                    );
+
+
+                const sec =
+                    seconds % 60;
+
+
+                document.getElementById(
+                    "timer"
+                ).textContent =
+
+                    String(minutes)
+                        .padStart(2, "0")
+                    +
+                    ":" +
+                    String(sec)
+                        .padStart(2, "0");
+
+            },
+            1000
+        );
+
+}
+
+
+/* =========================================================
+   HISTORY
+   ========================================================= */
+
+async function loadHistory() {
+
+    const list =
+        document.getElementById(
+            "historyList"
+        );
+
+
+    if (!supabaseClient) {
+
+        list.innerHTML =
+            "<div style='color:#666'>" +
+            "Supabase není nastavený" +
+            "</div>";
+
+        return;
     }
 
 
-    currentCall=null;
-    currentCallId=null;
-
-    muted=false;
-    speakerMuted=false;
-
-
-    document
-        .getElementById("remoteAudio")
-        .srcObject=null;
-
-
-    document
-        .getElementById("timer")
-        .textContent="00:00";
-
-
-    document
-        .getElementById("muteButton")
-        .textContent="🎤";
-
-
-    hideCallScreen();
-
-}
-
-
-function hideCallScreen(){
-
-    document
-        .getElementById("callScreen")
-        .classList.remove("show");
-
-}
-
-
-/* =====================================================
-   CALL SCREEN
-   ===================================================== */
-
-function showCallScreen(
-    name,
-    status
-){
-
-    document
-        .getElementById("callName")
-        .textContent=name;
-
-
-    document
-        .getElementById("callStatus")
-        .textContent=status;
-
-
-    document
-        .getElementById("callScreen")
-        .classList.add("show");
-
-}
-
-
-/* =====================================================
-   HISTORIE
-   ===================================================== */
-
-async function loadHistory(){
-
-    const me =
+    const myName =
         getMyName();
 
 
-    if(!me){
+    try {
 
-        return;
-    }
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("calls")
+                .select("*")
+                .or(
+                    "caller.eq." +
+                    myName +
+                    ",receiver.eq." +
+                    myName
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                )
+                .limit(20);
 
 
-    const {data,error} =
-        await supabaseClient
-        .from("calls")
-        .select("*")
-        .or(
-            `caller.eq.${me},receiver.eq.${me}`
-        )
-        .order(
-            "created_at",
-            {
-                ascending:false
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data || data.length === 0) {
+
+            list.innerHTML =
+                "<div style='color:#666'>" +
+                "Žádné hovory" +
+                "</div>";
+
+            return;
+        }
+
+
+        list.innerHTML = "";
+
+
+        data.forEach(
+            call => {
+
+                const other =
+                    call.caller === myName
+                        ? call.receiver
+                        : call.caller;
+
+
+                const direction =
+                    call.caller === myName
+                        ? "📤 Odchozí"
+                        : "📥 Příchozí";
+
+
+                const duration =
+                    call.duration || 0;
+
+
+                const minutes =
+                    Math.floor(
+                        duration / 60
+                    );
+
+
+                const seconds =
+                    duration % 60;
+
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "history-item";
+
+
+                item.innerHTML =
+
+                    "<div class='history-main'>" +
+                    direction +
+                    " • " +
+                    escapeHtml(other) +
+                    "</div>" +
+
+                    "<div class='history-info'>" +
+                    String(minutes)
+                        .padStart(2, "0") +
+                    ":" +
+                    String(seconds)
+                        .padStart(2, "0") +
+                    "</div>";
+
+
+                list.appendChild(
+                    item
+                );
+
             }
-        )
-        .limit(20);
+        );
 
 
-    if(error){
+    } catch(error) {
 
         console.error(
-            "Historie:",
+            "History:",
             error
         );
 
-        return;
+
+        list.innerHTML =
+            "<div style='color:#666'>" +
+            "Historii se nepodařilo načíst" +
+            "</div>";
+
     }
-
-
-    const history =
-        document.getElementById(
-            "history"
-        );
-
-
-    if(!data || data.length===0){
-
-        history.innerHTML=
-            `<div class="historyItem">
-                Zatím žádné hovory
-            </div>`;
-
-        return;
-    }
-
-
-    history.innerHTML="";
-
-
-    data.forEach(call=>{
-
-        const other =
-            call.caller === me
-            ? call.receiver
-            : call.caller;
-
-
-        const icon =
-            call.status === "rejected"
-            ? "❌"
-            : call.status === "ended"
-            ? "📞"
-            : "📲";
-
-
-        const duration =
-            formatDuration(
-                call.duration || 0
-            );
-
-
-        const item =
-            document.createElement(
-                "div"
-            );
-
-
-        item.className=
-            "historyItem";
-
-
-        item.innerHTML=`
-
-            <div class="historyTop">
-                <span>
-                    ${icon} ${escapeHTML(other)}
-                </span>
-
-                <span>
-                    ${duration}
-                </span>
-            </div>
-
-            <div class="historySmall">
-                ${escapeHTML(
-                    call.status
-                )}
-                ·
-                ${new Date(
-                    call.created_at
-                ).toLocaleString("cs-CZ")}
-            </div>
-
-        `;
-
-
-        history.appendChild(item);
-
-    });
 
 }
 
 
-function formatDuration(seconds){
+/* =========================================================
+   USERNAME
+   ========================================================= */
 
-    const min =
-        Math.floor(seconds/60);
+function getMyName() {
 
-    const sec =
-        seconds%60;
+    let name =
+        localStorage.getItem(
+            "sirtros_call_name"
+        );
 
 
-    return (
-        String(min).padStart(2,"0")
-        + ":" +
-        String(sec).padStart(2,"0")
+    if (!name) {
+
+        name =
+            prompt(
+                "Zadej své uživatelské jméno:"
+            );
+
+
+        if (!name) {
+
+            name =
+                "SirTros";
+
+        }
+
+
+        localStorage.setItem(
+            "sirtros_call_name",
+            name
+        );
+
+    }
+
+
+    document.getElementById(
+        "currentName"
+    ).textContent =
+        name;
+
+
+    return name;
+
+}
+
+
+/* =========================================================
+   TARGET
+   ========================================================= */
+
+function saveTarget(
+    target
+) {
+
+    localStorage.setItem(
+        "sirtros_call_target",
+        target
     );
 
 }
 
 
-function escapeHTML(text){
+function loadTarget() {
 
-    return String(text)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+    const target =
+        localStorage.getItem(
+            "sirtros_call_target"
+        );
+
+
+    if (target) {
+
+        document.getElementById(
+            "target"
+        ).value =
+            target;
+
+    }
 
 }
+
+
+/* =========================================================
+   NOTIFICATION
+   ========================================================= */
+
+function showNotification(
+    text
+) {
+
+    const notification =
+        document.getElementById(
+            "notification"
+        );
+
+
+    notification.innerHTML =
+        text;
+
+
+    notification.style.display =
+        "block";
+
+
+    setTimeout(
+        () => {
+
+            notification.style.display =
+                "none";
+
+        },
+        3000
+    );
+
+}
+
+
+/* =========================================================
+   RING
+   ========================================================= */
+
+function playRing() {
+
+    try {
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+
+        if (!AudioContext) {
+            return;
+        }
+
+
+        const ctx =
+            new AudioContext();
+
+
+        const oscillator =
+            ctx.createOscillator();
+
+
+        const gain =
+            ctx.createGain();
+
+
+        oscillator.type =
+            "sine";
+
+
+        oscillator.frequency.value =
+            700;
+
+
+        gain.gain.value =
+            0.08;
+
+
+        oscillator.connect(
+            gain
+        );
+
+
+        gain.connect(
+            ctx.destination
+        );
+
+
+        oscillator.start();
+
+
+        setTimeout(
+            () => {
+
+                oscillator.stop();
+
+                ctx.close();
+
+            },
+            500
+        );
+
+    } catch(error) {
+
+        console.log(
+            "Ring není dostupný."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHtml(
+    text
+) {
+
+    return String(text)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+window.addEventListener(
+    "load",
+    () => {
+
+        initSupabase();
+
+        getMyName();
+
+        loadTarget();
+
+        loadHistory();
+
+        /*
+           Nekoušíme mikrofon automaticky.
+           Uživatel klikne na "Povolit mikrofon",
+           což je spolehlivější způsob získání oprávnění.
+        */
+
+        setInterval(
+            checkIncomingCalls,
+            2000
+        );
+
+    }
+);
 
 </script>
 
