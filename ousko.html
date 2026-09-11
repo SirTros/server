@@ -2,180 +2,119 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ouško AI 2.4</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ouško AI</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{
+    box-sizing:border-box;
 }
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    background:
-        radial-gradient(circle at 50% 0%, #292929 0%, #0b0b0b 38%, #000 80%);
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
+body{
+    margin:0;
+    min-height:100vh;
+    font-family:Arial,sans-serif;
+    background:#111;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
-.app {
-    width: 100%;
-    max-width: 760px;
+.app{
+    width:min(600px,94vw);
+    background:#1c1c1c;
+    border:1px solid #333;
+    border-radius:24px;
+    padding:28px;
+    text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
 }
 
-header {
-    text-align: center;
+.ousko{
+    font-size:80px;
+    margin-bottom:5px;
 }
 
-h1 {
-    margin: 0;
-    font-size: 38px;
+h1{
+    margin:0;
+    font-size:32px;
 }
 
-.version {
-    color: #777;
-    margin-top: 5px;
-    font-size: 14px;
+.subtitle{
+    color:#aaa;
+    margin:8px 0 25px;
 }
 
-.orb-wrap {
-    display: flex;
-    justify-content: center;
-    margin: 25px 0 18px;
+.status{
+    padding:18px;
+    border-radius:16px;
+    background:#252525;
+    margin-bottom:20px;
+    font-size:18px;
 }
 
-.orb {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background:
-        radial-gradient(
-            circle at 35% 25%,
-            #777,
-            #333 25%,
-            #111 60%,
-            #000
-        );
-    border: 2px solid #333;
-    box-shadow:
-        0 0 35px rgba(255,255,255,.06),
-        inset 0 0 40px rgba(255,255,255,.08);
+.dot{
+    width:13px;
+    height:13px;
+    display:inline-block;
+    border-radius:50%;
+    background:#777;
+    margin-right:8px;
 }
 
-.orb.listening {
-    animation: listening 1.4s infinite;
+.dot.ready{
+    background:#4caf50;
 }
 
-.orb.speaking {
-    animation: speaking .35s infinite alternate;
+.dot.listening{
+    background:#ff8c32;
 }
 
-.orb.thinking {
-    animation: thinking .7s infinite alternate;
+.dot.speaking{
+    background:#42a5f5;
 }
 
-@keyframes listening {
-    0%, 100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.06);
-    }
+button{
+    width:100%;
+    padding:16px;
+    border:0;
+    border-radius:14px;
+    background:#ff8c32;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-@keyframes speaking {
-    from {
-        transform: scale(.95);
-    }
-
-    to {
-        transform: scale(1.08);
-    }
+button:hover{
+    background:#ff9f4d;
 }
 
-@keyframes thinking {
-    from {
-        transform: scale(.96);
-    }
-
-    to {
-        transform: scale(1.05);
-    }
+button:disabled{
+    opacity:.5;
+    cursor:not-allowed;
 }
 
-.status {
-    text-align: center;
-    font-size: 18px;
-    min-height: 27px;
+.answer{
+    margin-top:20px;
+    padding:18px;
+    background:#252525;
+    border-radius:16px;
+    text-align:left;
+    min-height:70px;
+    line-height:1.5;
 }
 
-.countdown {
-    height: 30px;
-    text-align: center;
-    font-size: 22px;
-    font-weight: bold;
+.small{
+    color:#888;
+    font-size:13px;
+    margin-top:18px;
 }
 
-.card {
-    background: rgba(15,15,15,.96);
-    border: 1px solid #292929;
-    border-radius: 18px;
-    padding: 17px;
-    margin-top: 14px;
-}
-
-.label {
-    color: #777;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .7px;
-    margin-bottom: 8px;
-}
-
-.text {
-    min-height: 30px;
-    font-size: 18px;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-}
-
-.answer {
-    font-size: 19px;
-}
-
-button {
-    width: 100%;
-    border: 1px solid #444;
-    border-radius: 15px;
-    padding: 16px;
-    margin-top: 18px;
-    background: white;
-    color: black;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #ddd;
-}
-
-button.off {
-    background: #151515;
-    color: white;
-}
-
-.info {
-    text-align: center;
-    color: #666;
-    font-size: 13px;
-    line-height: 1.5;
-    margin-top: 14px;
+.wake{
+    color:#ff9f4d;
+    font-weight:bold;
 }
 </style>
 </head>
@@ -184,3165 +123,576 @@ button.off {
 
 <div class="app">
 
-<header>
-    <h1>🦊 Ouško AI</h1>
-    <div class="version">verze 2.4</div>
-</header>
+    <div class="ousko">🦊</div>
 
-<div class="orb-wrap">
-    <div id="orb" class="orb"></div>
-</div>
+    <h1>Ouško AI</h1>
 
-<div id="status" class="status">
-    Mikrofon je vypnutý
-</div>
-
-<div id="countdown" class="countdown"></div>
-
-<div class="card">
-    <div class="label">Co říkáš</div>
-
-    <div id="heard" class="text">
-        —
+    <div class="subtitle">
+        Hlasový asistent
     </div>
-</div>
 
-<div class="card">
-    <div class="label">Ouško</div>
-
-    <div id="answer" class="text answer">
-        Ahoj! Zapni mikrofon a řekni „Hey Ouško“.
+    <div class="status" id="status">
+        <span class="dot" id="dot"></span>
+        <span id="statusText">Mikrofon není povolen</span>
     </div>
+
+    <button id="startButton">
+        🎤 Povolit mikrofon a spustit Ouška
+    </button>
+
+    <div class="answer" id="answer">
+        Ouško čeká... 🦊
+    </div>
+
+    <div class="small">
+        Po spuštění řekni:
+        <span class="wake">„Hey Ouško“</span>
+    </div>
+
 </div>
 
-<button id="micButton">
-    🎙️ Zapnout mikrofon
-</button>
-
-<div class="info">
-    Mikrofon zůstává zapnutý, dokud ho nevypneš.
-    <br>
-    Když čekám na „Hey Ouško“, běžnou řeč ignoruji.
-</div>
-
-</div>
-
+<script src="ai.js"></script>
 
 <script>
 
-/* =========================================================
-   OUŠKO AI 2.4
-   ========================================================= */
+let recognition;
 
-
-/* =========================================================
-   ELEMENTY
-   ========================================================= */
-
-const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-const synth =
-    window.speechSynthesis;
-
-const orb =
-    document.getElementById("orb");
-
-const statusEl =
-    document.getElementById("status");
-
-const heardEl =
-    document.getElementById("heard");
-
-const answerEl =
-    document.getElementById("answer");
-
-const countdownEl =
-    document.getElementById("countdown");
-
-const micButton =
-    document.getElementById("micButton");
-
-
-/* =========================================================
-   STAV
-   ========================================================= */
-
-let recognition = null;
-
-let microphoneStream = null;
-
-let microphoneOn = false;
-
-let recognitionRunning = false;
-
-let recognitionWanted = false;
-
+let running = false;
+let listeningForCommand = false;
 let speaking = false;
 
-let wakeActive = false;
+const startButton =
+    document.getElementById("startButton");
 
-let processing = false;
+const statusText =
+    document.getElementById("statusText");
 
-let restartTimer = null;
+const dot =
+    document.getElementById("dot");
 
-let countdownTimer = null;
-
-let commandTimeout = null;
-
-let lastFinalText = "";
-
-let lastFinalTime = 0;
-
-let wakeBuffer = "";
-
-let lastWakeTime = 0;
+const answer =
+    document.getElementById("answer");
 
 
-/* =========================================================
-   POLOHA
-   ========================================================= */
+function setStatus(text,type=""){
 
-let locationData = null;
+    statusText.textContent=text;
 
+    dot.className="dot";
 
-/* =========================================================
-   PAMĚŤ
-   ========================================================= */
-
-let savedName =
-    localStorage.getItem("ousko_name") || "";
-
-
-/* =========================================================
-   UI
-   ========================================================= */
-
-function setStatus(text) {
-    statusEl.textContent = text;
-}
-
-
-function setHeard(text) {
-    heardEl.textContent =
-        text || "—";
-}
-
-
-function setAnswer(text) {
-    answerEl.textContent =
-        text || "—";
-}
-
-
-function setOrb(mode) {
-
-    orb.className = "orb";
-
-    if (mode) {
-        orb.classList.add(mode);
-    }
-}
-
-
-/* =========================================================
-   NORMALIZACE
-   ========================================================= */
-
-function normalize(text) {
-
-    return String(text || "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[!?.,;:]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-}
-
-
-/* =========================================================
-   WAKE WORD
-   ========================================================= */
-
-function wakeText(text) {
-
-    let n =
-        normalize(text);
-
-    /*
-       Odstraníme některé mezery,
-       protože Chrome někdy rozdělí
-       slovo na více částí.
-    */
-
-    n =
-        n.replace(
-            /\bhe\s+y\b/g,
-            "hey"
-        );
-
-    n =
-        n.replace(
-            /\bhe\s+j\b/g,
-            "hej"
-        );
-
-    n =
-        n.replace(
-            /\bou\s+sko\b/g,
-            "ousko"
-        );
-
-    n =
-        n.replace(
-            /\bou\s+ško\b/g,
-            "ousko"
-        );
-
-    return n;
-}
-
-
-function containsWakeWord(text) {
-
-    const n =
-        wakeText(text);
-
-    const compact =
-        n.replace(/\s+/g, "");
-
-
-    /*
-       Normální varianty.
-    */
-
-    if (
-        n.includes("hey ousko") ||
-        n.includes("hej ousko")
-    ) {
-
-        return true;
+    if(type){
+        dot.classList.add(type);
     }
 
-
-    /*
-       Bez mezery.
-    */
-
-    if (
-        compact.includes("heyousko") ||
-        compact.includes("hejousko")
-    ) {
-
-        return true;
-    }
-
-
-    /*
-       Některé časté chyby
-       rozpoznávání.
-    */
-
-    if (
-        compact.includes("heyouško") ||
-        compact.includes("hejouško") ||
-        compact.includes("heyusko") ||
-        compact.includes("hejusko") ||
-        compact.includes("heyosko") ||
-        compact.includes("hejosko")
-    ) {
-
-        return true;
-    }
-
-
-    return false;
 }
 
 
-function removeWakeWord(text) {
+function showAnswer(text){
 
-    let n =
-        wakeText(text);
+    answer.textContent=text;
 
-
-    const patterns = [
-
-        /hey\s+ousko/gi,
-        /hej\s+ousko/gi,
-
-        /heyousko/gi,
-        /hejousko/gi,
-
-        /heyouško/gi,
-        /hejouško/gi,
-
-        /heyusko/gi,
-        /hejusko/gi,
-
-        /heyosko/gi,
-        /hejosko/gi
-    ];
-
-
-    for (
-        const pattern
-        of patterns
-    ) {
-
-        n =
-            n.replace(
-                pattern,
-                ""
-            );
-    }
-
-
-    return n
-        .replace(/\s+/g, " ")
-        .trim();
 }
 
 
-/* =========================================================
-   AKTIVAČNÍ ZVUK
-   ========================================================= */
+/*
+==================================================
+  TEXT TO SPEECH
+==================================================
+*/
 
-function activationSound() {
+function speak(text){
 
-    try {
+    return new Promise(resolve=>{
 
-        const AudioContext =
-            window.AudioContext ||
-            window.webkitAudioContext;
+        if(!("speechSynthesis" in window)){
 
-        if (!AudioContext) {
+            resolve();
             return;
+
         }
 
-        const ctx =
-            new AudioContext();
+        speechSynthesis.cancel();
 
-        const now =
-            ctx.currentTime;
+        const utterance =
+            new SpeechSynthesisUtterance(text);
 
+        utterance.lang="cs-CZ";
+        utterance.rate=1;
+        utterance.pitch=1;
+        utterance.volume=1;
 
-        function tone(
-            frequency,
-            start,
-            duration
-        ) {
-
-            const oscillator =
-                ctx.createOscillator();
-
-            const gain =
-                ctx.createGain();
-
-
-            oscillator.type =
-                "sine";
-
-            oscillator.frequency.value =
-                frequency;
-
-
-            gain.gain.setValueAtTime(
-                0.0001,
-                start
-            );
-
-            gain.gain.exponentialRampToValueAtTime(
-                0.14,
-                start + .02
-            );
-
-            gain.gain.exponentialRampToValueAtTime(
-                0.0001,
-                start + duration
-            );
-
-
-            oscillator.connect(gain);
-
-            gain.connect(
-                ctx.destination
-            );
-
-
-            oscillator.start(start);
-
-            oscillator.stop(
-                start + duration
-            );
-        }
-
-
-        tone(
-            520,
-            now,
-            .13
-        );
-
-        tone(
-            760,
-            now + .11,
-            .17
-        );
-
-
-        setTimeout(
-            () => {
-
-                try {
-                    ctx.close();
-                } catch {}
-
-            },
-            700
-        );
-
-    } catch {}
-}
-
-
-/* =========================================================
-   ČÍSLA
-   ========================================================= */
-
-const units = [
-    "nula",
-    "jedna",
-    "dvě",
-    "tři",
-    "čtyři",
-    "pět",
-    "šest",
-    "sedm",
-    "osm",
-    "devět"
-];
-
-
-const teens = [
-    "deset",
-    "jedenáct",
-    "dvanáct",
-    "třináct",
-    "čtrnáct",
-    "patnáct",
-    "šestnáct",
-    "sedmnáct",
-    "osmnáct",
-    "devatenáct"
-];
-
-
-const tens = [
-    "",
-    "",
-    "dvacet",
-    "třicet",
-    "čtyřicet",
-    "padesát",
-    "šedesát",
-    "sedmdesát",
-    "osmdesát",
-    "devadesát"
-];
-
-
-const numberWords = {
-
-    nula: 0,
-
-    jedna: 1,
-    jeden: 1,
-    jedno: 1,
-
-    dva: 2,
-    dve: 2,
-
-    tri: 3,
-
-    ctyri: 4,
-
-    pet: 5,
-
-    sest: 6,
-
-    sedm: 7,
-
-    osm: 8,
-
-    devet: 9,
-
-    deset: 10,
-
-    jedenact: 11,
-
-    dvanact: 12,
-
-    trinact: 13,
-
-    ctrnact: 14,
-
-    patnact: 15,
-
-    sestnact: 16,
-
-    sedmnact: 17,
-
-    osmnact: 18,
-
-    devatenact: 19,
-
-    dvacet: 20,
-
-    tricet: 30,
-
-    ctyricet: 40,
-
-    padesat: 50,
-
-    sedesat: 60,
-
-    sedmdesat: 70,
-
-    osmdesat: 80,
-
-    devadesat: 90
-};
-
-
-/* =========================================================
-   NUMBER → ČESKY
-   ========================================================= */
-
-function numberToCzech(value) {
-
-    const number =
-        Number(value);
-
-
-    if (
-        !Number.isFinite(number)
-    ) {
-
-        return String(value);
-    }
-
-
-    if (
-        !Number.isInteger(number)
-    ) {
-
-        return String(number)
-            .replace(".", ",");
-    }
-
-
-    if (
-        number < 0
-    ) {
-
-        return (
-            "minus " +
-            numberToCzech(
-                Math.abs(number)
-            )
-        );
-    }
-
-
-    if (
-        number < 10
-    ) {
-
-        return units[number];
-    }
-
-
-    if (
-        number < 20
-    ) {
-
-        return teens[number - 10];
-    }
-
-
-    if (
-        number < 100
-    ) {
-
-        const ten =
-            Math.floor(number / 10);
-
-        const unit =
-            number % 10;
-
-
-        if (
-            unit === 0
-        ) {
-
-            return tens[ten];
-        }
-
-
-        return (
-            tens[ten] +
-            " " +
-            units[unit]
-        );
-    }
-
-
-    if (
-        number < 1000
-    ) {
-
-        const hundred =
-            Math.floor(number / 100);
-
-        const rest =
-            number % 100;
-
-
-        let result;
-
-
-        if (
-            hundred === 1
-        ) {
-
-            result = "sto";
-
-        } else if (
-            hundred === 2
-        ) {
-
-            result = "dvě stě";
-
-        } else if (
-            hundred === 3
-        ) {
-
-            result = "tři sta";
-
-        } else if (
-            hundred === 4
-        ) {
-
-            result = "čtyři sta";
-
-        } else {
-
-            result =
-                units[hundred] +
-                " set";
-        }
-
-
-        if (
-            rest === 0
-        ) {
-
-            return result;
-        }
-
-
-        return (
-            result +
-            " " +
-            numberToCzech(rest)
-        );
-    }
-
-
-    if (
-        number < 1000000
-    ) {
-
-        const thousands =
-            Math.floor(number / 1000);
-
-        const rest =
-            number % 1000;
-
-
-        let result;
-
-
-        if (
-            thousands === 1
-        ) {
-
-            result = "tisíc";
-
-        } else {
-
-            result =
-                numberToCzech(thousands) +
-                " tisíc";
-        }
-
-
-        if (
-            rest === 0
-        ) {
-
-            return result;
-        }
-
-
-        return (
-            result +
-            " " +
-            numberToCzech(rest)
-        );
-    }
-
-
-    return String(number);
-}
-
-
-/* =========================================================
-   ČESKÉ ČÍSLO
-   ========================================================= */
-
-function parseCzechNumber(text) {
-
-    const n =
-        normalize(text);
-
-
-    if (
-        /^\d+(?:[.,]\d+)?$/.test(n)
-    ) {
-
-        return Number(
-            n.replace(",", ".")
-        );
-    }
-
-
-    const tokens =
-        n.split(" ");
-
-
-    let total = 0;
-    let current = 0;
-    let found = false;
-
-
-    for (
-        const token
-        of tokens
-    ) {
-
-        if (
-            token === "a"
-        ) {
-
-            continue;
-        }
-
-
-        if (
-            numberWords[token] !== undefined
-        ) {
-
-            current +=
-                numberWords[token];
-
-            found = true;
-
-            continue;
-        }
-
-
-        if (
-            token === "sto" ||
-            token === "sta" ||
-            token === "set"
-        ) {
-
-            current =
-                Math.max(
-                    1,
-                    current
-                ) * 100;
-
-            found = true;
-
-            continue;
-        }
-
-
-        if (
-            token === "tisic"
-        ) {
-
-            total +=
-                Math.max(
-                    1,
-                    current
-                ) * 1000;
-
-            current = 0;
-
-            found = true;
-
-            continue;
-        }
-
-
-        return null;
-    }
-
-
-    if (!found) {
-        return null;
-    }
-
-
-    return total + current;
-}
-
-
-/* =========================================================
-   MATEMATIKA
-   ========================================================= */
-
-function normalizeMath(text) {
-
-    let t =
-        normalize(text);
-
-
-    t = t.replace(/deleno/g, "/");
-    t = t.replace(/delit/g, "/");
-    t = t.replace(/lomeno/g, "/");
-
-    t = t.replace(/krat/g, "*");
-
-    t = t.replace(/plus/g, "+");
-
-    t = t.replace(/minus/g, "-");
-
-    t = t.replace(/×/g, "*");
-
-    t = t.replace(/\bx\b/g, "*");
-
-
-    t = t.replace(/kolik je/g, "");
-    t = t.replace(/vypocitej/g, "");
-    t = t.replace(/spocitej/g, "");
-
-
-    const words =
-        t
-            .split(/\s+/)
-            .filter(Boolean);
-
-
-    const output = [];
-
-
-    for (
-        let i = 0;
-        i < words.length;
-        i++
-    ) {
-
-        const word =
-            words[i];
-
-
-        if (
-            ["+", "-", "*", "/", "(", ")"]
-                .includes(word)
-        ) {
-
-            output.push(word);
-
-            continue;
-        }
-
-
-        if (
-            /^\d+(?:[.,]\d+)?$/.test(word)
-        ) {
-
-            output.push(
-                word.replace(",", ".")
-            );
-
-            continue;
-        }
-
-
-        let phrase = [];
-
-        let j = i;
-
-
-        while (
-            j < words.length
-        ) {
-
-            const w =
-                words[j];
-
-
-            if (
-                ["+", "-", "*", "/", "(", ")"]
-                    .includes(w)
-            ) {
-
-                break;
-            }
-
-
-            if (
-                numberWords[w] !== undefined ||
-                w === "sto" ||
-                w === "sta" ||
-                w === "set" ||
-                w === "tisic" ||
-                w === "a"
-            ) {
-
-                phrase.push(w);
-
-                j++;
-
-                continue;
-            }
-
-
-            break;
-        }
-
-
-        if (
-            phrase.length
-        ) {
-
-            const value =
-                parseCzechNumber(
-                    phrase.join(" ")
-                );
-
-
-            if (
-                value !== null
-            ) {
-
-                output.push(
-                    String(value)
-                );
-
-                i =
-                    j - 1;
-
-                continue;
-            }
-        }
-
-
-        output.push(word);
-    }
-
-
-    return output.join(" ");
-}
-
-
-function calculateExpression(expression) {
-
-    if (
-        !/^[0-9+\-*/().\s]+$/.test(expression)
-    ) {
-
-        return null;
-    }
-
-
-    if (
-        !/[+\-*/]/.test(expression)
-    ) {
-
-        return null;
-    }
-
-
-    if (
-        expression.includes("**")
-    ) {
-
-        return null;
-    }
-
-
-    try {
-
-        const result =
-            Function(
-                '"use strict"; return (' +
-                expression +
-                ')'
-            )();
-
-
-        if (
-            typeof result !== "number" ||
-            !Number.isFinite(result)
-        ) {
-
-            return null;
-        }
-
-
-        return result;
-
-    } catch {
-
-        return null;
-    }
-}
-
-
-function mathAnswer(text) {
-
-    const n =
-        normalize(text);
-
-
-    if (
-        n === "1 + 1" ||
-        n === "jedna plus jedna"
-    ) {
-
-        return "Jedna plus jedna jsou dvě.";
-    }
-
-
-    const hasMathOperator =
-        /[+\-*/×]/.test(text) ||
-        /\bx\b/i.test(text) ||
-        /\b(plus|minus|mínus|krát|krat|děleno|deleno|lomeno)\b/i
-            .test(text);
-
-
-    if (!hasMathOperator) {
-        return null;
-    }
-
-
-    const expression =
-        normalizeMath(text);
-
-
-    const result =
-        calculateExpression(expression);
-
-
-    if (
-        result === null
-    ) {
-
-        return null;
-    }
-
-
-    return (
-        "Výsledek je " +
-        numberToCzech(result) +
-        "."
-    );
-}
-
-
-/* =========================================================
-   ČAS
-   ========================================================= */
-
-function getTime() {
-
-    const now =
-        new Date();
-
-    const h =
-        now.getHours();
-
-    const m =
-        now.getMinutes();
-
-
-    if (
-        m === 0
-    ) {
-
-        return (
-            "Je " +
-            numberToCzech(h) +
-            " hodin."
-        );
-    }
-
-
-    return (
-        "Je " +
-        numberToCzech(h) +
-        " hodin a " +
-        numberToCzech(m) +
-        " minut."
-    );
-}
-
-
-/* =========================================================
-   DATUM
-   ========================================================= */
-
-function getDate() {
-
-    const now =
-        new Date();
-
-
-    const days = [
-        "neděle",
-        "pondělí",
-        "úterý",
-        "středa",
-        "čtvrtek",
-        "pátek",
-        "sobota"
-    ];
-
-
-    const months = [
-        "ledna",
-        "února",
-        "března",
-        "dubna",
-        "května",
-        "června",
-        "července",
-        "srpna",
-        "září",
-        "října",
-        "listopadu",
-        "prosince"
-    ];
-
-
-    return (
-        "Dnes je " +
-        days[now.getDay()] +
-        ", " +
-        now.getDate() +
-        ". " +
-        months[now.getMonth()] +
-        " " +
-        now.getFullYear() +
-        "."
-    );
-}
-
-
-/* =========================================================
-   POLOHA
-   ========================================================= */
-
-function prepareLocation() {
-
-    if (
-        !navigator.geolocation
-    ) {
-
-        return;
-    }
-
-
-    const savedLat =
-        localStorage.getItem(
-            "ousko_latitude"
-        );
-
-    const savedLon =
-        localStorage.getItem(
-            "ousko_longitude"
-        );
-
-
-    if (
-        savedLat &&
-        savedLon
-    ) {
-
-        locationData = {
-
-            latitude:
-                Number(savedLat),
-
-            longitude:
-                Number(savedLon)
-        };
-    }
-
-
-    navigator.geolocation.getCurrentPosition(
-
-        position => {
-
-            locationData = {
-
-                latitude:
-                    position.coords.latitude,
-
-                longitude:
-                    position.coords.longitude
-            };
-
-
-            localStorage.setItem(
-                "ousko_latitude",
-                String(locationData.latitude)
-            );
-
-
-            localStorage.setItem(
-                "ousko_longitude",
-                String(locationData.longitude)
-            );
-        },
-
-        error => {
-
-            console.log(
-                "Poloha:",
-                error.message
-            );
-        },
-
-        {
-            enableHighAccuracy: false,
-            timeout: 10000,
-            maximumAge: 600000
-        }
-    );
-}
-
-
-/* =========================================================
-   POČASÍ
-   ========================================================= */
-
-function weatherDescription(code) {
-
-    if (code === 0)
-        return "jasno";
-
-    if (code === 1)
-        return "většinou jasno";
-
-    if (code === 2)
-        return "polojasno";
-
-    if (code === 3)
-        return "zataženo";
-
-    if (code === 45 || code === 48)
-        return "mlha";
-
-    if (code >= 51 && code <= 55)
-        return "mrholení";
-
-    if (code >= 61 && code <= 67)
-        return "déšť";
-
-    if (code >= 71 && code <= 77)
-        return "sníh";
-
-    if (code >= 80 && code <= 82)
-        return "přeháňky";
-
-    if (code >= 95)
-        return "bouřka";
-
-    return "neznámé počasí";
-}
-
-
-async function getWeather() {
-
-    if (!locationData) {
-
-        const lat =
-            localStorage.getItem(
-                "ousko_latitude"
-            );
-
-        const lon =
-            localStorage.getItem(
-                "ousko_longitude"
-            );
-
-
-        if (
-            lat &&
-            lon
-        ) {
-
-            locationData = {
-
-                latitude:
-                    Number(lat),
-
-                longitude:
-                    Number(lon)
-            };
-        }
-    }
-
-
-    if (!locationData) {
-
-        return "Poloha zatím není dostupná.";
-    }
-
-
-    try {
-
-        const url =
-            "https://api.open-meteo.com/v1/forecast" +
-            "?latitude=" +
-            encodeURIComponent(
-                locationData.latitude
-            ) +
-            "&longitude=" +
-            encodeURIComponent(
-                locationData.longitude
-            ) +
-            "&current=" +
-            "temperature_2m," +
-            "weather_code," +
-            "rain," +
-            "showers," +
-            "snowfall" +
-            "&timezone=auto";
-
-
-        const response =
-            await fetch(url);
-
-
-        if (!response.ok) {
-            throw new Error();
-        }
-
-
-        const data =
-            await response.json();
-
-
-        const current =
-            data.current;
-
-
-        const temperature =
-            Math.round(
-                current.temperature_2m
-            );
-
-
-        const description =
-            weatherDescription(
-                current.weather_code
-            );
-
-
-        let extra = "";
-
-
-        if (
-            Number(current.rain) > 0 ||
-            Number(current.showers) > 0
-        ) {
-
-            extra =
-                " Právě prší.";
-        }
-
-
-        if (
-            Number(current.snowfall) > 0
-        ) {
-
-            extra =
-                " Právě sněží.";
-        }
-
-
-        return (
-            "Teď je přibližně " +
-            numberToCzech(temperature) +
-            " stupňů a " +
-            description +
-            "." +
-            extra
-        );
-
-    } catch {
-
-        return (
-            "Promiň, počasí se mi teď nepodařilo zjistit."
-        );
-    }
-}
-
-
-/* =========================================================
-   PAMĚŤ
-   ========================================================= */
-
-function memoryCommand(text) {
-
-    const match =
-        text.match(
-            /(?:jmenuju se|jmenuji se|říkej mi|rikej mi)\s+(.+)/i
-        );
-
-
-    if (
-        match &&
-        match[1]
-    ) {
-
-        savedName =
-            match[1]
-                .trim()
-                .replace(
-                    /[.!?]+$/,
-                    ""
-                );
-
-
-        localStorage.setItem(
-            "ousko_name",
-            savedName
-        );
-
-
-        return (
-            "Dobře, budu si pamatovat, že se jmenuješ " +
-            savedName +
-            "."
-        );
-    }
-
-
-    const n =
-        normalize(text);
-
-
-    if (
-        n.includes("co si pamatujes")
-    ) {
-
-        if (
-            savedName
-        ) {
-
-            return (
-                "Pamatuji si, že se jmenuješ " +
-                savedName +
-                "."
-            );
-        }
-
-
-        return (
-            "Zatím si o tobě nic nepamatuji."
-        );
-    }
-
-
-    if (
-        n.includes("zapomen moje jmeno")
-    ) {
-
-        savedName =
-            "";
-
-
-        localStorage.removeItem(
-            "ousko_name"
-        );
-
-
-        return (
-            "Dobře, tvoje jméno jsem zapomněl."
-        );
-    }
-
-
-    return null;
-}
-
-
-/* =========================================================
-   BĚŽNÁ KONVERZACE
-   ========================================================= */
-
-function basicConversation(text) {
-
-    const n =
-        normalize(text);
-
-
-    if (
-        n === "ahoj" ||
-        n === "cau" ||
-        n === "nazdar"
-    ) {
-
-        if (
-            savedName
-        ) {
-
-            return (
-                "Ahoj " +
-                savedName +
-                "! 🦊"
-            );
-        }
-
-
-        return "Ahoj! 🦊";
-    }
-
-
-    if (
-        n.includes("jak se mas")
-    ) {
-
-        return (
-            "Mám se dobře a jsem připravený pomoct."
-        );
-    }
-
-
-    if (
-        n.includes("kdo jsi") ||
-        n.includes("jak se jmenujes")
-    ) {
-
-        return (
-            "Jsem Ouško AI, hlasový asistent Ouška."
-        );
-    }
-
-
-    if (
-        n.includes("co umis") ||
-        n.includes("co dokazes")
-    ) {
-
-        return (
-            "Umím počítat, zjistit čas, datum a počasí, nastavit časovač, pamatovat si jednoduché údaje a odpovídat na běžné otázky."
-        );
-    }
-
-
-    if (
-        n.includes("dekuju") ||
-        n.includes("diky")
-    ) {
-
-        return "Není zač! 🦊";
-    }
-
-
-    if (
-        n.includes("jsi chytry")
-    ) {
-
-        return (
-            "Snažím se být čím dál chytřejší."
-        );
-    }
-
-
-    if (
-        n.includes("co je slunce")
-    ) {
-
-        return (
-            "Slunce je hvězda ve středu naší sluneční soustavy."
-        );
-    }
-
-
-    if (
-        n.includes("co je mesic")
-    ) {
-
-        return (
-            "Měsíc je přirozená družice Země."
-        );
-    }
-
-
-    if (
-        n.includes("kolik je planet")
-    ) {
-
-        return (
-            "V naší sluneční soustavě je osm planet."
-        );
-    }
-
-
-    if (
-        n.includes("hlavni mesto ceska")
-    ) {
-
-        return (
-            "Hlavním městem České republiky je Praha."
-        );
-    }
-
-
-    return null;
-}
-
-
-/* =========================================================
-   ČASOVAČ
-   ========================================================= */
-
-let timer = null;
-
-
-function timerSeconds(text) {
-
-    const n =
-        normalize(text);
-
-
-    const digits =
-        n.match(
-            /(\d+)\s*(sekund|sekunda|sekundy)/
-        );
-
-
-    if (
-        digits
-    ) {
-
-        return Number(
-            digits[1]
-        );
-    }
-
-
-    const before =
-        n.match(
-            /(.+?)\s*sekund/
-        );
-
-
-    if (
-        before
-    ) {
-
-        return parseCzechNumber(
-            before[1]
-        );
-    }
-
-
-    return null;
-}
-
-
-/* =========================================================
-   MLUVENÍ
-   ========================================================= */
-
-function speak(
-    text,
-    continueListening = true
-) {
-
-    return new Promise(
-        resolve => {
-
-            if (!text) {
-
-                resolve();
-
-                return;
-            }
-
-
-            speaking =
-                true;
-
-
-            recognitionWanted =
-                false;
-
-
-            /*
-               ZASTAVÍME JEN ROZPOZNÁVÁNÍ.
-               STREAM MIKROFONU ZŮSTÁVÁ OTEVŘENÝ.
-            */
-
-            if (
-                recognition &&
-                recognitionRunning
-            ) {
-
-                try {
-                    recognition.stop();
-                } catch {}
-            }
-
-
-            setOrb("speaking");
-
-            setStatus(
-                "Ouško odpovídá…"
-            );
-
-            setAnswer(text);
-
-
-            synth.cancel();
-
-
-            const utterance =
-                new SpeechSynthesisUtterance(
-                    text
-                );
-
-
-            utterance.lang =
-                "cs-CZ";
-
-            utterance.rate =
-                1;
-
-            utterance.pitch =
-                1;
-
-            utterance.volume =
-                1;
-
-
-            let finished = false;
-
-
-            function finish() {
-
-                if (finished) {
-                    return;
-                }
-
-
-                finished = true;
-
-                speaking = false;
-
-
-                if (
-                    microphoneOn &&
-                    continueListening
-                ) {
-
-                    recognitionWanted =
-                        true;
-
-                    wakeActive =
-                        false;
-
-                    setOrb("listening");
-
-                    setStatus(
-                        "Čekám na „Hey Ouško“…"
-                    );
-
-                    restartRecognition();
-
-                } else {
-
-                    setOrb("");
-
-                    setStatus(
-                        "Mikrofon je vypnutý"
-                    );
-                }
-
-
-                resolve();
-            }
-
-
-            utterance.onend =
-                finish;
-
-            utterance.onerror =
-                finish;
-
-
-            synth.speak(
-                utterance
-            );
-        }
-    );
-}
-
-
-/* =========================================================
-   ODPOČET
-   ========================================================= */
-
-function stopCountdown() {
-
-    if (countdownTimer) {
-
-        clearInterval(
-            countdownTimer
-        );
-
-        countdownTimer =
-            null;
-    }
-
-
-    if (commandTimeout) {
-
-        clearTimeout(
-            commandTimeout
-        );
-
-        commandTimeout =
-            null;
-    }
-
-
-    countdownEl.textContent =
-        "";
-}
-
-
-function startCountdown() {
-
-    stopCountdown();
-
-
-    const start =
-        Date.now();
-
-
-    function update() {
-
-        const elapsed =
-            Date.now() - start;
-
-
-        const remaining =
-            Math.max(
-                0,
-                15000 - elapsed
-            );
-
-
-        countdownEl.textContent =
-            Math.ceil(
-                remaining / 1000
-            ) + " s";
-
-
-        if (
-            remaining <= 0
-        ) {
-
-            stopCountdown();
-
-            wakeActive =
-                false;
-
-
-            setHeard("");
-
-
-            if (
-                microphoneOn
-            ) {
-
-                setStatus(
-                    "Čekám na „Hey Ouško“…"
-                );
-            }
-        }
-    }
-
-
-    update();
-
-
-    countdownTimer =
-        setInterval(
-            update,
-            100
-        );
-
-
-    commandTimeout =
-        setTimeout(
-            () => {
-
-                stopCountdown();
-
-                wakeActive =
-                    false;
-
-
-                setHeard("");
-
-
-                if (
-                    microphoneOn
-                ) {
-
-                    setStatus(
-                        "Čekám na „Hey Ouško“…"
-                    );
-                }
-
-            },
-            15000
-        );
-}
-
-
-/* =========================================================
-   AKTIVACE
-   ========================================================= */
-
-function activateAssistant(
-    commandText = ""
-) {
-
-    if (!microphoneOn) {
-        return;
-    }
-
-
-    /*
-       Zabráníme dvojité aktivaci.
-    */
-
-    const now =
-        Date.now();
-
-
-    if (
-        now - lastWakeTime < 2000
-    ) {
-
-        return;
-    }
-
-
-    lastWakeTime =
-        now;
-
-
-    wakeBuffer =
-        "";
-
-
-    activationSound();
-
-
-    wakeActive =
-        true;
-
-
-    setOrb("listening");
-
-
-    setStatus(
-        "Ano? Poslouchám…"
-    );
-
-
-    startCountdown();
-
-
-    /*
-       Pokud bylo řečeno:
-
-       „Hey Ouško, kolik je hodin?“
-
-       rovnou zpracujeme příkaz.
-    */
-
-    if (
-        commandText &&
-        commandText.trim()
-    ) {
-
-        wakeActive =
-            false;
-
-        stopCountdown();
-
-        handleCommand(
-            commandText.trim()
-        );
-
-        return;
-    }
-
-
-    /*
-       Samotné:
-       „Hey Ouško“
-    */
-
-    speak(
-        "Ano?",
-        true
-    ).then(
-        () => {
-
-            if (
-                microphoneOn &&
-                !processing
-            ) {
-
-                wakeActive =
-                    true;
-
-                startCountdown();
-
-                setStatus(
-                    "Poslouchám příkaz…"
-                );
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   HLAVNÍ PŘÍKAZ
-   ========================================================= */
-
-async function handleCommand(text) {
-
-    if (
-        processing
-    ) {
-
-        return;
-    }
-
-
-    const clean =
-        String(text || "")
-            .trim();
-
-
-    /*
-       PRÁZDNÝ PŘÍKAZ:
-
-       NIC NEŘÍKAT.
-    */
-
-    if (
-        !clean
-    ) {
-
-        return;
-    }
-
-
-    processing =
-        true;
-
-
-    try {
-
-        const n =
-            normalize(clean);
-
-
-        /* =====================================
-           VYPNOUT MIKROFON
-        ===================================== */
-
-        if (
-            n.includes("vypni mikrofon") ||
-            n === "vypnout mikrofon"
-        ) {
-
-            await speak(
-                "Dobře, vypínám mikrofon.",
-                false
-            );
-
-
-            disableMicrophone();
-
-            return;
-        }
-
-
-        /* =====================================
-           POČASÍ
-        ===================================== */
-
-        if (
-            n.includes("pocasi") ||
-            n.includes("jak je venku") ||
-            n.includes("kolik je stupnu") ||
-            n.includes("prsi") ||
-            n.includes("snezi")
-        ) {
-
-            await speak(
-                "Počkej prosím, zjišťuji počasí."
-            );
-
-
-            const weather =
-                await getWeather();
-
-
-            await speak(
-                weather
-            );
-
-
-            return;
-        }
-
-
-        /* =====================================
-           ČAS
-        ===================================== */
-
-        if (
-            n.includes("kolik je hodin") ||
-            n.includes("jaky je cas") ||
-            n.includes("kolik je ted hodin") ||
-            n.includes("rekni mi cas")
-        ) {
-
-            await speak(
-                getTime()
-            );
-
-            return;
-        }
-
-
-        /* =====================================
-           DATUM
-        ===================================== */
-
-        if (
-            n.includes("jaky je datum") ||
-            n.includes("jake je datum") ||
-            n.includes("kolikateho je")
-        ) {
-
-            await speak(
-                getDate()
-            );
-
-            return;
-        }
-
-
-        /* =====================================
-           PAMĚŤ
-        ===================================== */
-
-        const memory =
-            memoryCommand(clean);
-
-
-        if (
-            memory
-        ) {
-
-            await speak(
-                memory
-            );
-
-            return;
-        }
-
-
-        /* =====================================
-           ČASOVAČ
-        ===================================== */
-
-        if (
-            n.includes("casovac") ||
-            n.includes("timer")
-        ) {
-
-            if (
-                n.includes("zrus")
-            ) {
-
-                if (timer) {
-
-                    clearTimeout(timer);
-
-                    timer = null;
-
-                    await speak(
-                        "Časovač jsem zrušil."
-                    );
-
-                } else {
-
-                    await speak(
-                        "Žádný časovač neběží."
-                    );
-                }
-
-
-                return;
-            }
-
-
-            const seconds =
-                timerSeconds(clean);
-
-
-            if (
-                seconds &&
-                seconds > 0
-            ) {
-
-                if (timer) {
-
-                    clearTimeout(timer);
-                }
-
-
-                timer =
-                    setTimeout(
-                        async () => {
-
-                            timer = null;
-
-
-                            if (
-                                microphoneOn
-                            ) {
-
-                                await speak(
-                                    "Časovač skončil."
-                                );
-                            }
-
-                        },
-                        seconds * 1000
-                    );
-
-
-                await speak(
-                    "Dobře, časovač je nastavený na " +
-                    numberToCzech(seconds) +
-                    " sekund."
-                );
-
-            } else {
-
-                await speak(
-                    "Na jak dlouho mám časovač nastavit?"
-                );
-            }
-
-
-            return;
-        }
-
-
-        /* =====================================
-           MATEMATIKA
-        ===================================== */
-
-        const math =
-            mathAnswer(clean);
-
-
-        if (
-            math
-        ) {
-
-            await speak(
-                math
-            );
-
-            return;
-        }
-
-
-        /* =====================================
-           BĚŽNÁ KONVERZACE
-        ===================================== */
-
-        const basic =
-            basicConversation(
-                clean
-            );
-
-
-        if (
-            basic
-        ) {
-
-            await speak(
-                basic
-            );
-
-            return;
-        }
-
-
-        /* =====================================
-           NEZNÁMÝ PŘÍKAZ
-        ===================================== */
-
-        await speak(
-            "Tomu zatím úplně nerozumím. Zkus to říct jinak."
-        );
-
-    } finally {
-
-        processing =
-            false;
-    }
-}
-
-
-/* =========================================================
-   RECOGNITION
-   ========================================================= */
-
-function createRecognition() {
-
-    if (
-        !SpeechRecognition
-    ) {
+        speaking=true;
 
         setStatus(
-            "Použij prosím Google Chrome."
+            "Ouško odpovídá...",
+            "speaking"
         );
 
-        return null;
+        utterance.onend=()=>{
+
+            speaking=false;
+
+            resolve();
+
+            if(running){
+                waitForWakeWord();
+            }
+
+        };
+
+        utterance.onerror=()=>{
+
+            speaking=false;
+
+            resolve();
+
+            if(running){
+                waitForWakeWord();
+            }
+
+        };
+
+        speechSynthesis.speak(
+            utterance
+        );
+
+    });
+
+}
+
+
+/*
+==================================================
+  NORMALIZACE
+==================================================
+*/
+
+function normalize(text){
+
+    return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .trim();
+
+}
+
+
+/*
+==================================================
+  WAKE WORD
+==================================================
+*/
+
+function isWakeWord(text){
+
+    const t=normalize(text);
+
+    return (
+        t.includes("hey ousko") ||
+        t.includes("hej ousko") ||
+        t.includes("hey ousku") ||
+        t.includes("hej ousku") ||
+        t.includes("ousko")
+    );
+
+}
+
+
+/*
+==================================================
+  VYTAŽENÍ OTÁZKY ZA WAKE WORD
+==================================================
+*/
+
+function removeWakeWord(text){
+
+    return text
+        .replace(
+            /hey\s+ouško/gi,
+            ""
+        )
+        .replace(
+            /hej\s+ouško/gi,
+            ""
+        )
+        .replace(
+            /hey\s+oušku/gi,
+            ""
+        )
+        .replace(
+            /hej\s+oušku/gi,
+            ""
+        )
+        .replace(
+            /ouško/gi,
+            ""
+        )
+        .trim();
+
+}
+
+
+/*
+==================================================
+  VYTVOŘENÍ RECOGNITION
+==================================================
+*/
+
+function createRecognition(){
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if(!SpeechRecognition){
+
+        setStatus(
+            "Tento prohlížeč nepodporuje rozpoznávání hlasu."
+        );
+
+        startButton.disabled=true;
+
+        return false;
+
     }
 
-
-    const r =
+    recognition =
         new SpeechRecognition();
 
+    recognition.lang="cs-CZ";
 
-    r.lang =
-        "cs-CZ";
+    recognition.continuous=true;
 
+    recognition.interimResults=false;
 
-    r.continuous =
-        true;
-
-
-    r.interimResults =
-        true;
+    recognition.maxAlternatives=1;
 
 
-    r.maxAlternatives =
-        3;
+    recognition.onstart=()=>{
 
+        if(!running) return;
 
-    /* =========================================
-       START
-    ========================================= */
+        setStatus(
+            "Čekám na „Hey Ouško“...",
+            "ready"
+        );
 
-    r.onstart = () => {
-
-        recognitionRunning =
-            true;
-
-
-        if (
-            microphoneOn
-        ) {
-
-            setOrb("listening");
-
-
-            if (
-                wakeActive
-            ) {
-
-                setStatus(
-                    "Poslouchám příkaz…"
-                );
-
-            } else {
-
-                setStatus(
-                    "Čekám na „Hey Ouško“…"
-                );
-            }
-        }
     };
 
 
-    /* =========================================
-       RESULT
-    ========================================= */
+    recognition.onresult=async event=>{
 
-    r.onresult = event => {
+        if(!running) return;
 
-        let finalText =
-            "";
+        const result =
+            event.results[
+                event.results.length-1
+            ];
 
-        let interimText =
-            "";
+        if(!result.isFinal) return;
 
+        const text =
+            result[0].transcript.trim();
 
-        for (
-            let i = event.resultIndex;
-            i < event.results.length;
-            i++
-        ) {
-
-            const result =
-                event.results[i];
+        console.log(
+            "Ouško slyšelo:",
+            text
+        );
 
 
-            const transcript =
-                result[0].transcript;
+        /*
+        ------------------------------------------
+        ČEKÁME NA HEY OUŠKO
+        ------------------------------------------
+        */
 
+        if(!listeningForCommand){
 
-            if (
-                result.isFinal
-            ) {
+            if(isWakeWord(text)){
 
-                finalText +=
-                    transcript + " ";
+                listeningForCommand=true;
 
-            } else {
+                setStatus(
+                    "👂 Poslouchám...",
+                    "listening"
+                );
 
-                interimText +=
-                    transcript + " ";
-            }
-        }
-
-
-        finalText =
-            finalText.trim();
-
-        interimText =
-            interimText.trim();
-
-
-        const currentText =
-            (
-                finalText +
-                " " +
-                interimText
-            ).trim();
-
-
-        /* =========================================
-           ČEKÁNÍ NA HEY OUŠKO
-        ========================================= */
-
-        if (
-            !wakeActive
-        ) {
-
-            /*
-               TADY SE NIC NEZOBRAZUJE
-               A NIC SE NEŘÍKÁ,
-               pokud není wake word.
-            */
-
-            if (
-                !currentText
-            ) {
-
-                return;
-            }
-
-
-            /*
-               Přidáme řeč do bufferu.
-
-               Díky tomu funguje i případ:
-
-               „Hey“
-               ...
-               „Ouško“
-            */
-
-            wakeBuffer +=
-                " " +
-                currentText;
-
-
-            /*
-               Necháme jen posledních
-               cca 180 znaků.
-            */
-
-            if (
-                wakeBuffer.length > 180
-            ) {
-
-                wakeBuffer =
-                    wakeBuffer.slice(-180);
-            }
-
-
-            if (
-                containsWakeWord(
-                    wakeBuffer
-                )
-            ) {
+                showAnswer(
+                    "Slyším tě. 🦊"
+                );
 
                 /*
-                   Najdeme příkaz za
-                   „Hey Ouško“.
+                Pokud byla otázka rovnou za
+                „Hey Ouško“, zpracujeme ji.
                 */
 
                 const command =
-                    removeWakeWord(
-                        wakeBuffer
-                    );
+                    removeWakeWord(text);
 
+                if(command){
 
-                wakeBuffer =
-                    "";
-
-
-                /*
-                   Neaktivuj znovu
-                   několikrát ze stejné řeči.
-                */
-
-                if (
-                    !wakeActive
-                ) {
-
-                    setHeard(
-                        command || "Hey Ouško"
-                    );
-
-
-                    activateAssistant(
+                    await processCommand(
                         command
                     );
+
                 }
+
             }
 
-
             return;
-        }
 
-
-        /* =========================================
-           AKTIVNÍ PŘÍKAZ
-        ========================================= */
-
-        if (
-            currentText
-        ) {
-
-            setHeard(
-                currentText
-            );
         }
 
 
         /*
-           Bez finálního výsledku
-           ještě nic nespouštíme.
+        ------------------------------------------
+        UŽ JSME AKTIVNÍ
+        ------------------------------------------
         */
 
-        if (
-            !finalText
-        ) {
+        await processCommand(text);
 
-            return;
-        }
-
-
-        /*
-           Ochrana před dvojím
-           zpracováním.
-        */
-
-        const now =
-            Date.now();
-
-
-        if (
-            finalText === lastFinalText &&
-            now - lastFinalTime < 2500
-        ) {
-
-            return;
-        }
-
-
-        lastFinalText =
-            finalText;
-
-        lastFinalTime =
-            now;
-
-
-        wakeActive =
-            false;
-
-
-        stopCountdown();
-
-
-        handleCommand(
-            finalText
-        );
     };
 
 
-    /* =========================================
-       ERROR
-    ========================================= */
-
-    r.onerror = event => {
-
-        recognitionRunning =
-            false;
-
+    recognition.onerror=event=>{
 
         console.log(
-            "SpeechRecognition:",
+            "Recognition error:",
             event.error
         );
 
+        if(
+            event.error==="not-allowed"
+        ){
 
-        /*
-           TYTO CHYBY JSOU TICHÉ.
-           ŽÁDNÉ „NERozumím“.
-        */
-
-        if (
-            event.error === "no-speech" ||
-            event.error === "network" ||
-            event.error === "aborted" ||
-            event.error === "audio-capture"
-        ) {
-
-            if (
-                microphoneOn &&
-                recognitionWanted &&
-                !speaking
-            ) {
-
-                restartRecognition();
-            }
-
-
-            return;
-        }
-
-
-        /*
-           Pouze skutečný problém
-           s oprávněním.
-        */
-
-        if (
-            event.error === "not-allowed" ||
-            event.error === "service-not-allowed"
-        ) {
-
-            recognitionWanted =
-                false;
-
+            running=false;
 
             setStatus(
-                "Rozpoznávání řeči nemá povolení."
+                "Mikrofon nebyl povolen."
             );
 
+            startButton.disabled=false;
+
+            startButton.textContent=
+                "🎤 Povolit mikrofon a spustit Ouška";
 
             return;
+
         }
 
+        if(
+            event.error==="aborted"
+        ){
 
-        /*
-           Jiná chyba:
-           tichý restart.
-        */
+            return;
 
-        if (
-            microphoneOn &&
-            recognitionWanted &&
-            !speaking
-        ) {
-
-            restartRecognition();
         }
+
     };
 
 
-    /* =========================================
-       END
-    ========================================= */
-
-    r.onend = () => {
-
-        recognitionRunning =
-            false;
-
+    recognition.onend=()=>{
 
         /*
-           KDYŽ JE MIKROFON ON,
-           ROZPOZNÁVÁNÍ SE OBNOVÍ.
-
-           getUserMedia() SE ZNOVU
-           NIKDY NEVOLÁ.
+        Pokud Ouško běží, znovu posloucháme.
+        Toto není nové žádání o povolení —
+        oprávnění už bylo uděleno.
         */
 
-        if (
-            microphoneOn &&
-            recognitionWanted &&
+        if(
+            running &&
             !speaking
-        ) {
+        ){
 
-            restartRecognition();
-        }
-    };
+            setTimeout(()=>{
 
-
-    return r;
-}
-
-
-/* =========================================================
-   RESTART RECOGNITION
-   ========================================================= */
-
-function restartRecognition() {
-
-    if (
-        !microphoneOn ||
-        !recognitionWanted ||
-        speaking ||
-        recognitionRunning
-    ) {
-
-        return;
-    }
-
-
-    if (
-        restartTimer
-    ) {
-
-        clearTimeout(
-            restartTimer
-        );
-    }
-
-
-    restartTimer =
-        setTimeout(
-            () => {
-
-                if (
-                    !microphoneOn ||
-                    !recognitionWanted ||
-                    speaking ||
-                    recognitionRunning
-                ) {
-
-                    return;
-                }
-
-
-                if (
-                    !recognition
-                ) {
-
-                    recognition =
-                        createRecognition();
-                }
-
-
-                if (
-                    !recognition
-                ) {
-
-                    return;
-                }
-
-
-                try {
+                try{
 
                     recognition.start();
 
-                } catch (error) {
+                }catch(e){
 
-                    console.log(
-                        "Restart:",
-                        error
-                    );
+                    console.log(e);
 
-
-                    recognitionRunning =
-                        false;
-
-
-                    restartTimer =
-                        setTimeout(
-                            restartRecognition,
-                            800
-                        );
                 }
 
-            },
-            350
-        );
+            },300);
+
+        }
+
+    };
+
+
+    return true;
+
 }
 
 
-/* =========================================================
-   ZAPNOUT MIKROFON
-   ========================================================= */
+/*
+==================================================
+  ČEKÁNÍ NA WAKE WORD
+==================================================
+*/
 
-async function enableMicrophone() {
+function waitForWakeWord(){
 
-    if (
-        microphoneOn
-    ) {
+    if(!running) return;
+
+    listeningForCommand=false;
+
+    setStatus(
+        "Čekám na „Hey Ouško“...",
+        "ready"
+    );
+
+}
+
+
+/*
+==================================================
+  ZPRACOVÁNÍ PŘÍKAZU
+==================================================
+*/
+
+async function processCommand(text){
+
+    if(!text){
+
+        listeningForCommand=false;
 
         return;
+
     }
 
+    listeningForCommand=false;
 
-    if (
-        !navigator.mediaDevices ||
-        !navigator.mediaDevices.getUserMedia
-    ) {
+    setStatus(
+        "🧠 Ouško přemýšlí...",
+        "listening"
+    );
 
-        setStatus(
-            "Tento prohlížeč nepodporuje mikrofon."
-        );
-
-        return;
-    }
+    showAnswer(
+        "Přemýšlím... 🦊"
+    );
 
 
-    try {
+    let response;
 
-        setOrb("thinking");
+    try{
 
-        setStatus(
-            "Zapínám mikrofon…"
-        );
+        if(
+            typeof window.ouskoAI==="function"
+        ){
 
-
-        /*
-           =================================================
-           JEDINÉ MÍSTO, KDE SE OTEVÍRÁ MIKROFON.
-           =================================================
-        */
-
-        microphoneStream =
-            await navigator.mediaDevices.getUserMedia({
-                audio: {
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    autoGainControl: true
-                }
-            });
-
-
-        microphoneOn =
-            true;
-
-
-        recognitionWanted =
-            true;
-
-
-        wakeActive =
-            false;
-
-
-        wakeBuffer =
-            "";
-
-
-        prepareLocation();
-
-
-        /*
-           Recognition vytvoříme jen jednou.
-        */
-
-        if (
-            !recognition
-        ) {
-
-            recognition =
-                createRecognition();
-        }
-
-
-        if (
-            !recognition
-        ) {
-
-            disableMicrophone();
-
-            return;
-        }
-
-
-        micButton.textContent =
-            "🔇 Vypnout mikrofon";
-
-
-        micButton.classList.add(
-            "off"
-        );
-
-
-        setAnswer(
-            "Mikrofon je zapnutý. Čekám na „Hey Ouško“."
-        );
-
-
-        setStatus(
-            "Čekám na „Hey Ouško“…"
-        );
-
-
-        setOrb(
-            "listening"
-        );
-
-
-        restartRecognition();
-
-    } catch (error) {
-
-        console.error(
-            "Mikrofon:",
-            error
-        );
-
-
-        microphoneOn =
-            false;
-
-
-        recognitionWanted =
-            false;
-
-
-        if (
-            microphoneStream
-        ) {
-
-            microphoneStream
-                .getTracks()
-                .forEach(
-                    track =>
-                        track.stop()
+            response =
+                await window.ouskoAI(
+                    text
                 );
 
-            microphoneStream =
-                null;
+        }else{
+
+            response =
+                "Ouško AI se nepodařilo načíst.";
+
         }
 
+    }catch(error){
 
-        setOrb("");
+        console.error(error);
 
-        setStatus(
-            "Mikrofon se nepodařilo zapnout."
-        );
+        response =
+            "Promiň, něco se pokazilo. 🦊";
 
-
-        setAnswer(
-            "Povol mikrofon v Chrome a zkus to znovu."
-        );
     }
+
+
+    showAnswer(response);
+
+    await speak(response);
+
 }
 
 
-/* =========================================================
-   VYPNOUT MIKROFON
-   ========================================================= */
+/*
+==================================================
+  SPUŠTĚNÍ
+==================================================
+*/
 
-function disableMicrophone() {
+async function startOusko(){
 
-    microphoneOn =
-        false;
+    if(running) return;
 
+    if(!recognition){
 
-    recognitionWanted =
-        false;
+        const ok =
+            createRecognition();
 
+        if(!ok) return;
 
-    wakeActive =
-        false;
-
-
-    processing =
-        false;
-
-
-    wakeBuffer =
-        "";
-
-
-    stopCountdown();
-
-
-    if (
-        restartTimer
-    ) {
-
-        clearTimeout(
-            restartTimer
-        );
-
-        restartTimer =
-            null;
     }
-
-
-    if (
-        recognition &&
-        recognitionRunning
-    ) {
-
-        try {
-
-            recognition.stop();
-
-        } catch {}
-    }
-
-
-    recognitionRunning =
-        false;
 
 
     /*
-       Stream se skutečně vypne
-       pouze zde.
+    První spuštění musí být vyvolané
+    kliknutím uživatele.
+    Tady prohlížeč požádá o mikrofon.
     */
 
-    if (
-        microphoneStream
-    ) {
+    try{
 
-        microphoneStream
-            .getTracks()
-            .forEach(
-                track =>
-                    track.stop()
-            );
+        running=true;
 
-        microphoneStream =
-            null;
+        listeningForCommand=false;
+
+        setStatus(
+            "Spouštím Ouška...",
+            "ready"
+        );
+
+        startButton.disabled=true;
+
+        startButton.textContent=
+            "🦊 Ouško běží";
+
+        recognition.start();
+
+    }catch(error){
+
+        console.error(error);
+
+        running=false;
+
+        startButton.disabled=false;
+
+        startButton.textContent=
+            "🎤 Povolit mikrofon a spustit Ouška";
+
+        setStatus(
+            "Nepodařilo se spustit mikrofon."
+        );
+
     }
 
-
-    setOrb("");
-
-    setStatus(
-        "Mikrofon je vypnutý"
-    );
-
-
-    setHeard("");
-
-
-    micButton.textContent =
-        "🎙️ Zapnout mikrofon";
-
-
-    micButton.classList.remove(
-        "off"
-    );
 }
 
 
-/* =========================================================
-   TLAČÍTKO
-   ========================================================= */
-
-micButton.addEventListener(
+startButton.addEventListener(
     "click",
-    () => {
-
-        if (
-            microphoneOn
-        ) {
-
-            disableMicrophone();
-
-        } else {
-
-            enableMicrophone();
-        }
-    }
+    startOusko
 );
 
 
-/* =========================================================
-   START
-   ========================================================= */
+/*
+==================================================
+  STARTOVNÍ NASTAVENÍ
+==================================================
+*/
 
-if (
-    !SpeechRecognition
-) {
-
-    setStatus(
-        "Pro hlasové ovládání použij Google Chrome."
-    );
-}
-
-
-console.log(
-    "🦊 Ouško AI 2.4 připraven."
+setStatus(
+    "Mikrofon není povolen"
 );
 
 </script>
