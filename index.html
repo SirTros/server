@@ -4,617 +4,793 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NFC Pay Terminal – DEMO</title>
+<title>NFC Pay Terminal</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
-
-:root {
-    --bg: #080a0f;
-    --panel: #11151d;
-    --panel2: #171c25;
-    --border: rgba(255,255,255,.08);
-    --text: #f4f7fb;
-    --muted: #8c96a6;
-    --accent: #6ea8ff;
-    --green: #35d07f;
-    --red: #ff5264;
-    --yellow: #ffd35a;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    background:
-        radial-gradient(circle at 50% -10%, rgba(80,130,255,.18), transparent 40%),
-        var(--bg);
-    color: var(--text);
-    font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 24px;
-}
-
-.app {
-    width: min(100%, 920px);
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.logo {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #6ea8ff, #8d6eff);
-    display: grid;
-    place-items: center;
-    font-size: 23px;
-    box-shadow: 0 10px 35px rgba(90,120,255,.25);
-}
-
-.brand h1 {
-    font-size: 19px;
-    margin: 0;
-}
-
-.brand p {
-    margin: 3px 0 0;
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.demo {
-    padding: 8px 12px;
-    border: 1px solid rgba(255,255,255,.08);
-    border-radius: 999px;
-    color: #b9c3d3;
-    font-size: 11px;
-    background: rgba(255,255,255,.03);
-}
-
-.layout {
-    display: grid;
-    grid-template-columns: 1.3fr .7fr;
-    gap: 18px;
-}
-
-@media (max-width: 760px) {
-    .layout {
-        grid-template-columns: 1fr;
-    }
-}
-
-.terminal,
-.side {
-    background: rgba(17,21,29,.88);
-    border: 1px solid var(--border);
-    border-radius: 28px;
-    box-shadow: 0 25px 80px rgba(0,0,0,.35);
-    backdrop-filter: blur(20px);
-}
-
-.terminal {
-    padding: 26px;
-    min-height: 570px;
-    display: flex;
-    flex-direction: column;
-}
-
-.status-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.status {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    color: #b9c3d3;
-    font-size: 13px;
-}
-
-.status-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--yellow);
-    box-shadow: 0 0 14px rgba(255,211,90,.6);
-}
-
-.status.ready .status-dot {
-    background: var(--green);
-    box-shadow: 0 0 14px rgba(53,208,127,.65);
-}
-
-.status.error .status-dot {
-    background: var(--red);
-    box-shadow: 0 0 14px rgba(255,82,100,.65);
-}
-
-.time {
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.reader-area {
-    flex: 1;
-    display: grid;
-    place-items: center;
-    text-align: center;
-    padding: 30px 0;
-}
-
-.reader {
-    width: 230px;
-    height: 230px;
-    border-radius: 50%;
-    border: 1px solid rgba(110,168,255,.22);
-    position: relative;
-    display: grid;
-    place-items: center;
-    transition: .35s ease;
-}
-
-.reader::before,
-.reader::after {
-    content: "";
-    position: absolute;
-    inset: 17px;
-    border: 1px solid rgba(110,168,255,.16);
-    border-radius: 50%;
-}
-
-.reader::after {
-    inset: 40px;
-    border-color: rgba(110,168,255,.2);
-}
-
-.reader.active {
-    transform: scale(1.03);
-    border-color: rgba(110,168,255,.55);
-    box-shadow:
-        0 0 0 14px rgba(110,168,255,.035),
-        0 0 70px rgba(110,168,255,.16);
-}
-
-.nfc-icon {
-    width: 100px;
-    height: 100px;
-    border-radius: 30px;
-    background: linear-gradient(145deg, #1c2432, #10151d);
-    border: 1px solid rgba(255,255,255,.08);
-    display: grid;
-    place-items: center;
-    font-size: 45px;
-    position: relative;
-    z-index: 2;
-    box-shadow: 0 18px 50px rgba(0,0,0,.4);
-}
-
-.wave {
-    position: absolute;
-    width: 155px;
-    height: 155px;
-    border-radius: 50%;
-    border: 2px solid rgba(110,168,255,.4);
-    opacity: 0;
-}
-
-.reader.active .wave {
-    animation: wave 1.8s infinite;
-}
-
-.reader.active .wave:nth-child(2) {
-    animation-delay: .6s;
-}
-
-.reader.active .wave:nth-child(3) {
-    animation-delay: 1.2s;
-}
-
-@keyframes wave {
-    0% {
-        transform: scale(.65);
-        opacity: .65;
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
     }
 
-    100% {
-        transform: scale(1.55);
-        opacity: 0;
+    :root {
+        --bg: #07090d;
+        --panel: #10141b;
+        --panel2: #151a23;
+        --border: rgba(255,255,255,.09);
+        --text: #f5f7fb;
+        --muted: #8c96a6;
+        --blue: #4da3ff;
+        --green: #32d583;
+        --red: #ff5263;
+        --yellow: #ffc857;
     }
-}
 
-.message h2 {
-    font-size: 25px;
-    margin: 0 0 7px;
-}
+    body {
+        min-height: 100vh;
+        background:
+            radial-gradient(circle at 50% -10%, #1a2b45 0%, transparent 45%),
+            var(--bg);
+        color: var(--text);
+        font-family:
+            Inter,
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
 
-.message p {
-    color: var(--muted);
-    margin: 0;
-    font-size: 14px;
-}
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 24px;
+    }
 
-.code-box {
-    margin-top: 20px;
-    padding: 12px 16px;
-    border-radius: 14px;
-    background: rgba(255,255,255,.035);
-    border: 1px solid rgba(255,255,255,.06);
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-}
+    button,
+    input {
+        font: inherit;
+    }
 
-.code-label {
-    color: var(--muted);
-    font-size: 11px;
-}
+    .app {
+        width: min(1100px, 100%);
+    }
 
-.code {
-    font-family: monospace;
-    font-size: 17px;
-    letter-spacing: 3px;
-}
+    /* =========================
+       TOP
+    ========================= */
 
-.controls {
-    display: flex;
-    gap: 10px;
-}
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        gap: 15px;
+    }
 
-button {
-    border: 0;
-    color: white;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 650;
-}
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-.primary {
-    flex: 1;
-    padding: 14px 18px;
-    border-radius: 15px;
-    background: linear-gradient(135deg, #568fff, #8068ff);
-    box-shadow: 0 12px 30px rgba(80,110,255,.2);
-    transition: .2s;
-}
+    .brand-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
 
-.primary:hover {
-    transform: translateY(-1px);
-}
+        display: grid;
+        place-items: center;
 
-.secondary {
-    padding: 14px 18px;
-    border-radius: 15px;
-    background: rgba(255,255,255,.05);
-    border: 1px solid rgba(255,255,255,.07);
-}
+        background: linear-gradient(145deg, #1d8cff, #635bff);
+        box-shadow: 0 8px 30px rgba(55,130,255,.25);
+    }
 
-.side {
-    padding: 22px;
-}
+    .brand-icon span {
+        font-size: 25px;
+    }
 
-.side h3 {
-    margin: 0 0 4px;
-    font-size: 16px;
-}
+    .brand-title {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -.3px;
+    }
 
-.side-sub {
-    color: var(--muted);
-    font-size: 12px;
-    margin-bottom: 18px;
-}
+    .brand-sub {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 2px;
+    }
 
-.stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
+    .demo-badge {
+        border: 1px solid rgba(255,200,87,.25);
+        color: var(--yellow);
+        background: rgba(255,200,87,.07);
+        border-radius: 999px;
+        padding: 8px 13px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .5px;
+    }
 
-.stat {
-    padding: 15px;
-    border-radius: 17px;
-    background: rgba(255,255,255,.035);
-    border: 1px solid rgba(255,255,255,.06);
-}
+    /* =========================
+       MAIN
+    ========================= */
 
-.stat span {
-    display: block;
-    color: var(--muted);
-    font-size: 11px;
-    margin-bottom: 7px;
-}
+    .devices {
+        display: grid;
+        grid-template-columns: 1fr .8fr;
+        gap: 18px;
+    }
 
-.stat strong {
-    font-size: 20px;
-}
+    .terminal,
+    .phone {
+        background:
+            linear-gradient(145deg,
+                rgba(255,255,255,.045),
+                rgba(255,255,255,.015));
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        box-shadow:
+            0 25px 70px rgba(0,0,0,.4),
+            inset 0 1px 0 rgba(255,255,255,.03);
+    }
 
-.history {
-    margin-top: 18px;
-}
+    /* =========================
+       TERMINAL
+    ========================= */
 
-.history-title {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 9px;
-}
+    .terminal {
+        padding: 22px;
+        min-height: 650px;
+        display: flex;
+        flex-direction: column;
+    }
 
-.history-list {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    max-height: 260px;
-    overflow: auto;
-}
+    .terminal-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 22px;
+    }
 
-.history-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 11px;
-    border-radius: 13px;
-    background: rgba(255,255,255,.025);
-    font-size: 12px;
-}
+    .terminal-name {
+        font-weight: 800;
+        font-size: 16px;
+    }
 
-.history-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+    .terminal-id {
+        color: var(--muted);
+        font-size: 11px;
+        margin-top: 3px;
+    }
 
-.result-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-}
+    .status {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12px;
+        color: var(--muted);
+    }
 
-.result-dot.ok {
-    background: var(--green);
-}
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--yellow);
+        box-shadow: 0 0 12px rgba(255,200,87,.7);
+    }
 
-.result-dot.bad {
-    background: var(--red);
-}
+    .status-dot.ready {
+        background: var(--green);
+        box-shadow: 0 0 12px rgba(50,213,131,.7);
+    }
 
-.history-code {
-    font-family: monospace;
-}
+    .status-dot.error {
+        background: var(--red);
+        box-shadow: 0 0 12px rgba(255,82,99,.7);
+    }
 
-.history-time {
-    color: var(--muted);
-}
+    /* =========================
+       DISPLAY
+    ========================= */
 
-/* =========================
-   RESULT OVERLAY
-========================= */
+    .display {
+        min-height: 280px;
+        border-radius: 24px;
+        background:
+            radial-gradient(circle at 50% 0%, rgba(77,163,255,.13), transparent 55%),
+            #090c11;
+        border: 1px solid rgba(255,255,255,.07);
 
-.overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(3,5,8,.72);
-    backdrop-filter: blur(15px);
-    display: none;
-    place-items: center;
-    z-index: 50;
-}
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
 
-.overlay.show {
-    display: grid;
-    animation: fadeIn .2s ease;
-}
+        text-align: center;
+        padding: 30px;
+        position: relative;
+        overflow: hidden;
+    }
 
-.result-card {
-    width: min(90vw, 390px);
-    padding: 32px;
-    border-radius: 30px;
-    background: #11151d;
-    border: 1px solid rgba(255,255,255,.08);
-    text-align: center;
-    box-shadow: 0 35px 100px rgba(0,0,0,.55);
-    animation: pop .35s cubic-bezier(.2,.9,.2,1);
-}
+    .display::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+            linear-gradient(
+                120deg,
+                transparent,
+                rgba(255,255,255,.025),
+                transparent
+            );
+        transform: translateX(-100%);
+    }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+    .display.active::after {
+        animation: shine 2.2s ease infinite;
+    }
 
-@keyframes pop {
-    from {
-        transform: scale(.82) translateY(15px);
+    @keyframes shine {
+        to {
+            transform: translateX(100%);
+        }
+    }
+
+    .nfc-symbol {
+        width: 90px;
+        height: 90px;
+        border-radius: 28px;
+
+        display: grid;
+        place-items: center;
+
+        background: rgba(77,163,255,.09);
+        border: 1px solid rgba(77,163,255,.2);
+
+        margin-bottom: 22px;
+
+        position: relative;
+    }
+
+    .nfc-symbol span {
+        font-size: 46px;
+    }
+
+    .nfc-wave {
+        position: absolute;
+        border: 2px solid rgba(77,163,255,.45);
+        border-radius: 50%;
+        animation: nfcwave 1.8s ease-out infinite;
         opacity: 0;
     }
 
-    to {
-        transform: scale(1) translateY(0);
-        opacity: 1;
-    }
-}
-
-.result-icon {
-    width: 110px;
-    height: 110px;
-    margin: 0 auto 22px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: 55px;
-    position: relative;
-}
-
-.result-icon.success {
-    background: rgba(53,208,127,.1);
-    border: 2px solid rgba(53,208,127,.5);
-    color: var(--green);
-    animation: successPop .65s ease;
-}
-
-.result-icon.error {
-    background: rgba(255,82,100,.08);
-    border: 2px solid rgba(255,82,100,.5);
-    color: var(--red);
-    animation: shake .55s ease;
-}
-
-@keyframes successPop {
-    0% {
-        transform: scale(.4);
-        opacity: 0;
+    .nfc-wave:nth-child(2) {
+        animation-delay: .6s;
     }
 
-    60% {
-        transform: scale(1.12);
+    .nfc-wave:nth-child(3) {
+        animation-delay: 1.2s;
     }
 
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
+    @keyframes nfcwave {
+        0% {
+            width: 50px;
+            height: 50px;
+            opacity: .8;
+        }
 
-@keyframes shake {
-    0%,100% { transform: translateX(0); }
-    20% { transform: translateX(-9px); }
-    40% { transform: translateX(9px); }
-    60% { transform: translateX(-6px); }
-    80% { transform: translateX(6px); }
-}
-
-.result-card h2 {
-    margin: 0 0 8px;
-    font-size: 25px;
-}
-
-.result-card p {
-    margin: 0 0 22px;
-    color: var(--muted);
-    font-size: 14px;
-}
-
-.wallet-animation {
-    width: 190px;
-    height: 115px;
-    margin: 0 auto 22px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #ffffff, #dfe5ee);
-    position: relative;
-    overflow: hidden;
-    color: #111;
-    box-shadow: 0 20px 50px rgba(255,255,255,.1);
-    animation: walletIn .7s cubic-bezier(.2,.9,.2,1);
-}
-
-.wallet-animation::before {
-    content: "";
-    position: absolute;
-    width: 300px;
-    height: 70px;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,.8),
-        transparent
-    );
-    transform: rotate(-20deg);
-    left: -250px;
-    top: 20px;
-    animation: shine 1.4s ease .3s forwards;
-}
-
-.wallet-symbol {
-    position: absolute;
-    left: 18px;
-    top: 16px;
-    font-size: 18px;
-    font-weight: 800;
-}
-
-.wallet-card {
-    position: absolute;
-    right: 14px;
-    bottom: 14px;
-    width: 125px;
-    height: 67px;
-    border-radius: 11px;
-    background: linear-gradient(135deg, #e8edf4, #cbd4e0);
-    box-shadow: 0 7px 20px rgba(0,0,0,.15);
-}
-
-.wallet-card::after {
-    content: "✓";
-    position: absolute;
-    right: 10px;
-    bottom: 7px;
-    font-weight: 800;
-    font-size: 20px;
-}
-
-@keyframes walletIn {
-    from {
-        transform: translateY(30px) scale(.8);
-        opacity: 0;
+        100% {
+            width: 150px;
+            height: 150px;
+            opacity: 0;
+        }
     }
 
-    to {
-        transform: translateY(0) scale(1);
-        opacity: 1;
+    .display h1 {
+        font-size: 26px;
+        letter-spacing: -.7px;
+        margin-bottom: 8px;
     }
-}
 
-@keyframes shine {
-    to {
-        left: 250px;
+    .display p {
+        color: var(--muted);
+        font-size: 14px;
+        max-width: 420px;
+        line-height: 1.55;
     }
-}
 
-.retry {
-    width: 100%;
-    padding: 14px;
-    border-radius: 15px;
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.08);
-}
+    /* =========================
+       PIN
+    ========================= */
 
-.error-code {
-    font-family: monospace;
-    padding: 9px;
-    margin-bottom: 18px;
-    border-radius: 10px;
-    background: rgba(255,82,100,.06);
-    color: #ff9aa5;
-}
+    .pin-area {
+        display: none;
+        width: min(330px, 100%);
+    }
 
-.note {
-    margin-top: 18px;
-    color: #677284;
-    font-size: 10px;
-    text-align: center;
-    line-height: 1.5;
-}
+    .pin-area.show {
+        display: block;
+    }
+
+    .pin-title {
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 6px;
+    }
+
+    .pin-subtitle {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 16px;
+    }
+
+    .pin-display {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .pin-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #252c37;
+        border: 1px solid rgba(255,255,255,.08);
+        transition: .18s;
+    }
+
+    .pin-dot.filled {
+        background: var(--blue);
+        box-shadow: 0 0 12px rgba(77,163,255,.5);
+        transform: scale(1.1);
+    }
+
+    .keypad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+    }
+
+    .key {
+        height: 52px;
+        border: 1px solid rgba(255,255,255,.07);
+        background: #151a22;
+        color: white;
+        border-radius: 14px;
+        cursor: pointer;
+        font-size: 17px;
+        font-weight: 700;
+        transition: .15s;
+    }
+
+    .key:hover {
+        background: #1d2530;
+        transform: translateY(-1px);
+    }
+
+    .key:active {
+        transform: scale(.96);
+    }
+
+    .key.clear {
+        color: var(--red);
+    }
+
+    .key.ok {
+        color: var(--green);
+    }
+
+    /* =========================
+       BOTTOM
+    ========================= */
+
+    .terminal-bottom {
+        margin-top: auto;
+        padding-top: 18px;
+
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .main-button {
+        border: 0;
+        border-radius: 15px;
+        height: 52px;
+        cursor: pointer;
+
+        background: linear-gradient(135deg, #238fff, #635bff);
+        color: white;
+
+        font-weight: 800;
+        font-size: 14px;
+
+        box-shadow: 0 10px 25px rgba(54,111,255,.2);
+        transition: .18s;
+    }
+
+    .main-button:hover {
+        transform: translateY(-2px);
+    }
+
+    .main-button:active {
+        transform: scale(.98);
+    }
+
+    .main-button:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .secondary-button {
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 15px;
+        height: 52px;
+        cursor: pointer;
+
+        background: rgba(255,255,255,.035);
+        color: white;
+
+        font-weight: 700;
+        transition: .18s;
+    }
+
+    .secondary-button:hover {
+        background: rgba(255,255,255,.07);
+    }
+
+    /* =========================
+       PHONE
+    ========================= */
+
+    .phone-panel {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+    }
+
+    .phone {
+        width: 245px;
+        min-height: 500px;
+        padding: 10px;
+
+        border-radius: 36px;
+
+        background:
+            linear-gradient(145deg, #1a1f27, #080a0e);
+
+        border: 2px solid #272e38;
+
+        position: relative;
+        overflow: hidden;
+    }
+
+    .phone-screen {
+        min-height: 480px;
+        border-radius: 29px;
+
+        background:
+            radial-gradient(circle at 50% 20%, rgba(77,163,255,.18), transparent 35%),
+            #080b10;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        text-align: center;
+
+        padding: 28px 18px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .phone-camera {
+        position: absolute;
+        top: 9px;
+        left: 50%;
+        transform: translateX(-50%);
+
+        width: 75px;
+        height: 21px;
+        border-radius: 20px;
+
+        background: #030405;
+        border: 1px solid rgba(255,255,255,.06);
+    }
+
+    .phone-time {
+        width: 100%;
+        text-align: left;
+        font-size: 11px;
+        color: #b6bfcc;
+        margin-bottom: 55px;
+    }
+
+    .wallet-icon {
+        width: 76px;
+        height: 76px;
+        border-radius: 24px;
+
+        display: grid;
+        place-items: center;
+
+        background: linear-gradient(145deg, #1d8cff, #635bff);
+        box-shadow:
+            0 15px 35px rgba(51,112,255,.3);
+
+        margin-bottom: 18px;
+
+        transition: .3s;
+    }
+
+    .wallet-icon span {
+        font-size: 38px;
+    }
+
+    .phone-screen h2 {
+        font-size: 20px;
+        margin-bottom: 7px;
+    }
+
+    .phone-screen p {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .phone-card {
+        margin-top: auto;
+        width: 100%;
+        padding: 15px;
+
+        border-radius: 17px;
+
+        background:
+            linear-gradient(135deg,
+                rgba(255,255,255,.12),
+                rgba(255,255,255,.035));
+
+        border: 1px solid rgba(255,255,255,.09);
+
+        text-align: left;
+    }
+
+    .phone-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 22px;
+    }
+
+    .contactless {
+        font-size: 20px;
+    }
+
+    .phone-card-number {
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: #d8dde5;
+    }
+
+    .phone-card-name {
+        margin-top: 8px;
+        font-size: 10px;
+        color: var(--muted);
+    }
+
+    /* =========================
+       RESULT OVERLAY
+    ========================= */
+
+    .result {
+        position: fixed;
+        inset: 0;
+
+        background: rgba(2,4,7,.78);
+        backdrop-filter: blur(18px);
+
+        display: none;
+        justify-content: center;
+        align-items: center;
+
+        z-index: 100;
+
+        padding: 20px;
+    }
+
+    .result.show {
+        display: flex;
+        animation: fadein .25s ease;
+    }
+
+    @keyframes fadein {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .result-box {
+        width: min(390px, 100%);
+        background: #11151c;
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 28px;
+
+        padding: 32px 26px;
+        text-align: center;
+
+        box-shadow: 0 30px 100px rgba(0,0,0,.55);
+
+        animation: pop .35s cubic-bezier(.2,.8,.2,1);
+    }
+
+    @keyframes pop {
+        from {
+            transform: scale(.8);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .result-icon {
+        width: 92px;
+        height: 92px;
+
+        margin: 0 auto 20px;
+
+        border-radius: 50%;
+
+        display: grid;
+        place-items: center;
+
+        font-size: 45px;
+
+        position: relative;
+    }
+
+    .result.success .result-icon {
+        background: rgba(50,213,131,.1);
+        border: 1px solid rgba(50,213,131,.3);
+        color: var(--green);
+    }
+
+    .result.error .result-icon {
+        background: rgba(255,82,99,.1);
+        border: 1px solid rgba(255,82,99,.3);
+        color: var(--red);
+    }
+
+    .result-icon.success-animation {
+        animation: successPulse 1.4s ease infinite;
+    }
+
+    @keyframes successPulse {
+        0%,100% {
+            box-shadow: 0 0 0 0 rgba(50,213,131,.3);
+        }
+
+        50% {
+            box-shadow: 0 0 0 18px rgba(50,213,131,0);
+        }
+    }
+
+    .result h2 {
+        font-size: 25px;
+        margin-bottom: 8px;
+    }
+
+    .result p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+        margin-bottom: 22px;
+    }
+
+    .result-button {
+        width: 100%;
+        height: 50px;
+
+        border: 0;
+        border-radius: 14px;
+
+        color: white;
+        background: #1d2530;
+
+        font-weight: 800;
+        cursor: pointer;
+
+        transition: .15s;
+    }
+
+    .result-button:hover {
+        background: #27313e;
+    }
+
+    .success .result-button {
+        background: linear-gradient(135deg, #18a966, #24ca79);
+    }
+
+    /* =========================
+       SECRET PIN
+    ========================= */
+
+    .secret {
+        margin-top: 12px;
+        color: #667080;
+        font-size: 10px;
+        text-align: center;
+    }
+
+    .secret strong {
+        color: #9aa5b5;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 800px) {
+        body {
+            padding: 12px;
+            align-items: flex-start;
+        }
+
+        .topbar {
+            margin-top: 5px;
+        }
+
+        .devices {
+            grid-template-columns: 1fr;
+        }
+
+        .terminal {
+            min-height: auto;
+        }
+
+        .phone-panel {
+            padding: 10px;
+        }
+
+        .phone {
+            width: 230px;
+        }
+    }
+
+    @media (max-width: 430px) {
+        .demo-badge {
+            display: none;
+        }
+
+        .terminal {
+            padding: 15px;
+            border-radius: 23px;
+        }
+
+        .display {
+            min-height: 270px;
+            padding: 20px;
+        }
+
+        .display h1 {
+            font-size: 22px;
+        }
+
+        .terminal-bottom {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 </head>
 
@@ -622,166 +798,292 @@ button {
 
 <div class="app">
 
-    <header class="header">
+    <!-- =========================
+         TOP BAR
+    ========================= -->
+
+    <div class="topbar">
+
         <div class="brand">
-            <div class="logo">⌁</div>
+
+            <div class="brand-icon">
+                <span>contactless</span>
+            </div>
 
             <div>
-                <h1>NFC Pay Terminal</h1>
-                <p>Local NFC payment simulation</p>
+                <div class="brand-title">
+                    NFC Pay Terminal
+                </div>
+
+                <div class="brand-sub">
+                    Lokální platební simulace
+                </div>
             </div>
+
         </div>
 
-        <div class="demo">DEMO • NO REAL PAYMENT</div>
-    </header>
+        <div class="demo-badge">
+            DEMO • ŽÁDNÉ SKUTEČNÉ PLATBY
+        </div>
 
-    <div class="layout">
+    </div>
 
-        <main class="terminal">
 
-            <div class="status-row">
+    <!-- =========================
+         DEVICES
+    ========================= -->
 
-                <div id="status" class="status">
-                    <span class="status-dot"></span>
-                    <span id="statusText">Čekám na spuštění</span>
-                </div>
+    <div class="devices">
 
-                <div id="clock" class="time">--:--:--</div>
 
-            </div>
+        <!-- =====================
+             TERMINAL
+        ====================== -->
 
-            <div class="reader-area">
+        <section class="terminal">
+
+            <div class="terminal-head">
 
                 <div>
+                    <div class="terminal-name">
+                        Platební terminál
+                    </div>
 
-                    <div id="reader" class="reader">
+                    <div class="terminal-id">
+                        TERMINAL-NFC-01
+                    </div>
+                </div>
 
-                        <div class="wave"></div>
-                        <div class="wave"></div>
-                        <div class="wave"></div>
+                <div class="status">
 
-                        <div class="nfc-icon">
-                            📡
+                    <span
+                        id="statusDot"
+                        class="status-dot"
+                    ></span>
+
+                    <span id="statusText">
+                        Připraven
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- DISPLAY -->
+
+            <div
+                id="display"
+                class="display active"
+            >
+
+                <!-- NFC SCREEN -->
+
+                <div id="nfcScreen">
+
+                    <div class="nfc-symbol">
+
+                        <div class="nfc-wave"></div>
+                        <div class="nfc-wave"></div>
+                        <div class="nfc-wave"></div>
+
+                        <span>
+                            contactless
+                        </span>
+
+                    </div>
+
+                    <h1 id="displayTitle">
+                        Přiložte zařízení
+                    </h1>
+
+                    <p id="displayText">
+                        Přilož telefon, kartu nebo jiný
+                        podporovaný NFC předmět.
+                    </p>
+
+                </div>
+
+
+                <!-- PIN SCREEN -->
+
+                <div
+                    id="pinArea"
+                    class="pin-area"
+                >
+
+                    <div class="pin-title">
+                        Zadejte PIN
+                    </div>
+
+                    <div class="pin-subtitle">
+                        NFC zařízení bylo přijato.
+                    </div>
+
+
+                    <div
+                        id="pinDisplay"
+                        class="pin-display"
+                    >
+
+                        <span class="pin-dot"></span>
+                        <span class="pin-dot"></span>
+                        <span class="pin-dot"></span>
+                        <span class="pin-dot"></span>
+
+                    </div>
+
+
+                    <div class="keypad">
+
+                        <button class="key" data-key="1">1</button>
+                        <button class="key" data-key="2">2</button>
+                        <button class="key" data-key="3">3</button>
+
+                        <button class="key" data-key="4">4</button>
+                        <button class="key" data-key="5">5</button>
+                        <button class="key" data-key="6">6</button>
+
+                        <button class="key" data-key="7">7</button>
+                        <button class="key" data-key="8">8</button>
+                        <button class="key" data-key="9">9</button>
+
+                        <button class="key clear" data-key="clear">
+                            C
+                        </button>
+
+                        <button class="key" data-key="0">
+                            0
+                        </button>
+
+                        <button class="key ok" data-key="ok">
+                            ✓
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="terminal-bottom">
+
+                <button
+                    id="startButton"
+                    class="main-button"
+                >
+                    Připravit platbu
+                </button>
+
+                <button
+                    id="resetButton"
+                    class="secondary-button"
+                >
+                    Zrušit
+                </button>
+
+            </div>
+
+
+            <div class="secret">
+                Testovací PIN:
+                <strong id="secretPin">
+                    ----
+                </strong>
+            </div>
+
+        </section>
+
+
+        <!-- =====================
+             PHONE
+        ====================== -->
+
+        <section class="phone-panel">
+
+            <div class="phone">
+
+                <div class="phone-screen">
+
+                    <div class="phone-camera"></div>
+
+                    <div class="phone-time" id="phoneTime">
+                        18:00
+                    </div>
+
+
+                    <div
+                        id="walletIcon"
+                        class="wallet-icon"
+                    >
+                        <span>account_balance_wallet</span>
+                    </div>
+
+
+                    <h2 id="phoneTitle">
+                        Připraveno
+                    </h2>
+
+                    <p id="phoneText">
+                        Telefon čeká na přiložení
+                        k terminálu.
+                    </p>
+
+
+                    <div class="phone-card">
+
+                        <div class="phone-card-top">
+
+                            <span>
+                                <strong>PAY</strong>
+                            </span>
+
+                            <span class="contactless">
+                                contactless
+                            </span>
+
+                        </div>
+
+                        <div class="phone-card-number">
+                            •••• •••• •••• 1234
+                        </div>
+
+                        <div class="phone-card-name">
+                            TESTOVACÍ KARTA
                         </div>
 
                     </div>
 
-                    <div class="message">
-                        <h2 id="mainTitle">Přilož NFC</h2>
-
-                        <p id="mainText">
-                            Spusť terminál a přilož NFC zařízení nebo tag.
-                        </p>
-
-                        <div class="code-box">
-
-                            <span class="code-label">
-                                TEST KÓD
-                            </span>
-
-                            <span id="secretCode" class="code">
-                                ----
-                            </span>
-
-                        </div>
-
-                    </div>
-
                 </div>
 
             </div>
 
-            <div class="controls">
-
-                <button id="startBtn" class="primary">
-                    Spustit terminál
-                </button>
-
-                <button id="stopBtn" class="secondary">
-                    Zastavit
-                </button>
-
-            </div>
-
-        </main>
-
-
-        <aside class="side">
-
-            <h3>Testovací statistiky</h3>
-
-            <div class="side-sub">
-                Výsledky této relace
-            </div>
-
-            <div class="stats">
-
-                <div class="stat">
-                    <span>Pokusy</span>
-                    <strong id="attempts">0</strong>
-                </div>
-
-                <div class="stat">
-                    <span>Úspěšné</span>
-                    <strong id="successes">0</strong>
-                </div>
-
-                <div class="stat">
-                    <span>Chyby</span>
-                    <strong id="errors">0</strong>
-                </div>
-
-                <div class="stat">
-                    <span>Poslední</span>
-                    <strong id="lastTime">--</strong>
-                </div>
-
-            </div>
-
-            <div class="history">
-
-                <div class="history-title">
-                    HISTORIE
-                </div>
-
-                <div id="history" class="history-list">
-                    <div style="color:#687386;font-size:12px;">
-                        Zatím žádné pokusy.
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="note">
-                Toto je pouze lokální simulace NFC terminálu.
-                Neprovádí skutečné platby a nepracuje s bankovními údaji.
-            </div>
-
-        </aside>
+        </section>
 
     </div>
 
 </div>
 
 
-<!-- RESULT OVERLAY -->
+<!-- =========================
+     RESULT
+========================= -->
 
-<div id="overlay" class="overlay">
+<div
+    id="result"
+    class="result"
+>
 
-    <div id="resultCard" class="result-card">
+    <div class="result-box">
 
-        <div id="resultIcon" class="result-icon">
+        <div
+            id="resultIcon"
+            class="result-icon"
+        >
             ✓
-        </div>
-
-        <div id="walletAnimation" class="wallet-animation">
-
-            <div class="wallet-symbol">
-                Wallet
-            </div>
-
-            <div class="wallet-card"></div>
-
         </div>
 
         <h2 id="resultTitle">
@@ -789,17 +1091,14 @@ button {
         </h2>
 
         <p id="resultText">
-            NFC kód byl správný.
+            Testovací platba proběhla úspěšně.
         </p>
 
-        <div id="errorCode"
-             class="error-code"
-             style="display:none;">
-            NFC kód nebyl správný.
-        </div>
-
-        <button id="retryBtn" class="retry">
-            Pokračovat
+        <button
+            id="resultButton"
+            class="result-button"
+        >
+            Nová platba
         </button>
 
     </div>
@@ -808,103 +1107,137 @@ button {
 
 
 <script>
-/*
-=========================================================
- NFC PAY TERMINAL — DEMO
- --------------------------------------------------------
- Pouze simulace.
- Žádné skutečné peníze.
- Žádné bankovní údaje.
- Žádná skutečná platba.
-=========================================================
-*/
+/* =========================================================
+   NFC PAY TERMINAL
+   Lokální platební simulace
+   =========================================================
 
-let ndef = null;
-let running = false;
+   ⚠️ NENÍ TO SKUTEČNÝ PLATEBNÍ TERMINÁL.
 
-let secretCode = "";
-let attempts = 0;
-let successes = 0;
-let errors = 0;
-
-let lastTagTime = 0;
+   • žádné skutečné peníze
+   • žádné bankovní údaje
+   • žádné skutečné platby
+   • PIN je pouze testovací
+   • NFC se používá pouze přes Web NFC
+========================================================= */
 
 
 /* =========================
    ELEMENTS
 ========================= */
 
-const statusEl = document.getElementById("status");
-const statusText = document.getElementById("statusText");
+const startButton =
+    document.getElementById("startButton");
 
-const reader = document.getElementById("reader");
+const resetButton =
+    document.getElementById("resetButton");
 
-const mainTitle = document.getElementById("mainTitle");
-const mainText = document.getElementById("mainText");
+const display =
+    document.getElementById("display");
 
-const secretCodeEl = document.getElementById("secretCode");
+const displayTitle =
+    document.getElementById("displayTitle");
 
-const startBtn = document.getElementById("startBtn");
-const stopBtn = document.getElementById("stopBtn");
+const displayText =
+    document.getElementById("displayText");
 
-const overlay = document.getElementById("overlay");
-const resultIcon = document.getElementById("resultIcon");
+const nfcScreen =
+    document.getElementById("nfcScreen");
 
-const resultTitle = document.getElementById("resultTitle");
-const resultText = document.getElementById("resultText");
+const pinArea =
+    document.getElementById("pinArea");
 
-const walletAnimation = document.getElementById("walletAnimation");
-const errorCode = document.getElementById("errorCode");
+const pinDisplay =
+    document.getElementById("pinDisplay");
 
-const retryBtn = document.getElementById("retryBtn");
+const statusDot =
+    document.getElementById("statusDot");
 
-const attemptsEl = document.getElementById("attempts");
-const successesEl = document.getElementById("successes");
-const errorsEl = document.getElementById("errors");
+const statusText =
+    document.getElementById("statusText");
 
-const lastTimeEl = document.getElementById("lastTime");
+const secretPinElement =
+    document.getElementById("secretPin");
 
-const historyEl = document.getElementById("history");
+const result =
+    document.getElementById("result");
 
-const clock = document.getElementById("clock");
+const resultIcon =
+    document.getElementById("resultIcon");
+
+const resultTitle =
+    document.getElementById("resultTitle");
+
+const resultText =
+    document.getElementById("resultText");
+
+const resultButton =
+    document.getElementById("resultButton");
+
+const phoneTitle =
+    document.getElementById("phoneTitle");
+
+const phoneText =
+    document.getElementById("phoneText");
+
+const walletIcon =
+    document.getElementById("walletIcon");
+
+const phoneTime =
+    document.getElementById("phoneTime");
+
+
+/* =========================
+   STATE
+========================= */
+
+let reader = null;
+
+let secretPin = "";
+
+let enteredPin = "";
+
+let paymentActive = false;
+
+let nfcAccepted = false;
+
+let readingError = false;
 
 
 /* =========================
    CLOCK
 ========================= */
 
-function updateClock() {
+function updatePhoneTime() {
 
     const now = new Date();
 
-    clock.textContent =
-        now.toLocaleTimeString("cs-CZ");
+    const hours =
+        String(now.getHours()).padStart(2, "0");
 
+    const minutes =
+        String(now.getMinutes()).padStart(2, "0");
+
+    phoneTime.textContent =
+        `${hours}:${minutes}`;
 }
 
-setInterval(updateClock, 1000);
-updateClock();
+updatePhoneTime();
+
+setInterval(updatePhoneTime, 1000);
 
 
 /* =========================
-   RANDOM CODE
+   RANDOM PIN
 ========================= */
 
-function generateCode() {
+function generatePin() {
 
-    return Math.floor(
-        1000 + Math.random() * 9000
-    ).toString();
-
-}
-
-
-function newPaymentCode() {
-
-    secretCode = generateCode();
-
-    secretCodeEl.textContent = secretCode;
-
+    return String(
+        Math.floor(
+            1000 + Math.random() * 9000
+        )
+    );
 }
 
 
@@ -914,262 +1247,506 @@ function newPaymentCode() {
 
 function setStatus(type, text) {
 
-    statusEl.className = "status";
+    statusDot.className =
+        "status-dot";
 
     if (type === "ready") {
-        statusEl.classList.add("ready");
+        statusDot.classList.add("ready");
     }
 
     if (type === "error") {
-        statusEl.classList.add("error");
+        statusDot.classList.add("error");
     }
 
     statusText.textContent = text;
-
 }
 
 
 /* =========================
-   NFC SUPPORT
+   PHONE
 ========================= */
 
-function checkNFC() {
+function phoneReady() {
 
-    if (!("NDEFReader" in window)) {
+    phoneTitle.textContent =
+        "Přiložte zařízení";
 
-        setStatus(
-            "error",
-            "Web NFC není podporováno"
-        );
+    phoneText.textContent =
+        "NFC je připravené. Přilož telefon nebo NFC předmět.";
 
-        mainTitle.textContent =
-            "Web NFC není dostupné";
+    walletIcon.style.background =
+        "linear-gradient(145deg, #1d8cff, #635bff)";
+}
 
-        mainText.textContent =
-            "Použij podporovaný Android prohlížeč.";
 
-        return false;
-    }
+function phoneNfcAccepted() {
 
-    return true;
+    phoneTitle.textContent =
+        "NFC přijato";
 
+    phoneText.textContent =
+        "Zařízení bylo rozpoznáno. Terminál čeká na PIN.";
+
+    walletIcon.style.background =
+        "linear-gradient(145deg, #168fca, #4361ee)";
+}
+
+
+function phoneSuccess() {
+
+    phoneTitle.textContent =
+        "Platba hotová";
+
+    phoneText.textContent =
+        "Testovací platba byla schválena.";
+
+    walletIcon.style.background =
+        "linear-gradient(145deg, #18a966, #24ca79)";
+
+    walletIcon.style.transform =
+        "scale(1.08)";
+}
+
+
+function phoneError() {
+
+    phoneTitle.textContent =
+        "Chyba";
+
+    phoneText.textContent =
+        "NFC zařízení se nepodařilo načíst.";
+
+    walletIcon.style.background =
+        "linear-gradient(145deg, #e63950, #ff5263)";
 }
 
 
 /* =========================
-   START
+   RESET DISPLAY
 ========================= */
 
-startBtn.addEventListener(
-    "click",
-    async () => {
+function resetDisplay() {
 
-        if (!checkNFC()) {
-            return;
-        }
+    nfcScreen.style.display =
+        "block";
 
-        try {
+    pinArea.classList.remove("show");
 
-            ndef = new NDEFReader();
+    displayTitle.textContent =
+        "Přiložte zařízení";
 
-            await ndef.scan();
+    displayText.textContent =
+        "Přilož telefon, kartu nebo jiný podporovaný NFC předmět.";
 
-            running = true;
+    enteredPin = "";
 
-            newPaymentCode();
+    updatePinDots();
 
-            reader.classList.add("active");
+    phoneReady();
 
-            setStatus(
-                "ready",
-                "Terminál je připraven"
-            );
-
-            mainTitle.textContent =
-                "Přilož NFC";
-
-            mainText.textContent =
-                "Čekám na NFC zařízení nebo tag…";
-
-            ndef.onreading = handleNFCReading;
-
-            ndef.onreadingerror = () => {
-
-                setStatus(
-                    "error",
-                    "NFC se nepodařilo přečíst"
-                );
-
-            };
-
-        } catch (error) {
-
-            console.error(error);
-
-            setStatus(
-                "error",
-                "NFC se nepodařilo spustit"
-            );
-
-            mainTitle.textContent =
-                "NFC chyba";
-
-            mainText.textContent =
-                "Zkontroluj oprávnění a podporu Web NFC.";
-
-        }
-
-    }
-);
+    setStatus(
+        "normal",
+        "Připraven"
+    );
+}
 
 
 /* =========================
-   STOP
+   START PAYMENT
 ========================= */
 
-stopBtn.addEventListener(
-    "click",
-    () => {
-
-        running = false;
-
-        reader.classList.remove("active");
-
-        setStatus(
-            "",
-            "Terminál zastaven"
-        );
-
-        mainTitle.textContent =
-            "Terminál zastaven";
-
-        mainText.textContent =
-            "Stiskni Spustit terminál.";
-
-    }
-);
-
-
-/* =========================
-   NFC READ
-========================= */
-
-async function handleNFCReading(event) {
-
-    if (!running) {
-        return;
-    }
-
-    const now = performance.now();
-
-    /*
-       Některé čtečky mohou poslat více událostí
-       za sebou. Tohle zabrání okamžitému
-       dvojímu vyhodnocení stejného přiložení.
-    */
+async function startPayment() {
 
     if (
-        lastTagTime &&
-        now - lastTagTime < 1200
+        !("NDEFReader" in window)
     ) {
+
+        showNfcError(
+            "Tento prohlížeč nepodporuje Web NFC."
+        );
+
         return;
     }
 
-    lastTagTime = now;
+
+    secretPin =
+        generatePin();
+
+    secretPinElement.textContent =
+        secretPin;
+
+    enteredPin = "";
+
+    paymentActive = true;
+    nfcAccepted = false;
+    readingError = false;
+
+
+    setStatus(
+        "normal",
+        "Čekám na NFC"
+    );
+
+
+    display.classList.add("active");
+
+    displayTitle.textContent =
+        "Přiložte zařízení";
+
+    displayText.textContent =
+        "Terminál čeká na NFC. Obsah může být i EMPTY.";
+
+
+    nfcScreen.style.display =
+        "block";
+
+    pinArea.classList.remove("show");
+
+    phoneReady();
+
+
+    try {
+
+        reader =
+            new NDEFReader();
+
+        await reader.scan();
+
+
+        /*
+           onreading se spustí, když prohlížeč
+           NFC zařízení skutečně načte.
+
+           DŮLEŽITÉ:
+           Pokud má zpráva 0 záznamů,
+           pořád jde o onreading.
+           Proto EMPTY přijímáme.
+        */
+
+        reader.onreading =
+            event => {
+
+                if (!paymentActive) {
+                    return;
+                }
+
+                handleNfcReading(event);
+            };
+
+
+        /*
+           Toto je skutečná chyba čtení.
+        */
+
+        reader.onreadingerror =
+            () => {
+
+                if (!paymentActive) {
+                    return;
+                }
+
+                showNfcError(
+                    "NFC zařízení se nepodařilo načíst."
+                );
+            };
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showNfcError(
+            "NFC se nepodařilo spustit."
+        );
+    }
+}
+
+
+/* =========================
+   NFC READING
+========================= */
+
+function handleNfcReading(event) {
+
+    if (nfcAccepted) {
+        return;
+    }
+
+    nfcAccepted = true;
 
     let content = "";
 
-    for (const record of event.message.records) {
+    try {
 
-        try {
+        const records =
+            event.message.records || [];
 
-            if (record.recordType === "text") {
 
-                const decoder =
-                    new TextDecoder(
-                        record.encoding || "utf-8"
+        /*
+           EMPTY:
+           žádné NDEF záznamy.
+        */
+
+        if (records.length === 0) {
+
+            content =
+                "EMPTY";
+
+        } else {
+
+            const parts = [];
+
+            for (const record of records) {
+
+                try {
+
+                    if (
+                        record.recordType ===
+                        "text"
+                    ) {
+
+                        const decoder =
+                            new TextDecoder(
+                                record.encoding ||
+                                "utf-8"
+                            );
+
+                        parts.push(
+                            decoder.decode(
+                                record.data
+                            )
+                        );
+
+                    } else {
+
+                        const decoder =
+                            new TextDecoder();
+
+                        const value =
+                            decoder.decode(
+                                record.data
+                            );
+
+                        if (value.trim()) {
+                            parts.push(value);
+                        }
+                    }
+
+                } catch (e) {
+
+                    parts.push(
+                        "NFC DATA"
                     );
-
-                content =
-                    decoder.decode(record.data);
-
-            } else if (
-                record.recordType === "url"
-            ) {
-
-                const decoder =
-                    new TextDecoder();
-
-                content =
-                    decoder.decode(record.data);
-
-            } else {
-
-                const decoder =
-                    new TextDecoder();
-
-                content =
-                    decoder.decode(record.data);
-
+                }
             }
 
-        } catch {
+            content =
+                parts.join(" | ").trim();
 
-            content = "";
-
+            if (!content) {
+                content = "EMPTY";
+            }
         }
 
-        if (content) {
-            break;
-        }
+    } catch (error) {
 
+        content =
+            "EMPTY";
     }
 
-    content = content.trim();
 
-    attempts++;
+    /*
+       Jakmile onreading proběhne,
+       zařízení je pro tuto DEMO platbu
+       přijato.
 
-    attemptsEl.textContent = attempts;
+       Nezáleží na tom, jestli je:
+       TEXT
+       URL
+       EMPTY
+       jiný NDEF obsah
+    */
 
-    const correct =
-        content === secretCode;
+    console.log(
+        "NFC přijato:",
+        content
+    );
 
-    if (correct) {
 
-        successes++;
+    showPinScreen(content);
+}
 
-        successesEl.textContent =
-            successes;
 
-        lastTimeEl.textContent =
-            "OK";
+/* =========================
+   PIN SCREEN
+========================= */
 
-        addHistory(
-            true,
+function showPinScreen(content) {
+
+    paymentActive = true;
+
+    setStatus(
+        "ready",
+        "NFC přijato"
+    );
+
+
+    nfcScreen.style.display =
+        "none";
+
+    pinArea.classList.add("show");
+
+
+    phoneNfcAccepted();
+
+
+    display.classList.add("active");
+
+
+    /*
+       Pokud bylo EMPTY,
+       zobrazíme to jako úspěšné
+       přijetí NFC.
+    */
+
+    if (content === "EMPTY") {
+
+        console.log(
+            "NFC přijato: EMPTY"
+        );
+
+    } else {
+
+        console.log(
+            "NFC přijato:",
             content
         );
+    }
+
+
+    updatePinDots();
+}
+
+
+/* =========================
+   PIN DOTS
+========================= */
+
+function updatePinDots() {
+
+    const dots =
+        pinDisplay.querySelectorAll(
+            ".pin-dot"
+        );
+
+    dots.forEach(
+        (dot, index) => {
+
+            dot.classList.toggle(
+                "filled",
+                index < enteredPin.length
+            );
+
+        }
+    );
+}
+
+
+/* =========================
+   KEYPAD
+========================= */
+
+document
+    .querySelectorAll(".key")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                const key =
+                    button.dataset.key;
+
+
+                if (key === "clear") {
+
+                    enteredPin =
+                        enteredPin.slice(
+                            0,
+                            -1
+                        );
+
+                    updatePinDots();
+
+                    return;
+                }
+
+
+                if (key === "ok") {
+
+                    checkPin();
+
+                    return;
+                }
+
+
+                if (
+                    enteredPin.length >= 4
+                ) {
+                    return;
+                }
+
+
+                enteredPin += key;
+
+                updatePinDots();
+
+
+                /*
+                   Po zadání čtyř číslic
+                   automaticky ověří PIN.
+                */
+
+                if (
+                    enteredPin.length === 4
+                ) {
+
+                    setTimeout(
+                        checkPin,
+                        180
+                    );
+                }
+
+            }
+        );
+
+    });
+
+
+/* =========================
+   CHECK PIN
+========================= */
+
+function checkPin() {
+
+    if (
+        enteredPin.length !== 4
+    ) {
+
+        return;
+    }
+
+
+    if (
+        enteredPin === secretPin
+    ) {
 
         showSuccess();
 
     } else {
 
-        errors++;
-
-        errorsEl.textContent =
-            errors;
-
-        lastTimeEl.textContent =
-            "ERR";
-
-        addHistory(
-            false,
-            content || "EMPTY"
-        );
-
-        showError();
-
+        showPinError();
     }
-
 }
 
 
@@ -1179,224 +1756,211 @@ async function handleNFCReading(event) {
 
 function showSuccess() {
 
-    running = false;
-
-    reader.classList.remove("active");
+    paymentActive = false;
 
     setStatus(
         "ready",
         "Platba schválena"
     );
 
-    overlay.classList.add("show");
+    phoneSuccess();
+
+
+    result.className =
+        "result success show";
+
 
     resultIcon.className =
-        "result-icon success";
+        "result-icon success-animation";
 
     resultIcon.textContent =
         "✓";
 
+
     resultTitle.textContent =
         "Platba schválena";
 
+
     resultText.textContent =
-        "NFC kód byl správný.";
+        "NFC bylo přijato a testovací PIN byl správný. Platba je dokončena.";
 
-    errorCode.style.display =
-        "none";
 
-    walletAnimation.style.display =
-        "block";
-
-    retryBtn.textContent =
+    resultButton.textContent =
         "Nová platba";
-
 }
 
 
 /* =========================
-   ERROR
+   PIN ERROR
 ========================= */
 
-function showError() {
+function showPinError() {
 
-    running = false;
+    enteredPin = "";
 
-    reader.classList.remove("active");
+    updatePinDots();
+
+
+    result.className =
+        "result error show";
+
+
+    resultIcon.className =
+        "result-icon";
+
+    resultIcon.textContent =
+        "×";
+
+
+    resultTitle.textContent =
+        "Nesprávný PIN";
+
+
+    resultText.textContent =
+        "Zadaný PIN není správný. Zkuste ho zadat znovu.";
+
+
+    resultButton.textContent =
+        "Zadat PIN znovu";
+}
+
+
+/* =========================
+   NFC ERROR
+========================= */
+
+function showNfcError(message) {
+
+    paymentActive = false;
+    readingError = true;
+
 
     setStatus(
         "error",
-        "Platba zamítnuta"
+        "Chyba NFC"
     );
 
-    overlay.classList.add("show");
+
+    phoneError();
+
+
+    display.classList.remove(
+        "active"
+    );
+
+
+    result.className =
+        "result error show";
+
 
     resultIcon.className =
-        "result-icon error";
+        "result-icon";
 
     resultIcon.textContent =
-        "✕";
+        "×";
+
 
     resultTitle.textContent =
-        "Platba zamítnuta";
+        "NFC chyba";
+
 
     resultText.textContent =
-        "NFC kód nebyl správný.";
+        message;
 
-    errorCode.style.display =
-        "block";
 
-    walletAnimation.style.display =
-        "none";
-
-    retryBtn.textContent =
+    resultButton.textContent =
         "Zkusit znovu";
-
 }
 
 
 /* =========================
-   RETRY
+   RESULT BUTTON
 ========================= */
 
-retryBtn.addEventListener(
+resultButton.addEventListener(
     "click",
-    async () => {
+    () => {
 
-        overlay.classList.remove("show");
+        /*
+           Pokud byl problém jen
+           se špatným PINem,
+           vrátíme se rovnou na PIN.
+        */
 
-        newPaymentCode();
+        if (
+            resultTitle.textContent ===
+            "Nesprávný PIN"
+        ) {
 
-        if (!checkNFC()) {
+            result.className =
+                "result";
+
+            enteredPin = "";
+
+            updatePinDots();
+
             return;
         }
 
-        try {
 
-            ndef = new NDEFReader();
+        /*
+           Po úspěchu nebo NFC chybě
+           začneme úplně novou platbu.
+        */
 
-            await ndef.scan();
+        result.className =
+            "result";
 
-            running = true;
+        resetDisplay();
 
-            reader.classList.add("active");
+        startPayment();
+    }
+);
 
-            setStatus(
-                "ready",
-                "Terminál je připraven"
-            );
 
-            mainTitle.textContent =
-                "Přilož NFC";
+/* =========================
+   START BUTTON
+========================= */
 
-            mainText.textContent =
-                "Čekám na NFC zařízení nebo tag…";
+startButton.addEventListener(
+    "click",
+    () => {
 
-            ndef.onreading =
-                handleNFCReading;
+        startPayment();
+    }
+);
 
-        } catch (error) {
 
-            console.error(error);
+/* =========================
+   RESET BUTTON
+========================= */
 
-            setStatus(
-                "error",
-                "NFC se nepodařilo spustit"
-            );
+resetButton.addEventListener(
+    "click",
+    () => {
 
-        }
+        paymentActive = false;
+        nfcAccepted = false;
+
+        result.className =
+            "result";
+
+        resetDisplay();
+
+        secretPin = "";
+
+        secretPinElement.textContent =
+            "----";
 
     }
 );
 
 
 /* =========================
-   HISTORY
+   INITIAL STATE
 ========================= */
 
-function addHistory(
-    success,
-    code
-) {
-
-    const empty =
-        historyEl.querySelector(
-            "div[style]"
-        );
-
-    if (empty) {
-        historyEl.innerHTML = "";
-    }
-
-    const item =
-        document.createElement("div");
-
-    item.className =
-        "history-item";
-
-    const time =
-        new Date()
-            .toLocaleTimeString(
-                "cs-CZ"
-            );
-
-    item.innerHTML = `
-        <div class="history-left">
-            <span class="result-dot ${
-                success ? "ok" : "bad"
-            }"></span>
-
-            <span class="history-code">
-                ${escapeHTML(code)}
-            </span>
-        </div>
-
-        <span class="history-time">
-            ${time}
-        </span>
-    `;
-
-    historyEl.prepend(item);
-
-    while (
-        historyEl.children.length > 15
-    ) {
-
-        historyEl.removeChild(
-            historyEl.lastChild
-        );
-
-    }
-
-}
-
-
-/* =========================
-   SECURITY
-========================= */
-
-function escapeHTML(value) {
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-}
-
-
-/* =========================
-   INITIAL
-========================= */
-
-newPaymentCode();
-
-setStatus(
-    "",
-    "Čekám na spuštění"
-);
+resetDisplay();
 
 </script>
 
