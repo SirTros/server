@@ -4,291 +4,617 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NFC Mini Benchmark</title>
+<title>NFC Pay Terminal – DEMO</title>
 
 <style>
-    * {
-        box-sizing: border-box;
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #080a0f;
+    --panel: #11151d;
+    --panel2: #171c25;
+    --border: rgba(255,255,255,.08);
+    --text: #f4f7fb;
+    --muted: #8c96a6;
+    --accent: #6ea8ff;
+    --green: #35d07f;
+    --red: #ff5264;
+    --yellow: #ffd35a;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 50% -10%, rgba(80,130,255,.18), transparent 40%),
+        var(--bg);
+    color: var(--text);
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+}
+
+.app {
+    width: min(100%, 920px);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #6ea8ff, #8d6eff);
+    display: grid;
+    place-items: center;
+    font-size: 23px;
+    box-shadow: 0 10px 35px rgba(90,120,255,.25);
+}
+
+.brand h1 {
+    font-size: 19px;
+    margin: 0;
+}
+
+.brand p {
+    margin: 3px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.demo {
+    padding: 8px 12px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 999px;
+    color: #b9c3d3;
+    font-size: 11px;
+    background: rgba(255,255,255,.03);
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 1.3fr .7fr;
+    gap: 18px;
+}
+
+@media (max-width: 760px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.terminal,
+.side {
+    background: rgba(17,21,29,.88);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    box-shadow: 0 25px 80px rgba(0,0,0,.35);
+    backdrop-filter: blur(20px);
+}
+
+.terminal {
+    padding: 26px;
+    min-height: 570px;
+    display: flex;
+    flex-direction: column;
+}
+
+.status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #b9c3d3;
+    font-size: 13px;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--yellow);
+    box-shadow: 0 0 14px rgba(255,211,90,.6);
+}
+
+.status.ready .status-dot {
+    background: var(--green);
+    box-shadow: 0 0 14px rgba(53,208,127,.65);
+}
+
+.status.error .status-dot {
+    background: var(--red);
+    box-shadow: 0 0 14px rgba(255,82,100,.65);
+}
+
+.time {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.reader-area {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 30px 0;
+}
+
+.reader {
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    border: 1px solid rgba(110,168,255,.22);
+    position: relative;
+    display: grid;
+    place-items: center;
+    transition: .35s ease;
+}
+
+.reader::before,
+.reader::after {
+    content: "";
+    position: absolute;
+    inset: 17px;
+    border: 1px solid rgba(110,168,255,.16);
+    border-radius: 50%;
+}
+
+.reader::after {
+    inset: 40px;
+    border-color: rgba(110,168,255,.2);
+}
+
+.reader.active {
+    transform: scale(1.03);
+    border-color: rgba(110,168,255,.55);
+    box-shadow:
+        0 0 0 14px rgba(110,168,255,.035),
+        0 0 70px rgba(110,168,255,.16);
+}
+
+.nfc-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 30px;
+    background: linear-gradient(145deg, #1c2432, #10151d);
+    border: 1px solid rgba(255,255,255,.08);
+    display: grid;
+    place-items: center;
+    font-size: 45px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 18px 50px rgba(0,0,0,.4);
+}
+
+.wave {
+    position: absolute;
+    width: 155px;
+    height: 155px;
+    border-radius: 50%;
+    border: 2px solid rgba(110,168,255,.4);
+    opacity: 0;
+}
+
+.reader.active .wave {
+    animation: wave 1.8s infinite;
+}
+
+.reader.active .wave:nth-child(2) {
+    animation-delay: .6s;
+}
+
+.reader.active .wave:nth-child(3) {
+    animation-delay: 1.2s;
+}
+
+@keyframes wave {
+    0% {
+        transform: scale(.65);
+        opacity: .65;
     }
 
-    body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: Arial, Helvetica, sans-serif;
-        background:
-            radial-gradient(circle at top, #263b70 0%, #111827 45%, #070b12 100%);
-        color: white;
-        padding: 20px;
+    100% {
+        transform: scale(1.55);
+        opacity: 0;
+    }
+}
+
+.message h2 {
+    font-size: 25px;
+    margin: 0 0 7px;
+}
+
+.message p {
+    color: var(--muted);
+    margin: 0;
+    font-size: 14px;
+}
+
+.code-box {
+    margin-top: 20px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.06);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.code-label {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.code {
+    font-family: monospace;
+    font-size: 17px;
+    letter-spacing: 3px;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    border: 0;
+    color: white;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 650;
+}
+
+.primary {
+    flex: 1;
+    padding: 14px 18px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #568fff, #8068ff);
+    box-shadow: 0 12px 30px rgba(80,110,255,.2);
+    transition: .2s;
+}
+
+.primary:hover {
+    transform: translateY(-1px);
+}
+
+.secondary {
+    padding: 14px 18px;
+    border-radius: 15px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.07);
+}
+
+.side {
+    padding: 22px;
+}
+
+.side h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+}
+
+.side-sub {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 18px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat {
+    padding: 15px;
+    border-radius: 17px;
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.06);
+}
+
+.stat span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 7px;
+}
+
+.stat strong {
+    font-size: 20px;
+}
+
+.history {
+    margin-top: 18px;
+}
+
+.history-title {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 9px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-height: 260px;
+    overflow: auto;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 11px;
+    border-radius: 13px;
+    background: rgba(255,255,255,.025);
+    font-size: 12px;
+}
+
+.history-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.result-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.result-dot.ok {
+    background: var(--green);
+}
+
+.result-dot.bad {
+    background: var(--red);
+}
+
+.history-code {
+    font-family: monospace;
+}
+
+.history-time {
+    color: var(--muted);
+}
+
+/* =========================
+   RESULT OVERLAY
+========================= */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(3,5,8,.72);
+    backdrop-filter: blur(15px);
+    display: none;
+    place-items: center;
+    z-index: 50;
+}
+
+.overlay.show {
+    display: grid;
+    animation: fadeIn .2s ease;
+}
+
+.result-card {
+    width: min(90vw, 390px);
+    padding: 32px;
+    border-radius: 30px;
+    background: #11151d;
+    border: 1px solid rgba(255,255,255,.08);
+    text-align: center;
+    box-shadow: 0 35px 100px rgba(0,0,0,.55);
+    animation: pop .35s cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes pop {
+    from {
+        transform: scale(.82) translateY(15px);
+        opacity: 0;
     }
 
-    .app {
-        width: 100%;
-        max-width: 760px;
-        margin: 0 auto;
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.result-icon {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 55px;
+    position: relative;
+}
+
+.result-icon.success {
+    background: rgba(53,208,127,.1);
+    border: 2px solid rgba(53,208,127,.5);
+    color: var(--green);
+    animation: successPop .65s ease;
+}
+
+.result-icon.error {
+    background: rgba(255,82,100,.08);
+    border: 2px solid rgba(255,82,100,.5);
+    color: var(--red);
+    animation: shake .55s ease;
+}
+
+@keyframes successPop {
+    0% {
+        transform: scale(.4);
+        opacity: 0;
     }
 
-    .header {
-        text-align: center;
-        margin-bottom: 22px;
+    60% {
+        transform: scale(1.12);
     }
 
-    .logo {
-        width: 76px;
-        height: 76px;
-        margin: auto;
-        border-radius: 22px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 38px;
-        background: linear-gradient(135deg, #2563eb, #7c3aed);
-        box-shadow: 0 15px 40px rgba(37, 99, 235, 0.35);
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-9px); }
+    40% { transform: translateX(9px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+}
+
+.result-card h2 {
+    margin: 0 0 8px;
+    font-size: 25px;
+}
+
+.result-card p {
+    margin: 0 0 22px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.wallet-animation {
+    width: 190px;
+    height: 115px;
+    margin: 0 auto 22px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #ffffff, #dfe5ee);
+    position: relative;
+    overflow: hidden;
+    color: #111;
+    box-shadow: 0 20px 50px rgba(255,255,255,.1);
+    animation: walletIn .7s cubic-bezier(.2,.9,.2,1);
+}
+
+.wallet-animation::before {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 70px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.8),
+        transparent
+    );
+    transform: rotate(-20deg);
+    left: -250px;
+    top: 20px;
+    animation: shine 1.4s ease .3s forwards;
+}
+
+.wallet-symbol {
+    position: absolute;
+    left: 18px;
+    top: 16px;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.wallet-card {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    width: 125px;
+    height: 67px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #e8edf4, #cbd4e0);
+    box-shadow: 0 7px 20px rgba(0,0,0,.15);
+}
+
+.wallet-card::after {
+    content: "✓";
+    position: absolute;
+    right: 10px;
+    bottom: 7px;
+    font-weight: 800;
+    font-size: 20px;
+}
+
+@keyframes walletIn {
+    from {
+        transform: translateY(30px) scale(.8);
+        opacity: 0;
     }
 
-    h1 {
-        margin: 16px 0 6px;
-        font-size: 32px;
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
     }
+}
 
-    .subtitle {
-        margin: 0;
-        color: #aeb8c9;
+@keyframes shine {
+    to {
+        left: 250px;
     }
+}
 
-    .card {
-        background: rgba(17, 24, 39, 0.88);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 22px;
-        padding: 22px;
-        margin-bottom: 16px;
-        box-shadow: 0 15px 45px rgba(0,0,0,0.25);
-        backdrop-filter: blur(12px);
-    }
+.retry {
+    width: 100%;
+    padding: 14px;
+    border-radius: 15px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.08);
+}
 
-    .status-box {
-        display: flex;
-        align-items: center;
-        gap: 13px;
-        padding: 15px;
-        border-radius: 15px;
-        background: rgba(255,255,255,0.05);
-    }
+.error-code {
+    font-family: monospace;
+    padding: 9px;
+    margin-bottom: 18px;
+    border-radius: 10px;
+    background: rgba(255,82,100,.06);
+    color: #ff9aa5;
+}
 
-    .status-dot {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: #6b7280;
-        flex-shrink: 0;
-    }
-
-    .status-dot.ready {
-        background: #22c55e;
-        box-shadow: 0 0 15px #22c55e;
-    }
-
-    .status-dot.waiting {
-        background: #f59e0b;
-        box-shadow: 0 0 15px #f59e0b;
-    }
-
-    .status-dot.error {
-        background: #ef4444;
-        box-shadow: 0 0 15px #ef4444;
-    }
-
-    .status-title {
-        font-weight: bold;
-        font-size: 16px;
-    }
-
-    .status-text {
-        color: #aeb8c9;
-        margin-top: 3px;
-        font-size: 14px;
-    }
-
-    button {
-        width: 100%;
-        border: none;
-        border-radius: 15px;
-        padding: 15px;
-        margin-top: 10px;
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: transform 0.15s, opacity 0.15s;
-    }
-
-    button:hover {
-        transform: translateY(-2px);
-    }
-
-    button:active {
-        transform: scale(0.98);
-    }
-
-    button:disabled {
-        opacity: 0.45;
-        cursor: not-allowed;
-        transform: none;
-    }
-
-    .start {
-        background: linear-gradient(135deg, #2563eb, #4f46e5);
-    }
-
-    .stop {
-        background: #374151;
-    }
-
-    .clear {
-        background: #7f1d1d;
-    }
-
-    .section-title {
-        font-size: 18px;
-        font-weight: bold;
-        margin-bottom: 15px;
-    }
-
-    .latest {
-        background: rgba(37,99,235,0.12);
-        border: 1px solid rgba(37,99,235,0.25);
-        border-radius: 16px;
-        padding: 16px;
-    }
-
-    .latest-row {
-        display: flex;
-        justify-content: space-between;
-        gap: 15px;
-        padding: 8px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .latest-row:last-child {
-        border-bottom: none;
-    }
-
-    .label {
-        color: #9ca3af;
-    }
-
-    .value {
-        font-weight: bold;
-        text-align: right;
-        word-break: break-word;
-    }
-
-    .number {
-        font-family: monospace;
-        font-size: 20px;
-    }
-
-    .stats {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
-    .stat {
-        background: rgba(255,255,255,0.05);
-        border-radius: 16px;
-        padding: 16px;
-    }
-
-    .stat-name {
-        color: #9ca3af;
-        font-size: 13px;
-        margin-bottom: 7px;
-    }
-
-    .stat-value {
-        font-size: 23px;
-        font-weight: bold;
-    }
-
-    .history {
-        max-height: 330px;
-        overflow-y: auto;
-    }
-
-    .history-item {
-        padding: 14px;
-        margin-bottom: 10px;
-        border-radius: 14px;
-        background: rgba(255,255,255,0.045);
-        border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .history-top {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        margin-bottom: 7px;
-    }
-
-    .history-id {
-        color: #60a5fa;
-        font-weight: bold;
-    }
-
-    .history-time {
-        color: #9ca3af;
-        font-size: 13px;
-    }
-
-    .history-content {
-        font-family: monospace;
-        word-break: break-all;
-        color: #e5e7eb;
-    }
-
-    .history-info {
-        margin-top: 6px;
-        color: #9ca3af;
-        font-size: 13px;
-    }
-
-    .empty {
-        text-align: center;
-        color: #8b95a7;
-        padding: 25px;
-    }
-
-    .warning {
-        color: #fbbf24;
-        font-size: 13px;
-        line-height: 1.5;
-        margin-top: 14px;
-    }
-
-    .footer {
-        text-align: center;
-        color: #697386;
-        font-size: 12px;
-        margin-top: 18px;
-    }
-
-    @media (max-width: 500px) {
-        body {
-            padding: 12px;
-        }
-
-        h1 {
-            font-size: 27px;
-        }
-
-        .stats {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .card {
-            padding: 17px;
-        }
-    }
+.note {
+    margin-top: 18px;
+    color: #677284;
+    font-size: 10px;
+    text-align: center;
+    line-height: 1.5;
+}
 </style>
 </head>
 
@@ -296,786 +622,762 @@
 
 <div class="app">
 
-    <div class="header">
-        <div class="logo">📡</div>
-
-        <h1>NFC Mini Benchmark</h1>
-
-        <p class="subtitle">
-            Jednoduchý test rychlosti NFC
-        </p>
-    </div>
-
-
-    <!-- STAV -->
-    <div class="card">
-
-        <div class="status-box">
-
-            <div id="statusDot" class="status-dot"></div>
+    <header class="header">
+        <div class="brand">
+            <div class="logo">⌁</div>
 
             <div>
-                <div id="statusTitle" class="status-title">
-                    Připraveno
+                <h1>NFC Pay Terminal</h1>
+                <p>Local NFC payment simulation</p>
+            </div>
+        </div>
+
+        <div class="demo">DEMO • NO REAL PAYMENT</div>
+    </header>
+
+    <div class="layout">
+
+        <main class="terminal">
+
+            <div class="status-row">
+
+                <div id="status" class="status">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Čekám na spuštění</span>
                 </div>
 
-                <div id="statusText" class="status-text">
-                    Stiskni „Spustit test“.
-                </div>
+                <div id="clock" class="time">--:--:--</div>
+
             </div>
+
+            <div class="reader-area">
+
+                <div>
+
+                    <div id="reader" class="reader">
+
+                        <div class="wave"></div>
+                        <div class="wave"></div>
+                        <div class="wave"></div>
+
+                        <div class="nfc-icon">
+                            📡
+                        </div>
+
+                    </div>
+
+                    <div class="message">
+                        <h2 id="mainTitle">Přilož NFC</h2>
+
+                        <p id="mainText">
+                            Spusť terminál a přilož NFC zařízení nebo tag.
+                        </p>
+
+                        <div class="code-box">
+
+                            <span class="code-label">
+                                TEST KÓD
+                            </span>
+
+                            <span id="secretCode" class="code">
+                                ----
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="controls">
+
+                <button id="startBtn" class="primary">
+                    Spustit terminál
+                </button>
+
+                <button id="stopBtn" class="secondary">
+                    Zastavit
+                </button>
+
+            </div>
+
+        </main>
+
+
+        <aside class="side">
+
+            <h3>Testovací statistiky</h3>
+
+            <div class="side-sub">
+                Výsledky této relace
+            </div>
+
+            <div class="stats">
+
+                <div class="stat">
+                    <span>Pokusy</span>
+                    <strong id="attempts">0</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Úspěšné</span>
+                    <strong id="successes">0</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Chyby</span>
+                    <strong id="errors">0</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Poslední</span>
+                    <strong id="lastTime">--</strong>
+                </div>
+
+            </div>
+
+            <div class="history">
+
+                <div class="history-title">
+                    HISTORIE
+                </div>
+
+                <div id="history" class="history-list">
+                    <div style="color:#687386;font-size:12px;">
+                        Zatím žádné pokusy.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="note">
+                Toto je pouze lokální simulace NFC terminálu.
+                Neprovádí skutečné platby a nepracuje s bankovními údaji.
+            </div>
+
+        </aside>
+
+    </div>
+
+</div>
+
+
+<!-- RESULT OVERLAY -->
+
+<div id="overlay" class="overlay">
+
+    <div id="resultCard" class="result-card">
+
+        <div id="resultIcon" class="result-icon">
+            ✓
+        </div>
+
+        <div id="walletAnimation" class="wallet-animation">
+
+            <div class="wallet-symbol">
+                Wallet
+            </div>
+
+            <div class="wallet-card"></div>
 
         </div>
 
-        <button id="startButton" class="start">
-            ▶ Spustit test
+        <h2 id="resultTitle">
+            Platba schválena
+        </h2>
+
+        <p id="resultText">
+            NFC kód byl správný.
+        </p>
+
+        <div id="errorCode"
+             class="error-code"
+             style="display:none;">
+            NFC kód nebyl správný.
+        </div>
+
+        <button id="retryBtn" class="retry">
+            Pokračovat
         </button>
 
-        <button id="stopButton" class="stop" disabled>
-            ■ Zastavit test
-        </button>
-
-        <button id="clearButton" class="clear">
-            🗑 Vymazat výsledky
-        </button>
-
-        <div class="warning">
-            ⚠️ Web NFC musí být podporováno prohlížečem a stránka musí
-            běžet v zabezpečeném kontextu (HTTPS).
-        </div>
-
-    </div>
-
-
-    <!-- POSLEDNÍ TAG -->
-    <div class="card">
-
-        <div class="section-title">
-            📡 Poslední NFC tag
-        </div>
-
-        <div id="latestBox" class="latest">
-
-            <div class="latest-row">
-                <span class="label">Obsah</span>
-                <span id="latestContent" class="value">
-                    —
-                </span>
-            </div>
-
-            <div class="latest-row">
-                <span class="label">Typ</span>
-                <span id="latestType" class="value">
-                    —
-                </span>
-            </div>
-
-            <div class="latest-row">
-                <span class="label">Čas načtení</span>
-                <span id="latestTime" class="value">
-                    —
-                </span>
-            </div>
-
-            <div class="latest-row">
-                <span class="label">Nový obsah</span>
-                <span id="latestNew" class="value">
-                    —
-                </span>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- STATISTIKY -->
-    <div class="card">
-
-        <div class="section-title">
-            📊 Benchmark
-        </div>
-
-        <div class="stats">
-
-            <div class="stat">
-                <div class="stat-name">
-                    Načtených tagů
-                </div>
-
-                <div id="totalTags" class="stat-value">
-                    0
-                </div>
-            </div>
-
-
-            <div class="stat">
-                <div class="stat-name">
-                    Nových tagů
-                </div>
-
-                <div id="newTags" class="stat-value">
-                    0
-                </div>
-            </div>
-
-
-            <div class="stat">
-                <div class="stat-name">
-                    Průměr
-                </div>
-
-                <div id="averageTime" class="stat-value">
-                    —
-                </div>
-            </div>
-
-
-            <div class="stat">
-                <div class="stat-name">
-                    Nejrychlejší
-                </div>
-
-                <div id="fastestTime" class="stat-value">
-                    —
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- HISTORIE -->
-    <div class="card">
-
-        <div class="section-title">
-            🧾 Historie
-        </div>
-
-        <div id="history" class="history">
-
-            <div class="empty">
-                Zatím nebyl načten žádný NFC tag.
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="footer">
-        NFC Mini Benchmark • Web NFC
     </div>
 
 </div>
 
 
 <script>
-"use strict";
+/*
+=========================================================
+ NFC PAY TERMINAL — DEMO
+ --------------------------------------------------------
+ Pouze simulace.
+ Žádné skutečné peníze.
+ Žádné bankovní údaje.
+ Žádná skutečná platba.
+=========================================================
+*/
+
+let ndef = null;
+let running = false;
+
+let secretCode = "";
+let attempts = 0;
+let successes = 0;
+let errors = 0;
+
+let lastTagTime = 0;
 
 
-/* =========================================================
-   NFC MINI BENCHMARK
-   ========================================================= */
+/* =========================
+   ELEMENTS
+========================= */
 
-let nfcReader = null;
+const statusEl = document.getElementById("status");
+const statusText = document.getElementById("statusText");
 
-let scanning = false;
+const reader = document.getElementById("reader");
 
-let scanStartTime = 0;
+const mainTitle = document.getElementById("mainTitle");
+const mainText = document.getElementById("mainText");
 
-let totalTags = 0;
+const secretCodeEl = document.getElementById("secretCode");
 
-let newTags = 0;
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
 
-let times = [];
+const overlay = document.getElementById("overlay");
+const resultIcon = document.getElementById("resultIcon");
 
-let knownContents = new Set();
+const resultTitle = document.getElementById("resultTitle");
+const resultText = document.getElementById("resultText");
 
-let history = [];
+const walletAnimation = document.getElementById("walletAnimation");
+const errorCode = document.getElementById("errorCode");
 
+const retryBtn = document.getElementById("retryBtn");
 
-/* =========================================================
-   ELEMENTY
-   ========================================================= */
+const attemptsEl = document.getElementById("attempts");
+const successesEl = document.getElementById("successes");
+const errorsEl = document.getElementById("errors");
 
-const startButton =
-    document.getElementById("startButton");
+const lastTimeEl = document.getElementById("lastTime");
 
-const stopButton =
-    document.getElementById("stopButton");
+const historyEl = document.getElementById("history");
 
-const clearButton =
-    document.getElementById("clearButton");
-
-const statusDot =
-    document.getElementById("statusDot");
-
-const statusTitle =
-    document.getElementById("statusTitle");
-
-const statusText =
-    document.getElementById("statusText");
-
-const latestContent =
-    document.getElementById("latestContent");
-
-const latestType =
-    document.getElementById("latestType");
-
-const latestTime =
-    document.getElementById("latestTime");
-
-const latestNew =
-    document.getElementById("latestNew");
-
-const totalTagsElement =
-    document.getElementById("totalTags");
-
-const newTagsElement =
-    document.getElementById("newTags");
-
-const averageTimeElement =
-    document.getElementById("averageTime");
-
-const fastestTimeElement =
-    document.getElementById("fastestTime");
-
-const historyElement =
-    document.getElementById("history");
+const clock = document.getElementById("clock");
 
 
-/* =========================================================
-   STATUS
-   ========================================================= */
+/* =========================
+   CLOCK
+========================= */
 
-function setStatus(type, title, text) {
+function updateClock() {
 
-    statusDot.className = "status-dot";
+    const now = new Date();
 
-    if (type === "ready") {
-        statusDot.classList.add("ready");
-    }
+    clock.textContent =
+        now.toLocaleTimeString("cs-CZ");
 
-    if (type === "waiting") {
-        statusDot.classList.add("waiting");
-    }
+}
 
-    if (type === "error") {
-        statusDot.classList.add("error");
-    }
+setInterval(updateClock, 1000);
+updateClock();
 
-    statusTitle.textContent = title;
 
-    statusText.textContent = text;
+/* =========================
+   RANDOM CODE
+========================= */
+
+function generateCode() {
+
+    return Math.floor(
+        1000 + Math.random() * 9000
+    ).toString();
+
 }
 
 
-/* =========================================================
-   PODPORA NFC
-   ========================================================= */
+function newPaymentCode() {
 
-function checkNfcSupport() {
+    secretCode = generateCode();
+
+    secretCodeEl.textContent = secretCode;
+
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+function setStatus(type, text) {
+
+    statusEl.className = "status";
+
+    if (type === "ready") {
+        statusEl.classList.add("ready");
+    }
+
+    if (type === "error") {
+        statusEl.classList.add("error");
+    }
+
+    statusText.textContent = text;
+
+}
+
+
+/* =========================
+   NFC SUPPORT
+========================= */
+
+function checkNFC() {
 
     if (!("NDEFReader" in window)) {
 
         setStatus(
             "error",
-            "Web NFC není dostupné",
-            "Tento prohlížeč nebo zařízení nepodporuje Web NFC."
+            "Web NFC není podporováno"
         );
 
-        startButton.disabled = true;
+        mainTitle.textContent =
+            "Web NFC není dostupné";
+
+        mainText.textContent =
+            "Použij podporovaný Android prohlížeč.";
 
         return false;
     }
 
-    setStatus(
-        "ready",
-        "NFC je podporováno",
-        "Můžeš spustit benchmark."
-    );
-
     return true;
+
 }
 
 
-/* =========================================================
-   SPUSTIT NFC
-   ========================================================= */
+/* =========================
+   START
+========================= */
 
-async function startNfc() {
+startBtn.addEventListener(
+    "click",
+    async () => {
 
-    if (!checkNfcSupport()) {
-        return;
-    }
+        if (!checkNFC()) {
+            return;
+        }
 
-    try {
+        try {
 
-        nfcReader = new NDEFReader();
+            ndef = new NDEFReader();
 
-        nfcReader.onreadingerror = function() {
+            await ndef.scan();
+
+            running = true;
+
+            newPaymentCode();
+
+            reader.classList.add("active");
+
+            setStatus(
+                "ready",
+                "Terminál je připraven"
+            );
+
+            mainTitle.textContent =
+                "Přilož NFC";
+
+            mainText.textContent =
+                "Čekám na NFC zařízení nebo tag…";
+
+            ndef.onreading = handleNFCReading;
+
+            ndef.onreadingerror = () => {
+
+                setStatus(
+                    "error",
+                    "NFC se nepodařilo přečíst"
+                );
+
+            };
+
+        } catch (error) {
+
+            console.error(error);
 
             setStatus(
                 "error",
-                "Chyba čtení",
-                "NFC tag se nepodařilo přečíst."
+                "NFC se nepodařilo spustit"
             );
 
-            setTimeout(() => {
-
-                if (scanning) {
-
-                    setStatus(
-                        "waiting",
-                        "Čekám na NFC",
-                        "Přilož NFC tag k telefonu."
-                    );
-
-                }
-
-            }, 1500);
-
-        };
-
-
-        nfcReader.onreading = function(event) {
-
-            readNfcTag(event);
-
-        };
-
-
-        await nfcReader.scan();
-
-
-        scanning = true;
-
-        startButton.disabled = true;
-
-        stopButton.disabled = false;
-
-        setStatus(
-            "waiting",
-            "Čekám na NFC",
-            "Přilož NFC tag k telefonu."
-        );
-
-
-        /*
-         * Čas začátku měříme po spuštění čtečky.
-         * Po načtení tagu se spočítá rozdíl.
-         */
-
-        scanStartTime = performance.now();
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        scanning = false;
-
-        startButton.disabled = false;
-
-        stopButton.disabled = true;
-
-        setStatus(
-            "error",
-            "NFC se nepodařilo spustit",
-            error.message || "Neznámá chyba."
-        );
-
-    }
-}
-
-
-/* =========================================================
-   ZASTAVENÍ
-   ========================================================= */
-
-function stopNfc() {
-
-    scanning = false;
-
-    nfcReader = null;
-
-    startButton.disabled = false;
-
-    stopButton.disabled = true;
-
-    setStatus(
-        "ready",
-        "Test zastaven",
-        "Benchmark je připraven."
-    );
-}
-
-
-/* =========================================================
-   ČTENÍ TAGU
-   ========================================================= */
-
-async function readNfcTag(event) {
-
-    const readTime =
-        performance.now() - scanStartTime;
-
-
-    /*
-     * Po každém načtení připravíme nový čas.
-     */
-
-    scanStartTime = performance.now();
-
-
-    let contents = [];
-
-    let types = [];
-
-
-    try {
-
-        for (const record of event.message.records) {
-
-            const type = record.recordType;
-
-            types.push(type);
-
-
-            let value = "";
-
-
-            /* TEXT */
-            if (type === "text") {
-
-                try {
-
-                    const decoder =
-                        new TextDecoder(record.encoding || "utf-8");
-
-                    value =
-                        decoder.decode(record.data);
-
-                }
-                catch {
-
-                    value =
-                        new TextDecoder().decode(record.data);
-
-                }
-
-            }
-
-
-            /* URL */
-            else if (type === "url") {
-
-                try {
-
-                    value =
-                        new TextDecoder().decode(record.data);
-
-                }
-                catch {
-
-                    value =
-                        "[URL]";
-
-                }
-
-            }
-
-
-            /* MIME / JSON / OSTATNÍ */
-            else {
-
-                try {
-
-                    value =
-                        new TextDecoder().decode(record.data);
-
-                }
-                catch {
-
-                    value =
-                        "[binární data]";
-
-                }
-
-            }
-
-
-            contents.push(value);
+            mainTitle.textContent =
+                "NFC chyba";
+
+            mainText.textContent =
+                "Zkontroluj oprávnění a podporu Web NFC.";
 
         }
 
     }
+);
 
-    catch (error) {
 
-        console.error(error);
+/* =========================
+   STOP
+========================= */
+
+stopBtn.addEventListener(
+    "click",
+    () => {
+
+        running = false;
+
+        reader.classList.remove("active");
+
+        setStatus(
+            "",
+            "Terminál zastaven"
+        );
+
+        mainTitle.textContent =
+            "Terminál zastaven";
+
+        mainText.textContent =
+            "Stiskni Spustit terminál.";
+
+    }
+);
+
+
+/* =========================
+   NFC READ
+========================= */
+
+async function handleNFCReading(event) {
+
+    if (!running) {
+        return;
+    }
+
+    const now = performance.now();
+
+    /*
+       Některé čtečky mohou poslat více událostí
+       za sebou. Tohle zabrání okamžitému
+       dvojímu vyhodnocení stejného přiložení.
+    */
+
+    if (
+        lastTagTime &&
+        now - lastTagTime < 1200
+    ) {
+        return;
+    }
+
+    lastTagTime = now;
+
+    let content = "";
+
+    for (const record of event.message.records) {
+
+        try {
+
+            if (record.recordType === "text") {
+
+                const decoder =
+                    new TextDecoder(
+                        record.encoding || "utf-8"
+                    );
+
+                content =
+                    decoder.decode(record.data);
+
+            } else if (
+                record.recordType === "url"
+            ) {
+
+                const decoder =
+                    new TextDecoder();
+
+                content =
+                    decoder.decode(record.data);
+
+            } else {
+
+                const decoder =
+                    new TextDecoder();
+
+                content =
+                    decoder.decode(record.data);
+
+            }
+
+        } catch {
+
+            content = "";
+
+        }
+
+        if (content) {
+            break;
+        }
 
     }
 
+    content = content.trim();
 
-    const content =
-        contents.length > 0
-            ? contents.join(" | ")
-            : "[NFC bez čitelného obsahu]";
+    attempts++;
 
+    attemptsEl.textContent = attempts;
 
-    const type =
-        types.length > 0
-            ? types.join(", ")
-            : "unknown";
+    const correct =
+        content === secretCode;
 
+    if (correct) {
 
-    /*
-     * Zjištění, zda jde o nový obsah.
-     */
+        successes++;
 
-    const normalized =
-        content.trim();
+        successesEl.textContent =
+            successes;
 
+        lastTimeEl.textContent =
+            "OK";
 
-    const isNew =
-        !knownContents.has(normalized);
+        addHistory(
+            true,
+            content
+        );
 
+        showSuccess();
 
-    if (isNew) {
+    } else {
 
-        knownContents.add(normalized);
+        errors++;
 
-        newTags++;
+        errorsEl.textContent =
+            errors;
+
+        lastTimeEl.textContent =
+            "ERR";
+
+        addHistory(
+            false,
+            content || "EMPTY"
+        );
+
+        showError();
 
     }
 
-
-    totalTags++;
-
-    times.push(readTime);
+}
 
 
-    /*
-     * Poslední výsledek
-     */
+/* =========================
+   SUCCESS
+========================= */
 
-    latestContent.textContent =
-        content;
+function showSuccess() {
 
-    latestType.textContent =
-        type;
+    running = false;
 
-    latestTime.textContent =
-        formatMs(readTime);
-
-    latestNew.textContent =
-        isNew ? "ANO 🆕" : "NE 🔁";
-
-
-    /*
-     * Statistiky
-     */
-
-    updateStats();
-
-
-    /*
-     * Historie
-     */
-
-    addHistory(
-        content,
-        type,
-        readTime,
-        isNew
-    );
-
+    reader.classList.remove("active");
 
     setStatus(
-        "waiting",
-        "NFC načteno ✓",
-        "Přilož další NFC tag."
+        "ready",
+        "Platba schválena"
     );
 
+    overlay.classList.add("show");
+
+    resultIcon.className =
+        "result-icon success";
+
+    resultIcon.textContent =
+        "✓";
+
+    resultTitle.textContent =
+        "Platba schválena";
+
+    resultText.textContent =
+        "NFC kód byl správný.";
+
+    errorCode.style.display =
+        "none";
+
+    walletAnimation.style.display =
+        "block";
+
+    retryBtn.textContent =
+        "Nová platba";
+
 }
 
 
-/* =========================================================
-   FORMÁT ČASU
-   ========================================================= */
+/* =========================
+   ERROR
+========================= */
 
-function formatMs(ms) {
+function showError() {
 
-    if (!Number.isFinite(ms)) {
-        return "—";
+    running = false;
+
+    reader.classList.remove("active");
+
+    setStatus(
+        "error",
+        "Platba zamítnuta"
+    );
+
+    overlay.classList.add("show");
+
+    resultIcon.className =
+        "result-icon error";
+
+    resultIcon.textContent =
+        "✕";
+
+    resultTitle.textContent =
+        "Platba zamítnuta";
+
+    resultText.textContent =
+        "NFC kód nebyl správný.";
+
+    errorCode.style.display =
+        "block";
+
+    walletAnimation.style.display =
+        "none";
+
+    retryBtn.textContent =
+        "Zkusit znovu";
+
+}
+
+
+/* =========================
+   RETRY
+========================= */
+
+retryBtn.addEventListener(
+    "click",
+    async () => {
+
+        overlay.classList.remove("show");
+
+        newPaymentCode();
+
+        if (!checkNFC()) {
+            return;
+        }
+
+        try {
+
+            ndef = new NDEFReader();
+
+            await ndef.scan();
+
+            running = true;
+
+            reader.classList.add("active");
+
+            setStatus(
+                "ready",
+                "Terminál je připraven"
+            );
+
+            mainTitle.textContent =
+                "Přilož NFC";
+
+            mainText.textContent =
+                "Čekám na NFC zařízení nebo tag…";
+
+            ndef.onreading =
+                handleNFCReading;
+
+        } catch (error) {
+
+            console.error(error);
+
+            setStatus(
+                "error",
+                "NFC se nepodařilo spustit"
+            );
+
+        }
+
     }
-
-    return ms.toFixed(0) + " ms";
-}
+);
 
 
-/* =========================================================
-   STATISTIKY
-   ========================================================= */
-
-function updateStats() {
-
-    totalTagsElement.textContent =
-        totalTags;
-
-    newTagsElement.textContent =
-        newTags;
-
-
-    if (times.length === 0) {
-
-        averageTimeElement.textContent =
-            "—";
-
-        fastestTimeElement.textContent =
-            "—";
-
-        return;
-    }
-
-
-    const average =
-        times.reduce(
-            (sum, value) => sum + value,
-            0
-        ) / times.length;
-
-
-    const fastest =
-        Math.min(...times);
-
-
-    averageTimeElement.textContent =
-        formatMs(average);
-
-    fastestTimeElement.textContent =
-        formatMs(fastest);
-}
-
-
-/* =========================================================
-   HISTORIE
-   ========================================================= */
+/* =========================
+   HISTORY
+========================= */
 
 function addHistory(
-    content,
-    type,
-    time,
-    isNew
+    success,
+    code
 ) {
 
-    history.unshift({
-        content,
-        type,
-        time,
-        isNew,
-        date: new Date()
-    });
+    const empty =
+        historyEl.querySelector(
+            "div[style]"
+        );
 
-
-    /*
-     * Držíme maximálně 50 výsledků.
-     */
-
-    if (history.length > 50) {
-
-        history =
-            history.slice(0, 50);
-
+    if (empty) {
+        historyEl.innerHTML = "";
     }
 
+    const item =
+        document.createElement("div");
 
-    renderHistory();
+    item.className =
+        "history-item";
 
-}
-
-
-/* =========================================================
-   VYKRESLENÍ HISTORIE
-   ========================================================= */
-
-function renderHistory() {
-
-    if (history.length === 0) {
-
-        historyElement.innerHTML =
-            `
-            <div class="empty">
-                Zatím nebyl načten žádný NFC tag.
-            </div>
-            `;
-
-        return;
-    }
-
-
-    historyElement.innerHTML =
-        "";
-
-
-    history.forEach((item, index) => {
-
-        const div =
-            document.createElement("div");
-
-        div.className =
-            "history-item";
-
-
-        const date =
-            item.date.toLocaleTimeString(
+    const time =
+        new Date()
+            .toLocaleTimeString(
                 "cs-CZ"
             );
 
+    item.innerHTML = `
+        <div class="history-left">
+            <span class="result-dot ${
+                success ? "ok" : "bad"
+            }"></span>
 
-        div.innerHTML =
-            `
-            <div class="history-top">
+            <span class="history-code">
+                ${escapeHTML(code)}
+            </span>
+        </div>
 
-                <span class="history-id">
-                    #${history.length - index}
-                </span>
+        <span class="history-time">
+            ${time}
+        </span>
+    `;
 
-                <span class="history-time">
-                    ${escapeHtml(date)}
-                </span>
+    historyEl.prepend(item);
 
-            </div>
+    while (
+        historyEl.children.length > 15
+    ) {
 
-            <div class="history-content">
-                ${escapeHtml(item.content)}
-            </div>
+        historyEl.removeChild(
+            historyEl.lastChild
+        );
 
-            <div class="history-info">
-                Typ: ${escapeHtml(item.type)}
-                • ${formatMs(item.time)}
-                • ${item.isNew ? "🆕 nový" : "🔁 známý"}
-            </div>
-            `;
-
-
-        historyElement.appendChild(div);
-
-    });
+    }
 
 }
 
 
-/* =========================================================
-   OCHRANA TEXTU PRO HTML
-   ========================================================= */
+/* =========================
+   SECURITY
+========================= */
 
-function escapeHtml(text) {
+function escapeHTML(value) {
 
-    return String(text)
+    return String(value)
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -1085,81 +1387,16 @@ function escapeHtml(text) {
 }
 
 
-/* =========================================================
-   VYMAZÁNÍ
-   ========================================================= */
+/* =========================
+   INITIAL
+========================= */
 
-function clearResults() {
+newPaymentCode();
 
-    totalTags = 0;
-
-    newTags = 0;
-
-    times = [];
-
-    knownContents.clear();
-
-    history = [];
-
-
-    latestContent.textContent =
-        "—";
-
-    latestType.textContent =
-        "—";
-
-    latestTime.textContent =
-        "—";
-
-    latestNew.textContent =
-        "—";
-
-
-    updateStats();
-
-    renderHistory();
-
-
-    setStatus(
-        scanning ? "waiting" : "ready",
-        scanning ? "Čekám na NFC" : "Výsledky vymazány",
-        scanning
-            ? "Přilož NFC tag k telefonu."
-            : "Benchmark je připraven."
-    );
-
-}
-
-
-/* =========================================================
-   TLAČÍTKA
-   ========================================================= */
-
-startButton.addEventListener(
-    "click",
-    startNfc
+setStatus(
+    "",
+    "Čekám na spuštění"
 );
-
-
-stopButton.addEventListener(
-    "click",
-    stopNfc
-);
-
-
-clearButton.addEventListener(
-    "click",
-    clearResults
-);
-
-
-/* =========================================================
-   START
-   ========================================================= */
-
-checkNfcSupport();
-
-renderHistory();
 
 </script>
 
