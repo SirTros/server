@@ -9,10 +9,6 @@
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
-*{
-    box-sizing:border-box;
-}
-
 html,body{
     margin:0;
     width:100%;
@@ -38,8 +34,8 @@ html,body{
     width:1920px;
     height:1080px;
     object-fit:cover;
-    background:#000;
     display:none;
+    background:#000;
 }
 
 #logo{
@@ -49,7 +45,8 @@ html,body{
     color:white;
     font-size:32px;
     font-weight:bold;
-    z-index:20;
+    z-index:10;
+    user-select:none;
 }
 
 #startBtn{
@@ -62,67 +59,13 @@ html,body{
     z-index:999;
 }
 
-#startButton{
+#startBtn button{
     padding:20px 40px;
     font-size:24px;
     font-weight:bold;
-    border:0;
+    border:none;
     border-radius:10px;
     cursor:pointer;
-}
-
-#status{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    width:900px;
-    max-width:90%;
-    max-height:80%;
-    overflow:auto;
-    padding:30px;
-    background:#111;
-    color:white;
-    border-radius:16px;
-    z-index:10;
-    box-shadow:0 0 40px rgba(255,255,255,.08);
-}
-
-#status h1{
-    margin:0 0 20px;
-    font-size:32px;
-}
-
-#statusText{
-    white-space:pre-wrap;
-    font-family:Consolas,monospace;
-    font-size:16px;
-    line-height:1.6;
-    color:#ddd;
-}
-
-#retryButton{
-    margin-top:20px;
-    padding:14px 25px;
-    border:0;
-    border-radius:8px;
-    font-size:18px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-#debug{
-    position:absolute;
-    bottom:15px;
-    left:15px;
-    color:#aaa;
-    background:rgba(0,0,0,.75);
-    padding:8px 12px;
-    border-radius:6px;
-    font-family:Consolas,monospace;
-    font-size:13px;
-    z-index:30;
-    display:none;
 }
 </style>
 </head>
@@ -138,75 +81,31 @@ html,body{
     <video
         id="video"
         autoplay
-        playsinline
-        controls>
+        playsinline>
     </video>
-
-    <div id="status">
-
-        <h1 id="statusTitle">
-            Připraveno
-        </h1>
-
-        <div id="statusText">
-            Klikni na Spustit SirTros TV.
-        </div>
-
-        <button id="retryButton" onclick="startStream()">
-            Zkusit znovu
-        </button>
-
-    </div>
-
-    <div id="debug"></div>
 
 </div>
 
 <div id="startBtn">
-
-    <button id="startButton" onclick="startTV()">
+    <button onclick="startTV()">
         Spustit SirTros TV
     </button>
-
 </div>
 
 <script>
 
-const video =
-    document.getElementById("video");
-
-const startBtn =
-    document.getElementById("startBtn");
-
-const status =
-    document.getElementById("status");
-
-const statusTitle =
-    document.getElementById("statusTitle");
-
-const statusText =
-    document.getElementById("statusText");
-
-const retryButton =
-    document.getElementById("retryButton");
-
-const screen =
-    document.getElementById("screen");
-
-const debug =
-    document.getElementById("debug");
-
+const video = document.getElementById("video");
+const startBtn = document.getElementById("startBtn");
+const screen = document.getElementById("screen");
 
 const streamUrl =
-    "http://192.168.0.1:8888/live/stream/index.m3u8";
-
+    "http://192.168.0.13:8888/live/stream/index.m3u8";
 
 let hls = null;
-let retryTimer = null;
 
 
 /* ==========================================
-   OBRAZOVKA
+   PŘIZPŮSOBENÍ OBRAZOVKY
 ========================================== */
 
 function resizeScreen(){
@@ -217,7 +116,8 @@ function resizeScreen(){
     );
 
     screen.style.transform =
-        "translate(-50%,-50%) scale(" + scale + ")";
+        "translate(-50%, -50%) scale(" + scale + ")";
+
 }
 
 window.addEventListener(
@@ -226,38 +126,6 @@ window.addEventListener(
 );
 
 resizeScreen();
-
-
-/* ==========================================
-   STATUS
-========================================== */
-
-function showStatus(title,text){
-
-    status.style.display = "block";
-
-    statusTitle.textContent = title;
-
-    statusText.textContent = text;
-}
-
-
-function hideStatus(){
-
-    status.style.display = "none";
-}
-
-
-/* ==========================================
-   DEBUG
-========================================== */
-
-function showDebug(text){
-
-    debug.style.display = "block";
-
-    debug.textContent = text;
-}
 
 
 /* ==========================================
@@ -276,69 +144,31 @@ async function goFullscreen(){
 
     }catch(error){
 
-        console.log(
-            "Fullscreen chyba:",
-            error
-        );
+        console.log(error);
 
     }
+
 }
 
 
 /* ==========================================
-   START TV
-========================================== */
-
-async function startTV(){
-
-    startBtn.style.display = "none";
-
-    await goFullscreen();
-
-    startStream();
-}
-
-
-/* ==========================================
-   START STREAM
+   SPUŠTĚNÍ STREAMU
 ========================================== */
 
 function startStream(){
 
-    clearTimeout(retryTimer);
-
-
     if(hls){
 
-        try{
-            hls.destroy();
-        }catch(e){}
-
+        hls.destroy();
         hls = null;
+
     }
 
 
     video.pause();
-
     video.removeAttribute("src");
-
     video.load();
 
-    video.style.display = "none";
-
-
-    showStatus(
-        "Připojování…",
-        "Adresa streamu:\n\n" +
-        streamUrl +
-        "\n\n" +
-        "Kontroluji server..."
-    );
-
-
-    /* ======================================
-       HLS.JS
-    ====================================== */
 
     if(Hls.isSupported()){
 
@@ -357,20 +187,9 @@ function startStream(){
         });
 
 
-        hls.on(
-            Hls.Events.MANIFEST_LOADING,
-            function(event,data){
+        hls.loadSource(streamUrl);
 
-                showStatus(
-                    "Načítám stream…",
-                    "Připojuji se na:\n\n" +
-                    data.url +
-                    "\n\n" +
-                    "Čekám na odpověď serveru..."
-                );
-
-            }
-        );
+        hls.attachMedia(video);
 
 
         hls.on(
@@ -379,26 +198,7 @@ function startStream(){
 
                 video.style.display = "block";
 
-                hideStatus();
-
-                video.play()
-                .then(function(){
-
-                    showDebug(
-                        "● SirTros TV | STREAM OK"
-                    );
-
-                })
-                .catch(function(error){
-
-                    showStatus(
-                        "Video se nepodařilo spustit",
-                        "Stream byl nalezen, ale video nejde přehrát.\n\n" +
-                        "Chyba:\n" +
-                        error.message
-                    );
-
-                });
+                video.play().catch(function(){});
 
             }
         );
@@ -408,122 +208,21 @@ function startStream(){
             Hls.Events.ERROR,
             function(event,data){
 
-                console.error(
-                    "HLS chyba:",
-                    data
-                );
-
-
                 if(data.fatal){
-
-                    let details =
-                        data.details || "neznámá chyba";
-
-                    let type =
-                        data.type || "neznámý typ";
-
-
-                    let message =
-                        "Nepodařilo se připojit ke streamu.\n\n" +
-
-                        "URL:\n" +
-                        streamUrl +
-                        "\n\n" +
-
-                        "Typ chyby:\n" +
-                        type +
-                        "\n\n" +
-
-                        "Detail:\n" +
-                        details +
-                        "\n\n";
-
-
-                    if(
-                        details ===
-                        "manifestLoadError"
-                    ){
-
-                        message +=
-                            "Server neposlal HLS manifest.\n\n" +
-
-                            "Možné příčiny:\n" +
-                            "• server neběží\n" +
-                            "• špatná IP adresa\n" +
-                            "• špatný port\n" +
-                            "• špatná cesta k index.m3u8\n" +
-                            "• HTTP/HTTPS blokování\n" +
-                            "• CORS\n" +
-                            "• zařízení není ve stejné síti";
-
-                    }
-                    else if(
-                        details ===
-                        "manifestLoadTimeOut"
-                    ){
-
-                        message +=
-                            "Server neodpověděl včas.";
-
-                    }
-                    else if(
-                        details ===
-                        "fragLoadError"
-                    ){
-
-                        message +=
-                            "Manifest existuje, ale nepodařilo se načíst video segment.";
-
-                    }
-                    else if(
-                        details ===
-                        "fragLoadTimeOut"
-                    ){
-
-                        message +=
-                            "Video segment neodpověděl včas.";
-
-                    }
-                    else{
-
-                        message +=
-                            "HLS přehrávač oznámil závažnou chybu.";
-
-                    }
-
-
-                    showStatus(
-                        "❌ Stream nefunguje",
-                        message
-                    );
-
-
-                    showDebug(
-                        "● SirTros TV | CHYBA: " +
-                        details
-                    );
-
 
                     hls.destroy();
 
                     hls = null;
 
-
-                    retryTimer =
-                        setTimeout(
-                            startStream,
-                            5000
-                        );
+                    setTimeout(
+                        startStream,
+                        3000
+                    );
 
                 }
 
             }
         );
-
-
-        hls.loadSource(streamUrl);
-
-        hls.attachMedia(video);
 
     }
 
@@ -533,88 +232,18 @@ function startStream(){
         )
     ){
 
-        /*
-        ======================================
-        Nativní HLS
-        ======================================
-        */
-
         video.src = streamUrl;
-
 
         video.addEventListener(
             "loadedmetadata",
             function(){
 
-                video.style.display =
-                    "block";
+                video.style.display = "block";
 
-                hideStatus();
-
-                video.play()
-                .then(function(){
-
-                    showDebug(
-                        "● SirTros TV | NATIVNÍ HLS OK"
-                    );
-
-                })
-                .catch(function(error){
-
-                    showStatus(
-                        "❌ Video nelze spustit",
-                        "Stream byl nalezen, ale video se nepodařilo spustit.\n\n" +
-                        "Chyba:\n" +
-                        error.message
-                    );
-
-                });
+                video.play().catch(function(){});
 
             },
             {once:true}
-        );
-
-
-        video.addEventListener(
-            "error",
-            function(){
-
-                const error =
-                    video.error;
-
-
-                let text =
-                    "Nativní HLS přehrávání selhalo.\n\n";
-
-
-                if(error){
-
-                    text +=
-                        "Kód chyby: " +
-                        error.code +
-                        "\n\n" +
-
-                        "Zpráva: " +
-                        error.message;
-                }
-
-
-                showStatus(
-                    "❌ Stream nefunguje",
-                    text
-                );
-
-            },
-            {once:true}
-        );
-
-    }
-
-    else{
-
-        showStatus(
-            "❌ HLS není podporováno",
-            "Tento prohlížeč neumí přehrávat HLS stream."
         );
 
     }
@@ -623,89 +252,22 @@ function startStream(){
 
 
 /* ==========================================
-   VIDEO ERROR
+   START TV
 ========================================== */
 
-video.addEventListener(
-    "error",
-    function(){
+async function startTV(){
 
-        if(!video.error){
-            return;
-        }
+    startBtn.style.display = "none";
 
+    await goFullscreen();
 
-        showStatus(
+    startStream();
 
-            "❌ Chyba videa",
-
-            "Přehrávač oznámil chybu.\n\n" +
-
-            "Kód:\n" +
-            video.error.code +
-            "\n\n" +
-
-            "Zpráva:\n" +
-            video.error.message
-
-        );
-
-    }
-);
+}
 
 
 /* ==========================================
-   VIDEO PLAYING
-========================================== */
-
-video.addEventListener(
-    "playing",
-    function(){
-
-        hideStatus();
-
-        showDebug(
-            "● SirTros TV | PŘEHRÁVÁ SE"
-        );
-
-    }
-);
-
-
-/* ==========================================
-   VIDEO WAITING
-========================================== */
-
-video.addEventListener(
-    "waiting",
-    function(){
-
-        showDebug(
-            "● SirTros TV | Načítám video..."
-        );
-
-    }
-);
-
-
-/* ==========================================
-   VIDEO STALLED
-========================================== */
-
-video.addEventListener(
-    "stalled",
-    function(){
-
-        showDebug(
-            "● SirTros TV | Stream se zastavil"
-        );
-
-    }
-);
-
-
-/* ==========================================
-   VIDITELNOST KARTY
+   KDYŽ SE VRÁTÍŠ NA KARTU
 ========================================== */
 
 document.addEventListener(
@@ -714,14 +276,9 @@ document.addEventListener(
 
         if(!document.hidden){
 
-            video.play()
-            .catch(function(){
+            video.play().catch(function(){
 
-                if(!hls){
-
-                    startStream();
-
-                }
+                startStream();
 
             });
 
@@ -744,8 +301,7 @@ setInterval(
             video.paused
         ){
 
-            video.play()
-            .catch(function(){
+            video.play().catch(function(){
 
                 startStream();
 
