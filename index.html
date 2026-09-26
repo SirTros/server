@@ -2,111 +2,255 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
->
-
-<title>Fotoaparát</title>
+<title>Camera</title>
 
 <style>
-
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
-html,
-body{
+html,body{
     margin:0;
     width:100%;
     height:100%;
     overflow:hidden;
     background:#000;
+    font-family:Arial,Helvetica,sans-serif;
     color:white;
-    font-family:Arial,Segoe UI,sans-serif;
 }
 
 #app{
-    width:100%;
-    height:100%;
-    position:relative;
+    position:fixed;
+    inset:0;
     background:#000;
     overflow:hidden;
 }
 
-/* =========================
-   CAMERA
-========================= */
+/* ================= CAMERA ================= */
 
-#cameraView{
+#cameraArea{
     position:absolute;
     inset:0;
     overflow:hidden;
     background:#000;
 }
 
-#video{
+#videoWrap{
     position:absolute;
-    width:100%;
-    height:100%;
 
-    object-fit:cover;
+    /*
+       Větší obraz než displej = stabilizátor má
+       prostor pro pohyb bez černých okrajů.
+    */
+    left:-12%;
+    top:-12%;
+    width:124%;
+    height:124%;
 
     transform-origin:center center;
 
     will-change:transform;
 }
 
-/*
-Skrytý canvas pro snímky
-*/
-#photoCanvas{
-    display:none;
+#video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+
+    background:#000;
 }
 
-/* =========================
-   TOP BAR
-========================= */
+/* jemné černé překrytí nahoře/dole */
+#topShade{
+    position:absolute;
+    left:0;
+    right:0;
+    top:0;
+    height:140px;
+
+    background:linear-gradient(
+        to bottom,
+        rgba(0,0,0,.65),
+        rgba(0,0,0,0)
+    );
+
+    pointer-events:none;
+}
+
+#bottomShade{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:260px;
+
+    background:linear-gradient(
+        to top,
+        rgba(0,0,0,.85),
+        rgba(0,0,0,0)
+    );
+
+    pointer-events:none;
+}
+
+/* ================= TOP BAR ================= */
 
 #topBar{
     position:absolute;
-    top:0;
     left:0;
     right:0;
+    top:0;
 
-    height:90px;
+    height:82px;
 
     display:flex;
     align-items:center;
     justify-content:space-between;
 
-    padding:
-        env(safe-area-inset-top)
-        18px
-        0
-        18px;
+    padding:20px 22px;
 
     z-index:10;
-
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(0,0,0,.65),
-            rgba(0,0,0,0)
-        );
 }
 
 .topButton{
-    width:44px;
-    height:44px;
+    width:46px;
+    height:46px;
 
     border:0;
     border-radius:50%;
 
     background:rgba(0,0,0,.35);
+    color:white;
 
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:21px;
+
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+
+    cursor:pointer;
+}
+
+.topButton:active{
+    transform:scale(.9);
+}
+
+/* ================= ZOOM ================= */
+
+#zoomBar{
+    position:absolute;
+    left:50%;
+    bottom:170px;
+
+    transform:translateX(-50%);
+
+    display:flex;
+    gap:10px;
+
+    padding:7px;
+
+    border-radius:30px;
+
+    background:rgba(0,0,0,.38);
+
+    backdrop-filter:blur(15px);
+    -webkit-backdrop-filter:blur(15px);
+
+    z-index:10;
+}
+
+.zoomButton{
+    min-width:48px;
+    height:40px;
+
+    border:0;
+    border-radius:22px;
+
+    color:white;
+    background:transparent;
+
+    font-size:14px;
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.zoomButton.active{
+    background:rgba(255,255,255,.22);
+}
+
+.zoomButton:active{
+    transform:scale(.92);
+}
+
+/* ================= BOTTOM ================= */
+
+#bottomBar{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+
+    height:145px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:10;
+}
+
+/* shutter */
+
+#shutter{
+    width:82px;
+    height:82px;
+
+    border-radius:50%;
+
+    background:white;
+
+    border:5px solid rgba(255,255,255,.35);
+
+    box-shadow:
+        0 0 0 3px rgba(0,0,0,.45);
+
+    cursor:pointer;
+
+    transition:.12s;
+}
+
+#shutter:active{
+    transform:scale(.88);
+}
+
+/* recording */
+
+#shutter.recording{
+    background:#ff3b30;
+    border-radius:24px;
+}
+
+/* side buttons */
+
+.sideButton{
+    position:absolute;
+
+    width:52px;
+    height:52px;
+
+    border:0;
+    border-radius:50%;
+
+    background:rgba(0,0,0,.35);
     color:white;
 
     font-size:22px;
@@ -114,284 +258,164 @@ Skrytý canvas pro snímky
     display:flex;
     align-items:center;
     justify-content:center;
-}
-
-.topButton:active{
-    transform:scale(.88);
-}
-
-#flashIcon{
-    font-size:20px;
-}
-
-#flashIcon.off{
-    opacity:.45;
-}
-
-/* =========================
-   ZOOM
-========================= */
-
-#zoomBar{
-    position:absolute;
-
-    left:50%;
-    bottom:155px;
-
-    transform:translateX(-50%);
-
-    display:flex;
-    align-items:center;
-    gap:7px;
-
-    padding:5px;
-
-    border-radius:30px;
-
-    background:rgba(0,0,0,.42);
 
     backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
 
-    z-index:10;
+    cursor:pointer;
 }
 
-.zoomButton{
-    border:0;
-
-    width:45px;
-    height:35px;
-
-    border-radius:20px;
-
-    background:transparent;
-
-    color:white;
-
-    font-size:13px;
-    font-weight:bold;
+.sideButton:active{
+    transform:scale(.9);
 }
 
-.zoomButton.active{
-    background:#f6b91a;
-    color:#000;
+#switchCamera{
+    right:24px;
 }
 
-.zoomButton:active{
-    transform:scale(.92);
+#flashButton{
+    left:24px;
 }
 
-/* =========================
-   MODE BAR
-========================= */
+/* ================= MODE ================= */
 
 #modeBar{
     position:absolute;
-
-    bottom:112px;
-
+    bottom:105px;
     left:0;
     right:0;
 
     display:flex;
-
     justify-content:center;
-
     gap:28px;
 
     z-index:10;
 }
 
 .mode{
-    border:0;
-    background:none;
-
-    color:#aaa;
+    color:rgba(255,255,255,.65);
 
     font-size:14px;
     font-weight:bold;
+
+    cursor:pointer;
 }
 
 .mode.active{
     color:white;
 }
 
-/* =========================
-   BOTTOM
-========================= */
+/* ================= FOCUS ================= */
 
-#bottom{
-    position:absolute;
-
-    left:0;
-    right:0;
-    bottom:0;
-
-    height:110px;
-
-    padding-bottom:
-        env(safe-area-inset-bottom);
-
-    display:flex;
-    align-items:center;
-    justify-content:space-around;
-
-    background:
-        linear-gradient(
-            to top,
-            rgba(0,0,0,.85),
-            rgba(0,0,0,0)
-        );
-
-    z-index:10;
-}
-
-/* =========================
-   SHUTTER
-========================= */
-
-#shutter{
-    width:76px;
-    height:76px;
-
-    border-radius:50%;
-
-    border:5px solid white;
-
-    background:white;
-
-    box-shadow:
-        0 0 0 3px rgba(0,0,0,.35);
-
-    transition:.12s;
-}
-
-#shutter.videoMode{
-    border:5px solid white;
-    background:#ff3b30;
-}
-
-#shutter:active{
-    transform:scale(.88);
-}
-
-/* =========================
-   SIDE BUTTONS
-========================= */
-
-.bottomButton{
-    width:50px;
-    height:50px;
-
-    border:0;
-    border-radius:50%;
-
-    background:rgba(0,0,0,.4);
-
-    color:white;
-
-    font-size:23px;
-}
-
-.bottomButton:active{
-    transform:scale(.88);
-}
-
-/* =========================
-   GALLERY
-========================= */
-
-#galleryPreview{
-    width:48px;
-    height:48px;
-
-    border-radius:12px;
-
-    object-fit:cover;
-
-    background:#222;
-
-    border:2px solid white;
-
-    display:none;
-}
-
-/* =========================
-   FOCUS
-========================= */
-
-#focus{
+#focusBox{
     position:absolute;
 
     width:70px;
     height:70px;
 
-    border:2px solid #ffd21c;
-
-    border-radius:4px;
+    border:2px solid #ffd60a;
+    border-radius:8px;
 
     display:none;
 
-    transform:
-        translate(-50%,-50%);
-
-    z-index:8;
-
     pointer-events:none;
 
-    animation:focusAnim .5s;
+    z-index:9;
 }
 
-@keyframes focusAnim{
+/* ================= STATUS ================= */
 
-    0%{
-        transform:
-            translate(-50%,-50%)
-            scale(1.3);
-        opacity:0;
-    }
+#status{
+    position:absolute;
 
-    100%{
-        transform:
-            translate(-50%,-50%)
-            scale(1);
-        opacity:1;
-    }
+    left:50%;
+    top:92px;
 
+    transform:translateX(-50%);
+
+    padding:9px 15px;
+
+    border-radius:18px;
+
+    background:rgba(0,0,0,.45);
+
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+
+    color:white;
+
+    font-size:13px;
+
+    opacity:0;
+
+    transition:.2s;
+
+    z-index:30;
+
+    white-space:nowrap;
 }
 
-/* =========================
-   START SCREEN
-========================= */
+#status.show{
+    opacity:1;
+}
+
+/* ================= START ================= */
 
 #startScreen{
     position:absolute;
     inset:0;
 
-    background:#000;
+    background:#050505;
 
     display:flex;
     flex-direction:column;
-
     align-items:center;
     justify-content:center;
 
     z-index:100;
 }
 
-#startScreen h1{
-    margin:0 0 8px;
-    font-size:28px;
+#startIcon{
+    width:84px;
+    height:84px;
+
+    border-radius:24px;
+
+    background:#222;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:42px;
+
+    margin-bottom:22px;
 }
 
-#startScreen p{
-    margin:0 0 25px;
-    color:#999;
+#startTitle{
+    font-size:26px;
+    font-weight:bold;
+    margin-bottom:8px;
 }
 
-#startCamera{
+#startText{
+    max-width:320px;
+
+    text-align:center;
+
+    color:#aaa;
+
+    line-height:1.5;
+
+    font-size:14px;
+
+    margin-bottom:25px;
+}
+
+#startButton{
     border:0;
 
-    padding:15px 26px;
+    padding:14px 28px;
 
     border-radius:30px;
 
@@ -400,82 +424,55 @@ Skrytý canvas pro snímky
 
     font-size:16px;
     font-weight:bold;
+
+    cursor:pointer;
 }
 
-/* =========================
-   RECORDING
-========================= */
+#startButton:active{
+    transform:scale(.95);
+}
 
-#recording{
-    position:absolute;
+#errorText{
+    margin-top:18px;
 
-    top:105px;
-    left:50%;
+    max-width:330px;
 
-    transform:translateX(-50%);
+    text-align:center;
 
-    display:none;
-
-    align-items:center;
-    gap:7px;
-
-    padding:7px 12px;
-
-    border-radius:20px;
-
-    background:rgba(0,0,0,.5);
+    color:#ff6b6b;
 
     font-size:13px;
 
-    z-index:10;
+    line-height:1.4;
+
+    display:none;
 }
 
-#recordDot{
-    width:9px;
-    height:9px;
+/* ================= VIDEO MODE ================= */
 
-    border-radius:50%;
-
-    background:#ff3b30;
+body.videoMode #zoomBar{
+    display:none;
 }
 
-/* =========================
-   HIDDEN STABILIZATION
-========================= */
+/* ================= DESKTOP ================= */
 
-#stabilizationStatus{
-    position:absolute;
+@media(min-width:800px){
 
-    width:1px;
-    height:1px;
+    #app{
+        max-width:520px;
+        max-height:920px;
 
-    overflow:hidden;
-
-    opacity:0;
-}
-
-/* =========================
-   DESKTOP
-========================= */
-
-@media(min-width:700px){
-
-    #cameraView{
-        width:430px;
-        height:calc(100% - 20px);
-
-        top:10px;
         left:50%;
+        top:50%;
 
-        transform:translateX(-50%);
+        transform:translate(-50%,-50%);
 
         border-radius:25px;
 
-        overflow:hidden;
+        box-shadow:0 0 60px rgba(0,0,0,.8);
     }
 
 }
-
 </style>
 </head>
 
@@ -483,801 +480,836 @@ Skrytý canvas pro snímky
 
 <div id="app">
 
-    <!-- CAMERA -->
+    <div id="cameraArea">
 
-    <div id="cameraView">
-
-        <video
-            id="video"
-            autoplay
-            muted
-            playsinline>
-        </video>
-
-        <canvas id="photoCanvas"></canvas>
-
-        <div id="focus"></div>
-
-        <div id="recording">
-            <span id="recordDot"></span>
-            <span id="recordTime">00:00</span>
+        <div id="videoWrap">
+            <video id="video"
+                   autoplay
+                   playsinline
+                   muted></video>
         </div>
 
-    </div>
+        <div id="topShade"></div>
+        <div id="bottomShade"></div>
 
+        <div id="focusBox"></div>
+
+    </div>
 
     <!-- TOP -->
 
     <div id="topBar">
 
-        <button
-            class="topButton"
-            id="flashButton">
-            ⚡
+        <button class="topButton" id="closeButton">
+            ✕
         </button>
 
-        <button
-            class="topButton"
-            id="settingsButton">
+        <button class="topButton" id="settingsButton">
             ⚙
         </button>
 
     </div>
 
+    <!-- STATUS -->
+
+    <div id="status"></div>
 
     <!-- ZOOM -->
 
     <div id="zoomBar">
 
-        <button
-            class="zoomButton"
-            data-zoom="0.5">
-            0.5×
-        </button>
-
-        <button
-            class="zoomButton active"
-            data-zoom="1">
+        <button class="zoomButton active" data-zoom="1">
             1×
         </button>
 
-        <button
-            class="zoomButton"
-            data-zoom="2">
+        <button class="zoomButton" data-zoom="2">
             2×
         </button>
 
     </div>
 
-
-    <!-- MODES -->
+    <!-- MODE -->
 
     <div id="modeBar">
 
-        <button
-            class="mode"
-            data-mode="video">
-            VIDEO
-        </button>
-
-        <button
-            class="mode active"
-            data-mode="photo">
+        <div class="mode active" id="photoMode">
             FOTO
-        </button>
+        </div>
+
+        <div class="mode" id="videoMode">
+            VIDEO
+        </div>
 
     </div>
 
-
     <!-- BOTTOM -->
 
-    <div id="bottom">
+    <div id="bottomBar">
 
-        <button
-            class="bottomButton"
-            id="galleryButton">
-            🖼️
+        <button class="sideButton" id="flashButton">
+            ⚡
         </button>
 
-        <img
-            id="galleryPreview"
-            alt=""
-        >
+        <button id="shutter"></button>
 
-        <button
-            id="shutter">
-        </button>
-
-        <button
-            class="bottomButton"
-            id="switchCamera">
+        <button class="sideButton" id="switchCamera">
             🔄
         </button>
 
     </div>
 
-
     <!-- START -->
 
     <div id="startScreen">
 
-        <h1>📷 Fotoaparát</h1>
+        <div id="startIcon">
+            📷
+        </div>
 
-        <p>
-            Kamera se stabilizací
-        </p>
+        <div id="startTitle">
+            Fotoaparát
+        </div>
 
-        <button id="startCamera">
+        <div id="startText">
+            Povol přístup ke kameře a fotoaparát se spustí.
+            Stabilizace obrazu běží automaticky na pozadí.
+        </div>
+
+        <button id="startButton">
             Spustit fotoaparát
         </button>
 
-    </div>
+        <div id="errorText"></div>
 
-
-    <div id="stabilizationStatus">
-        Stabilizace aktivní
     </div>
 
 </div>
 
 
-<script type="module">
+<script>
 
-/* =====================================================
-   AI OBJECT DETECTOR
-===================================================== */
-
-import {
-    ObjectDetector,
-    FilesetResolver
-}
-from
-"https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs";
-
-
-/* =====================================================
-   ELEMENTS
-===================================================== */
-
-const video =
-    document.getElementById("video");
-
-const cameraView =
-    document.getElementById("cameraView");
-
-const startScreen =
-    document.getElementById("startScreen");
-
-const startCamera =
-    document.getElementById("startCamera");
-
-const shutter =
-    document.getElementById("shutter");
-
-const switchCamera =
-    document.getElementById("switchCamera");
-
-const flashButton =
-    document.getElementById("flashButton");
-
-const focus =
-    document.getElementById("focus");
-
-const canvas =
-    document.getElementById("photoCanvas");
-
-const galleryPreview =
-    document.getElementById("galleryPreview");
-
-const recording =
-    document.getElementById("recording");
-
-const recordTime =
-    document.getElementById("recordTime");
-
-
-/* =====================================================
+/* =========================================================
    CAMERA
-===================================================== */
+========================================================= */
+
+const video = document.getElementById("video");
+const videoWrap = document.getElementById("videoWrap");
+
+const startScreen = document.getElementById("startScreen");
+const startButton = document.getElementById("startButton");
+const errorText = document.getElementById("errorText");
+
+const statusBox = document.getElementById("status");
+
+const shutter = document.getElementById("shutter");
+
+const switchCamera = document.getElementById("switchCamera");
+const flashButton = document.getElementById("flashButton");
+
+const focusBox = document.getElementById("focusBox");
+
+const zoomButtons =
+    document.querySelectorAll(".zoomButton");
+
+const photoMode =
+    document.getElementById("photoMode");
+
+const videoMode =
+    document.getElementById("videoMode");
 
 let stream = null;
-
-let facingMode = "environment";
+let currentFacing = "environment";
 
 let currentZoom = 1;
 
-let currentMode = "photo";
+let flashOn = false;
 
-let flash = false;
+let mode = "photo";
 
-let detector = null;
+let recorder = null;
+let recordedChunks = [];
 
-
-/* =====================================================
-   STABILIZATION
-===================================================== */
-
-let stabilization = true;
-
-let stableX = 0;
-
-let stableY = 0;
-
-let stableRotation = 0;
-
-let wantedX = 0;
-
-let wantedY = 0;
-
-let wantedRotation = 0;
+let stabilizerStarted = false;
 
 
-/* =====================================================
-   OBJECT TRACKING
-===================================================== */
+/* =========================================================
+   STATUS
+========================================================= */
 
-let previousObjects = [];
+function showStatus(text, time = 1800){
 
-let lastAI =
-    0;
+    statusBox.textContent = text;
 
+    statusBox.classList.add("show");
 
-/* =====================================================
-   GYRO
-===================================================== */
+    clearTimeout(showStatus.timer);
 
-let gyroEnabled = true;
+    showStatus.timer = setTimeout(() => {
 
-let lastGamma = 0;
+        statusBox.classList.remove("show");
 
-let gyroMovement = 0;
-
-
-/* =====================================================
-   START CAMERA
-===================================================== */
-
-startCamera.onclick =
-    async () => {
-
-        await openCamera();
-
-    };
+    }, time);
+}
 
 
-/* =====================================================
-   OPEN CAMERA
-===================================================== */
+/* =========================================================
+   ERROR
+========================================================= */
 
-async function openCamera(){
+function showError(text){
+
+    errorText.textContent = text;
+
+    errorText.style.display = "block";
+
+}
+
+
+/* =========================================================
+   CAMERA START
+========================================================= */
+
+async function startCamera(){
+
+    errorText.style.display = "none";
+
+    if(!window.isSecureContext){
+
+        showError(
+            "Kamera v prohlížeči potřebuje HTTPS nebo localhost. " +
+            "Otevři stránku přes Live Server nebo HTTPS."
+        );
+
+        return;
+    }
+
+    if(!navigator.mediaDevices ||
+       !navigator.mediaDevices.getUserMedia){
+
+        showError(
+            "Tento prohlížeč nepodporuje přístup ke kameře."
+        );
+
+        return;
+    }
+
 
     try{
 
         if(stream){
 
-            stream
-                .getTracks()
-                .forEach(
-                    track =>
-                        track.stop()
-                );
+            stream.getTracks().forEach(track => track.stop());
 
         }
 
 
-        stream =
-            await navigator
-            .mediaDevices
-            .getUserMedia({
+        /* nejprve zkusíme kvalitní nastavení */
 
-                audio:false,
+        let constraints = {
 
-                video:{
+            audio:false,
 
-                    facingMode:{
-                        ideal:
-                            facingMode
-                    },
+            video:{
+                facingMode:{
+                    ideal:currentFacing
+                },
 
-                    width:{
-                        ideal:1920
-                    },
+                width:{
+                    ideal:1920
+                },
 
-                    height:{
-                        ideal:1080
-                    },
+                height:{
+                    ideal:1080
+                },
 
-                    frameRate:{
-                        ideal:60,
-                        max:60
+                frameRate:{
+                    ideal:60,
+                    max:60
+                }
+            }
+
+        };
+
+
+        try{
+
+            stream =
+                await navigator.mediaDevices.getUserMedia(
+                    constraints
+                );
+
+        }catch(e){
+
+            /* fallback pro starší prohlížeče */
+
+            stream =
+                await navigator.mediaDevices.getUserMedia({
+
+                    audio:false,
+
+                    video:{
+                        facingMode:currentFacing
                     }
 
-                }
+                });
 
-            });
+        }
 
 
-        video.srcObject =
-            stream;
-
+        video.srcObject = stream;
 
         await video.play();
 
 
-        startScreen.style.display =
-            "none";
+        startScreen.style.display = "none";
+
+        showStatus("Kamera spuštěna");
 
 
-        await setupCameraZoom();
-
-
-        /*
-        AI načteme na pozadí.
-        */
-
-        loadAI();
-
-
-        requestAnimationFrame(
-            stabilizationLoop
-        );
-
+        setupStabilization();
 
     }catch(error){
 
         console.error(error);
 
-        alert(
-            "Kamera není dostupná."
-        );
+        let message =
+            "Kameru se nepodařilo spustit.";
+
+        if(error.name === "NotAllowedError"){
+
+            message =
+                "Přístup ke kameře byl zamítnut. Povol kameru v prohlížeči.";
+
+        }
+
+        else if(error.name === "NotFoundError"){
+
+            message =
+                "Kamera nebyla nalezena.";
+
+        }
+
+        else if(error.name === "NotReadableError"){
+
+            message =
+                "Kameru právě používá jiná aplikace.";
+
+        }
+
+        else if(error.name === "SecurityError"){
+
+            message =
+                "Prohlížeč zablokoval kameru. Použij HTTPS nebo localhost.";
+
+        }
+
+
+        showError(message);
 
     }
 
 }
 
 
-/* =====================================================
-   CAMERA ZOOM
-===================================================== */
+/* =========================================================
+   SWITCH CAMERA
+========================================================= */
 
-async function setupCameraZoom(){
+switchCamera.addEventListener("click", async () => {
 
-    if(!stream)
+    if(!stream){
+
         return;
+    }
+
+    currentFacing =
+        currentFacing === "environment"
+        ? "user"
+        : "environment";
+
+
+    await startCamera();
+
+});
+
+
+/* =========================================================
+   ZOOM
+========================================================= */
+
+function setZoom(value){
+
+    currentZoom = value;
+
+    zoomButtons.forEach(button => {
+
+        button.classList.toggle(
+            "active",
+            Number(button.dataset.zoom) === value
+        );
+
+    });
+
+
+    /*
+       1× = normální záběr
+       2× = digitální přiblížení
+
+       Stabilizátor ale stále pracuje s větším
+       interním obrazem kolem okrajů.
+    */
+
+    if(value === 1){
+
+        video.style.transform =
+            "scale(1)";
+
+    }
+
+    if(value === 2){
+
+        video.style.transform =
+            "scale(2)";
+
+    }
+
+}
+
+
+zoomButtons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        setZoom(
+            Number(button.dataset.zoom)
+        );
+
+    });
+
+});
+
+
+/* =========================================================
+   AUTOMATICKÁ STABILIZACE
+=========================================================
+
+   Důležité:
+
+   0.5× NENÍ tlačítko.
+
+   Stabilizátor má automaticky rezervu obrazu
+   kolem displeje. Díky tomu může obraz posouvat,
+   když se telefon trochu pohne.
+
+========================================================= */
+
+let smoothX = 0;
+let smoothY = 0;
+
+let targetX = 0;
+let targetY = 0;
+
+let smoothRotation = 0;
+let targetRotation = 0;
+
+
+let lastGamma = null;
+let lastBeta = null;
+
+
+/* nastavení stabilizace */
+
+const STABILIZATION_POWER = 0.55;
+const MAX_MOVE = 4.5;
+const MAX_ROTATION = 2.2;
+
+
+/* gyro */
+
+function orientationHandler(event){
+
+    if(
+        typeof event.gamma !== "number" ||
+        typeof event.beta !== "number"
+    ){
+
+        return;
+    }
+
+
+    if(lastGamma === null){
+
+        lastGamma = event.gamma;
+        lastBeta = event.beta;
+
+        return;
+
+    }
+
+
+    let dg =
+        event.gamma - lastGamma;
+
+    let db =
+        event.beta - lastBeta;
+
+
+    /*
+       omezení náhlých skoků
+    */
+
+    dg =
+        Math.max(-8,Math.min(8,dg));
+
+    db =
+        Math.max(-8,Math.min(8,db));
+
+
+    targetX +=
+        dg * STABILIZATION_POWER;
+
+    targetY +=
+        db * STABILIZATION_POWER;
+
+
+    targetX =
+        Math.max(
+            -MAX_MOVE,
+            Math.min(MAX_MOVE,targetX)
+        );
+
+    targetY =
+        Math.max(
+            -MAX_MOVE,
+            Math.min(MAX_MOVE,targetY)
+        );
+
+
+    targetRotation =
+        Math.max(
+            -MAX_ROTATION,
+            Math.min(
+                MAX_ROTATION,
+                targetRotation + dg * 0.08
+            )
+        );
+
+
+    lastGamma = event.gamma;
+    lastBeta = event.beta;
+
+}
+
+
+/* stabilizace */
+
+function stabilizationLoop(){
+
+    smoothX +=
+        (targetX - smoothX) * 0.08;
+
+    smoothY +=
+        (targetY - smoothY) * 0.08;
+
+    smoothRotation +=
+        (targetRotation - smoothRotation) * 0.06;
+
+
+    /*
+       pomalé vracení středu
+    */
+
+    targetX *= 0.985;
+    targetY *= 0.985;
+    targetRotation *= 0.97;
+
+
+    /*
+       0.5× rezervní plocha je automatická.
+       Uživatel ji nevidí a nemusí nic nastavovat.
+    */
+
+    videoWrap.style.transform =
+        `translate3d(${-smoothX}px, ${-smoothY}px, 0)
+         rotate(${-smoothRotation}deg)`;
+
+
+    requestAnimationFrame(stabilizationLoop);
+
+}
+
+
+function setupStabilization(){
+
+    if(stabilizerStarted){
+
+        return;
+
+    }
+
+    stabilizerStarted = true;
+
+
+    window.addEventListener(
+        "deviceorientation",
+        orientationHandler,
+        true
+    );
+
+
+    stabilizationLoop();
+
+}
+
+
+/* =========================================================
+   IOS / GYRO PERMISSION
+========================================================= */
+
+async function requestMotionPermission(){
+
+    try{
+
+        if(
+            typeof DeviceOrientationEvent !== "undefined" &&
+            typeof DeviceOrientationEvent.requestPermission === "function"
+        ){
+
+            const permission =
+                await DeviceOrientationEvent.requestPermission();
+
+            if(permission === "granted"){
+
+                showStatus("Stabilizace aktivní");
+
+            }
+
+        }
+
+    }catch(e){
+
+        console.log(e);
+
+    }
+
+}
+
+
+/* =========================================================
+   START BUTTON
+========================================================= */
+
+startButton.addEventListener("click", async () => {
+
+    await requestMotionPermission();
+
+    await startCamera();
+
+});
+
+
+/* =========================================================
+   FLASH
+========================================================= */
+
+flashButton.addEventListener("click", async () => {
+
+    if(!stream){
+
+        return;
+    }
 
 
     const track =
         stream.getVideoTracks()[0];
 
 
-    if(
-        !track ||
-        !track.getCapabilities
-    ){
+    if(!track){
 
         return;
-
     }
 
 
     const capabilities =
-        track.getCapabilities();
+        track.getCapabilities
+        ? track.getCapabilities()
+        : {};
 
 
-    if(!capabilities.zoom)
+    if(!capabilities.torch){
+
+        showStatus("Blesk není v prohlížeči dostupný");
+
         return;
-
-
-    /*
-    Browser může mít jiný rozsah
-    než klasické 0.5× / 1× / 2×.
-    */
-
-    const min =
-        capabilities.zoom.min;
-
-    const max =
-        capabilities.zoom.max;
-
-
-    let wanted =
-        currentZoom;
-
-
-    wanted =
-        Math.max(
-            min,
-            Math.min(
-                max,
-                wanted
-            )
-        );
+    }
 
 
     try{
+
+        flashOn = !flashOn;
 
         await track.applyConstraints({
 
             advanced:[
                 {
-                    zoom:wanted
+                    torch:flashOn
                 }
             ]
 
         });
 
-    }catch(error){
 
-        console.log(
-            "Hardware zoom není dostupný."
+        flashButton.textContent =
+            flashOn ? "⚡" : "⚡";
+
+        showStatus(
+            flashOn
+            ? "Blesk zapnutý"
+            : "Blesk vypnutý"
         );
 
+    }catch(e){
+
+        showStatus("Blesk se nepodařilo změnit");
+
     }
-
-}
-
-
-/* =====================================================
-   ZOOM BUTTONS
-===================================================== */
-
-document
-.querySelectorAll(".zoomButton")
-.forEach(button => {
-
-    button.onclick =
-        async () => {
-
-            const zoom =
-                Number(
-                    button.dataset.zoom
-                );
-
-
-            currentZoom =
-                zoom;
-
-
-            document
-            .querySelectorAll(
-                ".zoomButton"
-            )
-            .forEach(
-                b =>
-                    b.classList.remove(
-                        "active"
-                    )
-            );
-
-
-            button.classList.add(
-                "active"
-            );
-
-
-            await setupCameraZoom();
-
-
-            /*
-            Pokud hardware zoom neumí,
-            použijeme digitální zoom.
-            */
-
-            if(
-                !stream ||
-                !stream
-                .getVideoTracks()[0]
-                .getCapabilities
-            ){
-
-                applyDigitalZoom();
-
-            }
-
-        };
 
 });
 
 
-/* =====================================================
-   DIGITAL ZOOM
-===================================================== */
-
-function applyDigitalZoom(){
-
-    /*
-    Hardware zoom má přednost.
-    Tohle je pouze fallback.
-    */
-
-    if(currentZoom <= 1){
-
-        video.style.zoom =
-            1;
-
-        return;
-
-    }
-
-
-    video.style.zoom =
-        currentZoom;
-
-}
-
-
-/* =====================================================
-   FLASH
-===================================================== */
-
-flashButton.onclick =
-    () => {
-
-        flash =
-            !flash;
-
-
-        flashButton.classList.toggle(
-            "off",
-            !flash
-        );
-
-
-        /*
-        HTML kamera nemůže
-        spolehlivě ovládat fyzický
-        blesk na každém telefonu.
-        */
-
-        if(
-            stream
-        ){
-
-            const track =
-                stream.getVideoTracks()[0];
-
-
-            if(
-                track &&
-                track.getCapabilities
-            ){
-
-                const capabilities =
-                    track.getCapabilities();
-
-
-                if(
-                    capabilities.torch
-                ){
-
-                    track.applyConstraints({
-
-                        advanced:[
-                            {
-                                torch:
-                                    flash
-                            }
-                        ]
-
-                    }).catch(
-                        () => {}
-                    );
-
-                }
-
-            }
-
-        }
-
-    };
-
-
-/* =====================================================
-   SWITCH CAMERA
-===================================================== */
-
-switchCamera.onclick =
-    async () => {
-
-        facingMode =
-            facingMode ===
-            "environment"
-            ? "user"
-            : "environment";
-
-
-        await openCamera();
-
-    };
-
-
-/* =====================================================
+/* =========================================================
    FOCUS
-===================================================== */
+========================================================= */
 
-cameraView.addEventListener(
-    "click",
-    event => {
-
-        /*
-        Nechceme fokusovat,
-        když uživatel klikne na UI.
-        */
-
-        const rect =
-            cameraView
-            .getBoundingClientRect();
-
-
-        const x =
-            event.clientX -
-            rect.left;
-
-
-        const y =
-            event.clientY -
-            rect.top;
-
-
-        focus.style.left =
-            x + "px";
-
-
-        focus.style.top =
-            y + "px";
-
-
-        focus.style.display =
-            "block";
-
-
-        clearTimeout(
-            focus.hideTimer
-        );
-
-
-        focus.hideTimer =
-            setTimeout(
-                () => {
-
-                    focus.style.display =
-                        "none";
-
-                },
-                700
-            );
-
-    }
-);
-
-
-/* =====================================================
-   MODES
-===================================================== */
-
-document
-.querySelectorAll(".mode")
-.forEach(button => {
-
-    button.onclick =
-        () => {
-
-            currentMode =
-                button.dataset.mode;
-
-
-            document
-            .querySelectorAll(".mode")
-            .forEach(
-                b =>
-                    b.classList.remove(
-                        "active"
-                    )
-            );
-
-
-            button.classList.add(
-                "active"
-            );
-
-
-            if(
-                currentMode ===
-                "video"
-            ){
-
-                shutter.classList.add(
-                    "videoMode"
-                );
-
-            }else{
-
-                shutter.classList.remove(
-                    "videoMode"
-                );
-
-            }
-
-        };
-
-});
-
-
-/* =====================================================
-   PHOTO
-===================================================== */
-
-shutter.onclick =
-    async () => {
-
-        if(
-            currentMode ===
-            "photo"
-        ){
-
-            takePhoto();
-
-        }else{
-
-            toggleRecording();
-
-        }
-
-    };
-
-
-/* =====================================================
-   TAKE PHOTO
-===================================================== */
-
-function takePhoto(){
+document.getElementById("cameraArea")
+.addEventListener("pointerdown", event => {
 
     if(
-        video.readyState < 2
+        event.target.closest("button") ||
+        event.target.closest("#zoomBar")
     ){
 
         return;
+    }
+
+
+    const rect =
+        document
+        .getElementById("cameraArea")
+        .getBoundingClientRect();
+
+
+    const x =
+        event.clientX - rect.left;
+
+    const y =
+        event.clientY - rect.top;
+
+
+    focusBox.style.left =
+        `${x - 35}px`;
+
+    focusBox.style.top =
+        `${y - 35}px`;
+
+    focusBox.style.display =
+        "block";
+
+
+    clearTimeout(focusBox.timer);
+
+    focusBox.timer =
+        setTimeout(() => {
+
+            focusBox.style.display =
+                "none";
+
+        },1000);
+
+
+    const track =
+        stream?.getVideoTracks()?.[0];
+
+
+    if(track &&
+       track.getCapabilities){
+
+        const caps =
+            track.getCapabilities();
+
+        if(
+            caps.focusMode &&
+            caps.focusMode.includes("single-shot")
+        ){
+
+            track.applyConstraints({
+
+                advanced:[
+                    {
+                        focusMode:"single-shot"
+                    }
+                ]
+
+            }).catch(()=>{});
+
+        }
 
     }
+
+});
+
+
+/* =========================================================
+   PHOTO
+========================================================= */
+
+function takePhoto(){
+
+    if(!video.videoWidth){
+
+        showStatus("Kamera ještě není připravená");
+
+        return;
+
+    }
+
+
+    const canvas =
+        document.createElement("canvas");
 
 
     canvas.width =
         video.videoWidth;
 
-
     canvas.height =
         video.videoHeight;
 
 
-    const c =
+    const ctx =
         canvas.getContext("2d");
 
 
     /*
-    Zrcadlení přední kamery.
+       Zrcadlení pouze přední kamery.
     */
 
-    if(
-        facingMode ===
-        "user"
-    ){
+    if(currentFacing === "user"){
 
-        c.save();
-
-        c.translate(
+        ctx.translate(
             canvas.width,
             0
         );
 
-        c.scale(
-            -1,
-            1
-        );
+        ctx.scale(-1,1);
 
     }
 
 
-    c.drawImage(
+    /*
+       Foto z aktuálního obrazu.
+    */
+
+    ctx.drawImage(
         video,
         0,
         0,
@@ -1286,158 +1318,155 @@ function takePhoto(){
     );
 
 
-    if(
-        facingMode ===
-        "user"
-    ){
+    canvas.toBlob(blob => {
 
-        c.restore();
+        if(!blob){
 
-    }
+            showStatus("Fotku se nepodařilo uložit");
 
+            return;
 
-    const image =
-        canvas.toDataURL(
-            "image/jpeg",
-            .95
-        );
-
-
-    galleryPreview.src =
-        image;
-
-
-    galleryPreview.style.display =
-        "block";
-
-
-    /*
-    Stažení fotografie.
-    */
-
-    const link =
-        document.createElement(
-            "a"
-        );
-
-
-    link.href =
-        image;
-
-
-    link.download =
-        "foto-" +
-        Date.now() +
-        ".jpg";
-
-
-    link.click();
-
-
-    /*
-    Malá animace spouště.
-    */
-
-    shutter.animate(
-        [
-            {
-                transform:
-                    "scale(1)"
-            },
-
-            {
-                transform:
-                    "scale(.82)"
-            },
-
-            {
-                transform:
-                    "scale(1)"
-            }
-        ],
-        {
-            duration:180
         }
-    );
+
+
+        const url =
+            URL.createObjectURL(blob);
+
+
+        const a =
+            document.createElement("a");
+
+
+        const now =
+            new Date();
+
+
+        const filename =
+            "foto-" +
+            now.getFullYear() +
+            "-" +
+            String(now.getMonth()+1).padStart(2,"0") +
+            "-" +
+            String(now.getDate()).padStart(2,"0") +
+            "-" +
+            String(now.getHours()).padStart(2,"0") +
+            String(now.getMinutes()).padStart(2,"0") +
+            String(now.getSeconds()).padStart(2,"0") +
+            ".jpg";
+
+
+        a.href = url;
+        a.download = filename;
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+        setTimeout(() => {
+
+            URL.revokeObjectURL(url);
+
+        },1000);
+
+
+        showStatus("Fotka uložena 📸");
+
+    },"image/jpeg",0.95);
 
 }
 
 
-/* =====================================================
-   VIDEO RECORDING
-===================================================== */
+/* =========================================================
+   VIDEO
+========================================================= */
 
-let recorder = null;
+function getRecorder(){
 
-let chunks = [];
+    if(!window.MediaRecorder){
 
-let recordingStart = 0;
-
-let recordingTimer = null;
-
-
-function toggleRecording(){
-
-    if(
-        !recorder ||
-        recorder.state ===
-        "inactive"
-    ){
-
-        startRecording();
-
-    }else{
-
-        stopRecording();
+        return null;
 
     }
 
-}
+
+    const types = [
+
+        "video/webm;codecs=vp9",
+
+        "video/webm;codecs=vp8",
+
+        "video/webm",
+
+        "video/mp4"
+
+    ];
 
 
-/* =====================================================
-   START RECORD
-===================================================== */
+    for(const type of types){
 
-function startRecording(){
+        try{
 
-    if(!stream)
-        return;
+            if(
+                MediaRecorder.isTypeSupported &&
+                MediaRecorder.isTypeSupported(type)
+            ){
 
+                return new MediaRecorder(
+                    stream,
+                    {
+                        mimeType:type
+                    }
+                );
 
-    chunks = [];
+            }
+
+        }catch(e){}
+
+    }
 
 
     try{
 
-        recorder =
-            new MediaRecorder(
-                stream,
-                {
-                    mimeType:
-                        "video/webm"
-                }
-            );
+        return new MediaRecorder(stream);
 
+    }catch(e){
 
-    }catch(error){
-
-        recorder =
-            new MediaRecorder(
-                stream
-            );
+        return null;
 
     }
+
+}
+
+
+function startRecording(){
+
+    recorder =
+        getRecorder();
+
+
+    if(!recorder){
+
+        showStatus(
+            "Video není v tomto prohlížeči podporované"
+        );
+
+        return;
+
+    }
+
+
+    recordedChunks = [];
 
 
     recorder.ondataavailable =
         event => {
 
-            if(
-                event.data.size > 0
-            ){
+            if(event.data &&
+               event.data.size > 0){
 
-                chunks.push(
+                recordedChunks.push(
                     event.data
                 );
 
@@ -1447,44 +1476,24 @@ function startRecording(){
 
 
     recorder.onstop =
-        saveVideo;
+        saveRecording;
 
 
     recorder.start();
 
 
-    recording.style.display =
-        "flex";
+    shutter.classList.add("recording");
 
-
-    recordingStart =
-        Date.now();
-
-
-    recordingTimer =
-        setInterval(
-            updateRecordingTime,
-            500
-        );
-
-
-    shutter.classList.add(
-        "videoMode"
-    );
+    showStatus("Nahrávání…");
 
 }
 
-
-/* =====================================================
-   STOP RECORD
-===================================================== */
 
 function stopRecording(){
 
     if(
         recorder &&
-        recorder.state !==
-        "inactive"
+        recorder.state !== "inactive"
     ){
 
         recorder.stop();
@@ -1492,644 +1501,183 @@ function stopRecording(){
     }
 
 
-    clearInterval(
-        recordingTimer
-    );
-
-
-    recording.style.display =
-        "none";
-
-
-    recordTime.textContent =
-        "00:00";
-
-
     shutter.classList.remove(
-        "videoMode"
+        "recording"
     );
 
 }
 
 
-/* =====================================================
-   RECORD TIME
-===================================================== */
+function saveRecording(){
 
-function updateRecordingTime(){
+    if(!recordedChunks.length){
 
-    const seconds =
-        Math.floor(
-            (
-                Date.now() -
-                recordingStart
-            ) / 1000
+        showStatus(
+            "Video nemá žádná data"
         );
 
+        return;
 
-    const min =
-        String(
-            Math.floor(
-                seconds / 60
-            )
-        ).padStart(
-            2,
-            "0"
-        );
+    }
 
 
-    const sec =
-        String(
-            seconds % 60
-        ).padStart(
-            2,
-            "0"
-        );
+    const type =
+        recorder.mimeType ||
+        "video/webm";
 
-
-    recordTime.textContent =
-        min +
-        ":" +
-        sec;
-
-}
-
-
-/* =====================================================
-   SAVE VIDEO
-===================================================== */
-
-function saveVideo(){
 
     const blob =
         new Blob(
-            chunks,
+            recordedChunks,
             {
-                type:
-                    "video/webm"
+                type:type
             }
         );
 
 
     const url =
-        URL.createObjectURL(
-            blob
-        );
+        URL.createObjectURL(blob);
 
 
-    const link =
-        document.createElement(
-            "a"
-        );
+    const a =
+        document.createElement("a");
 
 
-    link.href =
-        url;
+    a.href = url;
 
-
-    link.download =
+    a.download =
         "video-" +
         Date.now() +
         ".webm";
 
 
-    link.click();
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
 
 
-    setTimeout(
-        () => {
+    setTimeout(() => {
 
-            URL.revokeObjectURL(
-                url
-            );
+        URL.revokeObjectURL(url);
 
-        },
-        1000
+    },1000);
+
+
+    showStatus("Video uloženo 🎥");
+
+}
+
+
+/* =========================================================
+   SHUTTER
+========================================================= */
+
+shutter.addEventListener("click", async () => {
+
+    if(!stream){
+
+        showStatus("Nejdřív spusť kameru");
+
+        return;
+
+    }
+
+
+    if(mode === "photo"){
+
+        takePhoto();
+
+    }else{
+
+        if(
+            recorder &&
+            recorder.state === "recording"
+        ){
+
+            stopRecording();
+
+        }else{
+
+            startRecording();
+
+        }
+
+    }
+
+});
+
+
+/* =========================================================
+   MODES
+========================================================= */
+
+photoMode.addEventListener("click", () => {
+
+    mode = "photo";
+
+    photoMode.classList.add("active");
+    videoMode.classList.remove("active");
+
+    shutter.classList.remove("recording");
+
+});
+
+
+videoMode.addEventListener("click", () => {
+
+    mode = "video";
+
+    videoMode.classList.add("active");
+    photoMode.classList.remove("active");
+
+});
+
+
+/* =========================================================
+   CLOSE
+========================================================= */
+
+document.getElementById("closeButton")
+.addEventListener("click", () => {
+
+    if(stream){
+
+        stream
+        .getTracks()
+        .forEach(track => track.stop());
+
+    }
+
+
+    video.srcObject = null;
+
+    startScreen.style.display =
+        "flex";
+
+});
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+document.getElementById("settingsButton")
+.addEventListener("click", () => {
+
+    showStatus(
+        "Automatická stabilizace je zapnutá"
     );
 
-}
+});
 
 
-/* =====================================================
-   AI
-===================================================== */
+/* =========================================================
+   INITIAL
+========================================================= */
 
-async function loadAI(){
-
-    if(detector)
-        return;
-
-
-    try{
-
-        const vision =
-            await FilesetResolver
-            .forVisionTasks(
-
-                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
-
-            );
-
-
-        detector =
-            await ObjectDetector
-            .createFromOptions(
-                vision,
-                {
-
-                    baseOptions:{
-
-                        modelAssetPath:
-
-                        "https://storage.googleapis.com/mediapipe-tasks/object_detector/efficientdet_lite0.tflite",
-
-                        delegate:
-                            "GPU"
-
-                    },
-
-                    runningMode:
-                        "VIDEO",
-
-                    maxResults:
-                        8,
-
-                    scoreThreshold:
-                        .3
-
-                }
-            );
-
-
-    }catch(error){
-
-        console.log(
-            "AI není dostupná:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   OBJECT DETECTION
-===================================================== */
-
-function detectMotion(){
-
-    if(
-        !detector ||
-        video.readyState < 2
-    ){
-
-        return;
-
-    }
-
-
-    const now =
-        performance.now();
-
-
-    if(
-        now -
-        lastAI <
-        90
-    ){
-
-        return;
-
-    }
-
-
-    lastAI =
-        now;
-
-
-    try{
-
-        const result =
-            detector.detectForVideo(
-                video,
-                now
-            );
-
-
-        if(
-            !result.detections ||
-            result.detections.length === 0
-        ){
-
-            return;
-
-        }
-
-
-        /*
-        Největší objekt
-        použijeme jako referenci.
-        */
-
-        let best = null;
-
-
-        for(
-            const detection
-            of result.detections
-        ){
-
-            const box =
-                detection.boundingBox;
-
-
-            const score =
-                detection
-                .categories?.[0]
-                ?.score || 0;
-
-
-            if(!box)
-                continue;
-
-
-            const area =
-                box.width *
-                box.height;
-
-
-            const value =
-                area *
-                score;
-
-
-            if(
-                !best ||
-                value >
-                best.value
-            ){
-
-                best = {
-                    box,
-                    value
-                };
-
-            }
-
-        }
-
-
-        if(!best)
-            return;
-
-
-        const box =
-            best.box;
-
-
-        const x =
-            box.originX +
-            box.width / 2;
-
-
-        const y =
-            box.originY +
-            box.height / 2;
-
-
-        const nx =
-            x /
-            video.videoWidth;
-
-
-        const ny =
-            y /
-            video.videoHeight;
-
-
-        /*
-        Sledujeme změnu pozice
-        objektu mezi snímky.
-        */
-
-        if(
-            previousObjects.length
-        ){
-
-            const old =
-                previousObjects[0];
-
-
-            const dx =
-                nx -
-                old.x;
-
-
-            const dy =
-                ny -
-                old.y;
-
-
-            /*
-            Opačný pohyb =
-            stabilizace.
-            */
-
-            wantedX =
-                dx *
-                220;
-
-
-            wantedY =
-                dy *
-                220;
-
-        }
-
-
-        previousObjects = [
-            {
-                x:nx,
-                y:ny
-            }
-        ];
-
-
-    }catch(error){
-
-        console.log(error);
-
-    }
-
-}
-
-
-/* =====================================================
-   GYRO
-===================================================== */
-
-window.addEventListener(
-    "deviceorientation",
-    event => {
-
-        if(
-            !gyroEnabled
-        )
-            return;
-
-
-        const gamma =
-            event.gamma || 0;
-
-
-        const difference =
-            gamma -
-            lastGamma;
-
-
-        lastGamma =
-            gamma;
-
-
-        /*
-        Nízkopásmový filtr.
-        Malé náhodné změny ignorujeme.
-        */
-
-        if(
-            Math.abs(
-                difference
-            ) <
-            .08
-        ){
-
-            return;
-
-        }
-
-
-        gyroMovement +=
-            difference;
-
-
-        /*
-        Opačná rotace.
-        */
-
-        wantedRotation =
-            gyroMovement *
-            .55;
-
-
-        /*
-        Pomalu vracíme nulovou hodnotu.
-        */
-
-        gyroMovement *=
-            .94;
-
-    },
-    true
-);
-
-
-/* =====================================================
-   SMOOTH
-===================================================== */
-
-function smooth(
-    current,
-    target,
-    amount
-){
-
-    return current +
-        (
-            target -
-            current
-        ) *
-        amount;
-
-}
-
-
-/* =====================================================
-   STABILIZER LOOP
-===================================================== */
-
-function stabilizationLoop(){
-
-    detectMotion();
-
-
-    if(
-        stabilization
-    ){
-
-        /*
-        Pohyb postupně vyhladíme.
-        */
-
-        stableX =
-            smooth(
-                stableX,
-                wantedX,
-                .055
-            );
-
-
-        stableY =
-            smooth(
-                stableY,
-                wantedY,
-                .055
-            );
-
-
-        stableRotation =
-            smooth(
-                stableRotation,
-                wantedRotation,
-                .045
-            );
-
-
-        /*
-        Omezíme maximální korekci.
-        */
-
-        stableX =
-            Math.max(
-                -35,
-                Math.min(
-                    35,
-                    stableX
-                )
-            );
-
-
-        stableY =
-            Math.max(
-                -35,
-                Math.min(
-                    35,
-                    stableY
-                )
-            );
-
-
-        stableRotation =
-            Math.max(
-                -5,
-                Math.min(
-                    5,
-                    stableRotation
-                )
-            );
-
-
-        /*
-        1.12× = malý ořez,
-        aby stabilizace měla
-        místo pro pohyb obrazu.
-        */
-
-        video.style.transform =
-
-            "translate(" +
-            (-stableX) +
-            "px," +
-            (-stableY) +
-            "px)" +
-
-            " rotate(" +
-            (-stableRotation) +
-            "deg)" +
-
-            " scale(1.12)";
-
-
-        /*
-        Po každém pohybu
-        se korekce postupně vrací.
-        */
-
-        wantedX *=
-            .92;
-
-
-        wantedY *=
-            .92;
-
-
-        wantedRotation *=
-            .92;
-
-    }
-
-
-    requestAnimationFrame(
-        stabilizationLoop
-    );
-
-}
-
-
-/* =====================================================
-   GALLERY
-===================================================== */
-
-galleryPreview.onclick =
-    () => {
-
-        if(
-            galleryPreview.src
-        ){
-
-            window.open(
-                galleryPreview.src,
-                "_blank"
-            );
-
-        }
-
-    };
-
-
-/* =====================================================
-   PREVENT DOUBLE TAP ZOOM
-===================================================== */
-
-let lastTap = 0;
-
-document.addEventListener(
-    "touchend",
-    event => {
-
-        const now =
-            Date.now();
-
-
-        if(
-            now -
-            lastTap <
-            300
-        ){
-
-            event.preventDefault();
-
-        }
-
-
-        lastTap =
-            now;
-
-    },
-    {
-        passive:false
-    }
-);
+setZoom(1);
 
 </script>
 
