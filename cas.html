@@ -17,7 +17,6 @@ html, body {
     font-family: 'Montserrat', sans-serif;
 }
 
-/* KONTAINER */
 #container {
     position: absolute;
     top: 50%;
@@ -32,7 +31,6 @@ html, body {
     text-shadow: 0 4px 10px rgba(0,0,0,0.35);
 }
 
-/* ČAS */
 #time {
     font-size: 140px;
     font-weight: 700;
@@ -42,35 +40,32 @@ html, body {
     align-items: center;
 }
 
-/* čísla */
 .digit {
     display: inline-flex;
     justify-content: center;
     align-items: center;
 
     min-width: 80px;
-    height: 170px;              /* 🔥 větší výška */
+    height: 170px;
     position: relative;
 
-    overflow: visible;         /* 🔥 důležité – žádné uřezávání */
+    overflow: visible;
 
     font-feature-settings: "tnum";
     will-change: transform, opacity;
     transform: translateZ(0);
 }
 
-/* vnitřní číslo */
 .inner {
     position: absolute;
     width: 100%;
     text-align: center;
 
-    line-height: 170px;        /* 🔥 zarovnání doprostřed */
+    line-height: 170px;
     will-change: transform, opacity;
     transform: translateZ(0);
 }
 
-/* animace */
 .slide-in {
     animation: slideIn 0.2s ease-out forwards;
 }
@@ -81,7 +76,7 @@ html, body {
 
 @keyframes slideOut {
     from { transform: translateY(0); opacity: 1; }
-    to   { transform: translateY(-30px); opacity: 0; } /* trochu víc prostoru */
+    to   { transform: translateY(-30px); opacity: 0; }
 }
 
 @keyframes slideIn {
@@ -89,7 +84,6 @@ html, body {
     to   { transform: translateY(0); opacity: 1; }
 }
 
-/* datum */
 #date, #weekday {
     font-weight: 700;
     letter-spacing: 1px;
@@ -108,6 +102,7 @@ html, body {
 </head>
 
 <body>
+
 <div id="container">
     <div id="time">
         <span class="digit"><span id="h1" class="inner"></span></span>
@@ -125,8 +120,20 @@ html, body {
 </div>
 
 <script>
-const days = ["neděle","pondělí","úterý","středa","čtvrtek","pátek","sobota"];
+const days = [
+    "neděle",
+    "pondělí",
+    "úterý",
+    "středa",
+    "čtvrtek",
+    "pátek",
+    "sobota"
+];
+
 let last = {};
+
+// Posun hodin o 20 sekund dozadu
+const TIME_OFFSET_MS = -20 * 1000;
 
 function setDigit(id, val) {
     const el = document.getElementById(id);
@@ -146,25 +153,32 @@ function setDigit(id, val) {
 }
 
 function update() {
-    const now = new Date();
 
-    const h = String(now.getHours()).padStart(2,'0');
-    const m = String(now.getMinutes()).padStart(2,'0');
-    const s = String(now.getSeconds()).padStart(2,'0');
+    // Aktuální čas mínus 20 sekund
+    const now = new Date(Date.now() + TIME_OFFSET_MS);
+
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
 
     setDigit("h1", h[0]);
     setDigit("h2", h[1]);
+
     setDigit("m1", m[0]);
     setDigit("m2", m[1]);
+
     setDigit("s1", s[0]);
     setDigit("s2", s[1]);
 
-    const d = String(now.getDate()).padStart(2,'0');
-    const mo = String(now.getMonth()+1).padStart(2,'0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const mo = String(now.getMonth() + 1).padStart(2, '0');
     const y = now.getFullYear();
 
-    document.getElementById("date").innerText = `${d}.${mo}.${y}`;
-    document.getElementById("weekday").innerText = days[now.getDay()];
+    document.getElementById("date").innerText =
+        `${d}.${mo}.${y}`;
+
+    document.getElementById("weekday").innerText =
+        days[now.getDay()];
 }
 
 update();
