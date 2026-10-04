@@ -1,155 +1,260 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokročilý Test Vibrací</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f4f6f9;
-            color: #333;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ověření zařízení</title>
 
-        .container {
-            text-align: center;
-            padding: 24px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            max-width: 90%;
-            width: 340px;
-            box-sizing: border-box;
-        }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-        h1 {
-            font-size: 22px;
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #101114;
+    color: white;
+    font-family: Arial, sans-serif;
+}
 
-        p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
+.card {
+    width: min(90%, 420px);
+    background: #1b1d22;
+    border-radius: 28px;
+    padding: 35px 28px;
+    text-align: center;
+    box-shadow: 0 15px 50px rgba(0,0,0,.45);
+}
 
-        .vib-button {
-            width: 100%;
-            padding: 18px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background-color: #0381fe;
-            border: none;
-            border-radius: 14px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(3, 129, 254, 0.3);
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
+.icon {
+    width: 82px;
+    height: 82px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: #292c33;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
 
-        .vib-button:active {
-            background-color: #0266cb;
-            transform: scale(0.97);
-        }
+h1 {
+    margin: 0 0 10px;
+}
 
-        /* Styl pro diagnostickou konzoli */
-        .console {
-            margin-top: 20px;
-            padding: 12px;
-            background-color: #1e1e1e;
-            color: #00ff00;
-            font-family: monospace;
-            font-size: 12px;
-            border-radius: 8px;
-            text-align: left;
-            max-height: 150px;
-            overflow-y: auto;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
-        }
+p {
+    color: #b9bcc4;
+    line-height: 1.5;
+}
 
-        .log-entry {
-            margin-bottom: 4px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 4px;
-        }
-    </style>
+button {
+    width: 100%;
+    border: 0;
+    border-radius: 18px;
+    padding: 16px;
+    margin-top: 15px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#verify {
+    background: white;
+    color: #111;
+}
+
+#retry {
+    display: none;
+    background: #30333a;
+    color: white;
+}
+
+#status {
+    margin-top: 22px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.success {
+    color: #55e878;
+}
+
+.error {
+    color: #ff6262;
+}
+</style>
 </head>
+
 <body>
 
-    <div class="container">
-        <h1>Test hmatové odezvy</h1>
-        <p>Prohlížeč vyžaduje HTTPS (GitHub Pages je ideální). Vypni v telefonu úsporný režim.</p>
-        
-        <button id="vibBtn" class="vib-button">SPUSTIT VIBRACI</button>
-        
-        <!-- Diagnostické okno -->
-        <div class="console" id="logConsole">
-            <div class="log-entry">[Systém] Připraven k testu...</div>
-        </div>
-    </div>
+<div class="card">
 
-    <script>
-        const btn = document.getElementById('vibBtn');
-        const consoleEl = document.getElementById('logConsole');
+    <div class="icon" id="icon">🔐</div>
 
-        // Pomocná funkce pro zápis do naší mini konzole na obrazovce
-        function loguj(text, typ = 'info') {
-            const entry = document.createElement('div');
-            entry.className = 'log-entry';
-            
-            if (typ === 'error') entry.style.color = '#ff4d4d';
-            if (typ === 'success') entry.style.color = '#00ffcc';
-            
-            const cas = new Date().toLocaleTimeString();
-            entry.innerText = `[${cas}] ${text}`;
-            consoleEl.appendChild(entry);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
+    <h1>Ověření zařízení</h1>
+
+    <p id="description">
+        Pro pokračování ověřte svou identitu pomocí zabezpečení tohoto zařízení.
+    </p>
+
+    <button id="verify">
+        Ověřit zařízení
+    </button>
+
+    <button id="retry">
+        Opakovat
+    </button>
+
+    <div id="status"></div>
+
+</div>
+
+<script>
+const verifyButton = document.getElementById("verify");
+const retryButton = document.getElementById("retry");
+const statusText = document.getElementById("status");
+const description = document.getElementById("description");
+const icon = document.getElementById("icon");
+
+async function verifyDevice() {
+
+    statusText.textContent = "";
+    statusText.className = "";
+
+    if (!window.PublicKeyCredential) {
+        showError("Toto zařízení nebo prohlížeč WebAuthn nepodporuje.");
+        return;
+    }
+
+    try {
+
+        const supported =
+            await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+
+        if (!supported) {
+            showError("Ověření zařízení není dostupné.");
+            return;
         }
 
-        function provedVibraci(e) {
-            if (e) e.preventDefault();
-            loguj("Detekován stisk tlačítka...");
+        /*
+         * Testovací WebAuthn přihlášení.
+         * Prohlížeč může zobrazit systémové ověření
+         * pomocí PINu, otisku nebo jiné dostupné metody.
+         */
 
-            // 1. Kontrola protokolu HTTPS
-            if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-                loguj("CHYBA: Web neběží na HTTPS! Android vibrace zablokoval.", "error");
-                return;
-            }
+        const challenge = crypto.getRandomValues(
+            new Uint8Array(32)
+        );
 
-            // 2. Kontrola podpory Vibration API
-            if (!("vibrate" in navigator)) {
-                loguj("CHYBA: Prohlížeč vůbec nepodporuje Vibration API.", "error");
-                return;
-            }
+        const userId = crypto.getRandomValues(
+            new Uint8Array(16)
+        );
 
-            try {
-                // Posíláme pulz: 400ms vibrace, 100ms pauza, 400ms vibrace
-                const vysledek = navigator.vibrate([400, 100, 400]);
-                
-                if (vysledek) {
-                    loguj("ÚSPĚCH: Příkaz odeslán do hardwaru telefonu.", "success");
-                } else {
-                    loguj("CHYBA: Android odmítl požadavek (zkontroluj Úsporný režim / Hmatovou odezvu v Nastavení).", "error");
-                }
-            } catch (err) {
-                loguj("VÝJIMKA SYSTÉMU: " + err.message, "error");
+        const credential = await navigator.credentials.create({
+            publicKey: {
+                challenge: challenge,
+
+                rp: {
+                    name: "Test ověření zařízení"
+                },
+
+                user: {
+                    id: userId,
+                    name: "test@example.com",
+                    displayName: "Testovací uživatel"
+                },
+
+                pubKeyCredParams: [
+                    {
+                        type: "public-key",
+                        alg: -7
+                    },
+                    {
+                        type: "public-key",
+                        alg: -257
+                    }
+                ],
+
+                authenticatorSelection: {
+                    authenticatorAttachment: "platform",
+                    userVerification: "required"
+                },
+
+                timeout: 60000,
+
+                attestation: "none"
             }
+        });
+
+        if (credential) {
+            showSuccess();
+        } else {
+            showError("Nemůžete pokračovat");
         }
 
-        // Reakce na dotyk (nejrychlejší cesta na mobilech)
-        btn.addEventListener('touchstart', provedVibraci, { passive: false });
-        // Pojistka pro kliknutí
-        btn.addEventListener('click', provedVibraci);
-    </script>
+    } catch (error) {
+
+        console.log(error);
+
+        showError("Nemůžete pokračovat");
+
+    }
+}
+
+function showSuccess() {
+
+    icon.textContent = "✓";
+
+    description.textContent =
+        "Vaše zařízení bylo úspěšně ověřeno.";
+
+    statusText.textContent =
+        "Povoleno";
+
+    statusText.className = "success";
+
+    verifyButton.style.display = "none";
+    retryButton.style.display = "block";
+}
+
+function showError(message) {
+
+    icon.textContent = "✕";
+
+    description.textContent =
+        "Ověření se nepodařilo dokončit.";
+
+    statusText.textContent =
+        message;
+
+    statusText.className = "error";
+
+    verifyButton.style.display = "none";
+    retryButton.style.display = "block";
+}
+
+function reset() {
+
+    icon.textContent = "🔐";
+
+    description.textContent =
+        "Pro pokračování ověřte svou identitu pomocí zabezpečení tohoto zařízení.";
+
+    statusText.textContent = "";
+    statusText.className = "";
+
+    verifyButton.style.display = "block";
+    retryButton.style.display = "none";
+}
+
+verifyButton.addEventListener("click", verifyDevice);
+retryButton.addEventListener("click", reset);
+
+</script>
 
 </body>
 </html>
