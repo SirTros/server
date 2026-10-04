@@ -6,9 +6,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>STCB Bank Final</title>
+<title>SirTros-city Bank</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@Supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 
@@ -209,20 +209,10 @@ box-shadow:0 10px 30px #000;
 display:none !important;
 }
 
-@media(max-width:600px){
-
-.logo{
-font-size:65px;
-}
-
-.money{
-font-size:34px;
-}
-
-.card{
-padding:18px;
-}
-
+#qrReader{
+width:100%;
+overflow:hidden;
+border-radius:20px;
 }
 
 </style>
@@ -249,7 +239,7 @@ padding:18px;
 </div>
 
 <h1>
-STCB Bank
+SirTros-city Bank
 </h1>
 
 <p>
@@ -304,16 +294,17 @@ Zadej 6místný kód z Authenticatoru.
 <div class="step">
 
 <div class="stepDot done"></div>
-
 <div class="stepDot active"></div>
 
 </div>
 
-<div id="authQr"
+<div
+id="authQr"
 style="display:none;text-align:center;margin-top:15px;"
 ></div>
 
-<div id="authSecret"
+<div
+id="authSecret"
 style="display:none;word-break:break-all;text-align:center;color:#9fb3d1;font-size:13px;margin-top:12px;"
 ></div>
 
@@ -353,7 +344,7 @@ style="background:#17243a;"
 <div id="bank">
 
 <div class="header">
-🏦 STCB Bank
+🏦 SirTros-city Bank
 </div>
 
 
@@ -421,30 +412,22 @@ Vítej 👋
 
 <p>
 Jméno:
-<b id="profileName">
--
-</b>
+<b id="profileName">-</b>
 </p>
 
 <p>
 E-mail:
-<b id="profileEmail">
--
-</b>
+<b id="profileEmail">-</b>
 </p>
 
 <p>
 Účet:
-<b id="profileAccount">
--
-</b>
+<b id="profileAccount">-</b>
 </p>
 
 <p>
 Authenticator:
-<b id="profileAuth">
--
-</b>
+<b id="profileAuth">-</b>
 </p>
 
 <button onclick="logout()">
@@ -456,7 +439,7 @@ Authenticator:
 </div>
 
 
-<!-- POSÍLÁNÍ PENĚZ -->
+<!-- POSÍLÁNÍ -->
 
 <div id="send" class="page">
 
@@ -588,7 +571,7 @@ placeholder="🔐 Tvůj PIN"
 /* SUPABASE */
 /* ========================================= */
 
-const supabaseClient = supabase.createClient(
+const supabaseClient = window.supabase.createClient(
 
 "https://knpkaoddloxtzdtzwjle.supabase.co",
 
@@ -606,17 +589,13 @@ detectSessionInUrl:true
 
 
 /* ========================================= */
-/* STAV PŘIHLÁŠENÍ */
+/* STAV */
 /* ========================================= */
 
 let currentClient=null;
-
 let pendingClient=null;
-
 let authenticatorVerified=false;
-
 let totpSecret=null;
-
 let totpFactorId=null;
 
 
@@ -626,10 +605,9 @@ let totpFactorId=null;
 
 function stcbAlert(text){
 
-let box=document.createElement("div");
+const box=document.createElement("div");
 
 box.className="alert";
-
 box.innerHTML=text;
 
 document
@@ -646,20 +624,20 @@ box.remove();
 
 
 /* ========================================= */
-/* STRÁNKY BANKY */
+/* STRÁNKY */
 /* ========================================= */
 
 function openPage(id){
 
 document
 .querySelectorAll(".page")
-.forEach(p=>{
+.forEach(page=>{
 
-p.classList.remove("active");
+page.classList.remove("active");
 
 });
 
-let page=document.getElementById(id);
+const page=document.getElementById(id);
 
 if(page){
 
@@ -667,44 +645,32 @@ page.classList.add("active");
 
 }
 
+if(id==="qr"){
+
+startQR();
+
 }
-
-
-/* ========================================= */
-/* SKRYTÍ LOGIN KROKŮ */
-/* ========================================= */
-
-function hideSecurityScreens(){
-
-document
-.getElementById("login")
-.classList.add("hidden");
-
-document
-.getElementById("authenticator")
-.classList.add("hidden");
 
 }
 
 
 /* ========================================= */
-/* KROK 1 */
-/* JMÉNO / EMAIL + HESLO */
+/* PŘIHLÁŠENÍ */
 /* ========================================= */
 
 async function login(){
 
-let identity=document
+const identity=document
 .getElementById("loginIdentity")
 .value
 .trim();
 
-let password=document
+const password=document
 .getElementById("loginPassword")
 .value
 .trim();
 
-let msg=document
+const msg=document
 .getElementById("loginMsg");
 
 msg.innerHTML="";
@@ -712,62 +678,58 @@ msg.innerHTML="";
 
 if(!identity || !password){
 
-msg.innerHTML="❌ Vyplň jméno/e-mail a heslo";
+msg.innerHTML=
+"❌ Vyplň jméno/e-mail a heslo.";
 
 return;
 
 }
 
 
-msg.innerHTML="⏳ Ověřuji přihlášení…";
-
-
-let query=supabaseClient
-.from("clients")
-.select("*");
+msg.innerHTML=
+"⏳ Ověřuji přihlášení…";
 
 
 let result;
 
 
-/* EMAIL */
-
 if(identity.includes("@")){
 
-result=await query
+result=await supabaseClient
+.from("clients")
+.select("*")
 .eq("email",identity)
 .maybeSingle();
 
 }
-
-/* JMÉNO */
-
 else{
 
-result=await query
+result=await supabaseClient
+.from("clients")
+.select("*")
 .ilike("name",identity)
 .maybeSingle();
 
 }
 
 
-let data=result.data;
+if(result.error || !result.data){
 
-let error=result.error;
-
-
-if(error || !data){
-
-msg.innerHTML="❌ Špatné jméno/e-mail nebo heslo";
+msg.innerHTML=
+"❌ Špatné jméno/e-mail nebo heslo.";
 
 return;
 
 }
 
 
+const data=result.data;
+
+
 if(String(data.pin)!==String(password)){
 
-msg.innerHTML="❌ Špatné jméno/e-mail nebo heslo";
+msg.innerHTML=
+"❌ Špatné jméno/e-mail nebo heslo.";
 
 return;
 
@@ -776,7 +738,8 @@ return;
 
 if(!data.email){
 
-msg.innerHTML="❌ Účet nemá nastavený e-mail";
+msg.innerHTML=
+"❌ Účet nemá nastavený e-mail.";
 
 return;
 
@@ -786,11 +749,11 @@ return;
 pendingClient=data;
 
 
-/*
-   Supabase Auth účet.
-*/
+/* ========================================= */
+/* SUPABASE AUTH */
+/* ========================================= */
 
-let authResult=
+const authResult=
 await supabaseClient.auth.signInWithPassword({
 
 email:data.email,
@@ -802,7 +765,7 @@ password:String(data.pin)
 
 if(authResult.error){
 
-let signup=
+const signup=
 await supabaseClient.auth.signUp({
 
 email:data.email,
@@ -811,8 +774,8 @@ password:String(data.pin),
 
 options:{
 data:{
-stcb_client_id:String(data.id),
-stcb_name:data.name
+sirtros_client_id:String(data.id),
+sirtros_name:data.name
 }
 }
 
@@ -822,7 +785,8 @@ stcb_name:data.name
 if(signup.error){
 
 msg.innerHTML=
-"❌ Auth účet se nepodařilo vytvořit:<br>"+
+"❌ Auth účet se nepodařilo vytvořit:<br>"
++
 signup.error.message;
 
 return;
@@ -833,7 +797,7 @@ return;
 if(!signup.data.session){
 
 msg.innerHTML=
-"❌ Supabase vyžaduje potvrzení e-mailu. Vypni v Supabase Auth nastavení <b>Confirm email</b>.";
+"❌ Supabase vyžaduje potvrzení e-mailu. Vypni v Supabase Auth nastavení Confirm email.";
 
 return;
 
@@ -842,17 +806,11 @@ return;
 }
 
 
-/*
-   Už nepotřebujeme otisk,
-   PIN zařízení ani Passkey.
+msg.innerHTML=
+"⏳ Přihlášení úspěšné…";
 
-   Rovnou pokračujeme na Authenticator.
-*/
-
-msg.innerHTML="⏳ Přihlašování…";
 
 await afterLogin();
-
 
 }
 
@@ -876,20 +834,14 @@ throw factors.error;
 }
 
 
-let verifiedFactors=
+const verifiedFactors=
 (factors.data.totp || [])
 .filter(
 factor=>factor.status==="verified"
 );
 
 
-/*
-   Authenticator už existuje.
-*/
-
-if(
-verifiedFactors.length>0
-){
+if(verifiedFactors.length>0){
 
 totpFactorId=
 verifiedFactors[0].id;
@@ -907,13 +859,16 @@ document
 .innerHTML=
 "Zadej 6místný kód z Authenticatoru.";
 
+
 document
 .getElementById("authQr")
 .style.display="none";
 
+
 document
 .getElementById("authSecret")
 .style.display="none";
+
 
 document
 .getElementById("authStatus")
@@ -925,10 +880,6 @@ return;
 }
 
 
-/*
-   Authenticator zatím neexistuje.
-*/
-
 await setupAuthenticator();
 
 }
@@ -939,7 +890,8 @@ console.error(error);
 document
 .getElementById("loginMsg")
 .innerHTML=
-"❌ Nepodařilo se načíst Authenticator:<br>"+
+"❌ Nepodařilo se načíst Authenticator:<br>"
++
 (error.message || "");
 
 }
@@ -948,7 +900,7 @@ document
 
 
 /* ========================================= */
-/* PRVNÍ NASTAVENÍ AUTHENTICATORU */
+/* NASTAVENÍ AUTHENTICATORU */
 /* ========================================= */
 
 async function setupAuthenticator(){
@@ -976,16 +928,12 @@ document
 
 try{
 
-/*
-   Skutečné Supabase TOTP enrollment.
-*/
-
-let result=
+const result=
 await supabaseClient.auth.mfa.enroll({
 
 factorType:"totp",
 
-friendlyName:"STCB Bank Authenticator"
+friendlyName:"SirTros-city Bank Authenticator"
 
 });
 
@@ -1000,39 +948,29 @@ throw result.error;
 totpFactorId=
 result.data.id;
 
-
 totpSecret=
 result.data.totp.secret;
 
 
-/*
-   Skutečný QR kód přímo ze Supabase.
-*/
-
-let qrSvg=
-result.data.totp.qr_code;
-
-
-let qrBox=
+const qrBox=
 document.getElementById("authQr");
 
 qrBox.style.display="block";
 
-qrBox.innerHTML=qrSvg;
+qrBox.innerHTML=
+result.data.totp.qr_code;
 
 
-/*
-   Tajný klíč jako záloha.
-*/
-
-let secretBox=
+const secretBox=
 document.getElementById("authSecret");
 
 secretBox.style.display="block";
 
 secretBox.innerHTML=
-"🔑 Tajný klíč:<br><b>"+
-totpSecret+
+"🔑 Tajný klíč:<br><b>"
++
+totpSecret
++
 "</b>";
 
 
@@ -1049,7 +987,8 @@ console.error(error);
 document
 .getElementById("authStatus")
 .innerHTML=
-"❌ Authenticator se nepodařilo nastavit:<br>"+
+"❌ Authenticator se nepodařilo nastavit:<br>"
++
 (error.message || "");
 
 }
@@ -1058,18 +997,17 @@ document
 
 
 /* ========================================= */
-/* KROK 2 */
-/* SKUTEČNÝ SUPABASE TOTP */
+/* OVĚŘENÍ AUTHENTICATORU */
 /* ========================================= */
 
 async function verifyAuthenticator(){
 
-let code=document
+const code=document
 .getElementById("authCode")
 .value
 .trim();
 
-let status=document
+const status=document
 .getElementById("authStatus");
 
 
@@ -1099,11 +1037,7 @@ status.innerHTML=
 
 try{
 
-/*
-   Supabase vytvoří challenge.
-*/
-
-let challenge=
+const challenge=
 await supabaseClient.auth.mfa.challenge({
 
 factorId:totpFactorId
@@ -1118,12 +1052,7 @@ throw challenge.error;
 }
 
 
-/*
-   Supabase skutečně ověří
-   6místný TOTP kód.
-*/
-
-let verification=
+const verification=
 await supabaseClient.auth.mfa.verify({
 
 factorId:totpFactorId,
@@ -1142,18 +1071,10 @@ throw verification.error;
 }
 
 
-/*
-   AAL2 úspěšně ověřeno.
-*/
-
 authenticatorVerified=true;
 
 
-/*
-   Zapíšeme stav do clients.
-*/
-
-let update=
+const update=
 await supabaseClient
 .from("clients")
 .update({
@@ -1174,12 +1095,12 @@ throw update.error;
 
 
 pendingClient.auth="1";
-
 pendingClient["auth-status"]="1";
 
 
 status.innerHTML=
 "✅ Authenticator ověřen.";
+
 
 setTimeout(()=>{
 
@@ -1202,7 +1123,7 @@ status.innerHTML=
 
 
 /* ========================================= */
-/* DOKONČENÍ LOGINU */
+/* DOKONČENÍ PŘIHLÁŠENÍ */
 /* ========================================= */
 
 function finishLogin(){
@@ -1213,11 +1134,6 @@ return;
 
 }
 
-
-/*
-   Pokud je Authenticator aktivní,
-   musí být skutečně ověřený.
-*/
 
 if(
 String(pendingClient.auth)==="1" &&
@@ -1240,7 +1156,14 @@ totpFactorId=null;
 totpSecret=null;
 
 
-hideSecurityScreens();
+document
+.getElementById("login")
+.classList.add("hidden");
+
+
+document
+.getElementById("authenticator")
+.classList.add("hidden");
 
 
 document
@@ -1254,7 +1177,7 @@ updateAccount();
 
 
 /* ========================================= */
-/* ZPĚT NA LOGIN */
+/* ZPĚT */
 /* ========================================= */
 
 async function backToLogin(){
@@ -1263,7 +1186,12 @@ try{
 
 await supabaseClient.auth.signOut();
 
-}catch(e){}
+}
+catch(error){
+
+console.error(error);
+
+}
 
 
 pendingClient=null;
@@ -1279,41 +1207,51 @@ document
 .getElementById("authenticator")
 .classList.add("hidden");
 
+
 document
 .getElementById("bank")
 .style.display="none";
+
 
 document
 .getElementById("login")
 .classList.remove("hidden");
 
+
 document
 .getElementById("loginIdentity")
 .value="";
+
 
 document
 .getElementById("loginPassword")
 .value="";
 
+
 document
 .getElementById("authCode")
 .value="";
+
 
 document
 .getElementById("loginMsg")
 .innerHTML="";
 
+
 document
 .getElementById("authQr")
 .innerHTML="";
+
 
 document
 .getElementById("authQr")
 .style.display="none";
 
+
 document
 .getElementById("authSecret")
 .innerHTML="";
+
 
 document
 .getElementById("authSecret")
@@ -1328,18 +1266,22 @@ document
 
 function updateAccount(){
 
-if(!currentClient)return;
+if(!currentClient){
+
+return;
+
+}
 
 
 document
 .getElementById("userName")
-.innerHTML=currentClient.name;
+.innerHTML=
+currentClient.name;
 
 
 document
 .getElementById("balance")
 .innerHTML=
-
 Number(currentClient.money || 0)
 .toLocaleString("cs-CZ")
 +
@@ -1348,7 +1290,8 @@ Number(currentClient.money || 0)
 
 document
 .getElementById("profileName")
-.innerHTML=currentClient.name;
+.innerHTML=
+currentClient.name;
 
 
 document
@@ -1360,16 +1303,13 @@ currentClient.email || "-";
 document
 .getElementById("profileAccount")
 .innerHTML=
-
 currentClient.account ||
-
 "STCB-"+currentClient.id;
 
 
 document
 .getElementById("profileAuth")
 .innerHTML=
-
 String(currentClient.auth)==="1"
 ?
 "✅ Zapnutý"
@@ -1392,17 +1332,18 @@ try{
 
 await supabaseClient.auth.signOut();
 
-}catch(e){}
+}
+catch(error){
+
+console.error(error);
+
+}
 
 
 currentClient=null;
-
 pendingClient=null;
-
 authenticatorVerified=false;
-
 totpFactorId=null;
-
 totpSecret=null;
 
 
@@ -1412,13 +1353,13 @@ document
 
 
 document
-.getElementById("login")
-.classList.remove("hidden");
+.getElementById("authenticator")
+.classList.add("hidden");
 
 
 document
-.getElementById("authenticator")
-.classList.add("hidden");
+.getElementById("login")
+.classList.remove("hidden");
 
 
 document
@@ -1443,31 +1384,30 @@ document
 /* ========================================= */
 
 let sendReceiver=null;
-
 let sendAmount=0;
 
 
 async function prepareSend(){
 
-let name=document
+const name=document
 .getElementById("receiverName")
 .value
 .trim();
 
-let amount=Number(
+const amount=Number(
 document
 .getElementById("sendAmount")
 .value
 );
 
-let msg=document
+const msg=document
 .getElementById("sendMsg");
 
 
 if(!name || amount<=0){
 
 msg.innerHTML=
-"❌ Vyplň jméno a částku";
+"❌ Vyplň jméno a částku.";
 
 return;
 
@@ -1477,42 +1417,42 @@ return;
 if(Number(currentClient.money)<amount){
 
 msg.innerHTML=
-"❌ Nemáš dost peněz";
+"❌ Nemáš dost peněz.";
 
 return;
 
 }
 
 
-const {data,error}=await supabaseClient
+const result=
+await supabaseClient
 .from("clients")
 .select("*")
 .ilike("name",name)
 .maybeSingle();
 
 
-if(error || !data){
+if(result.error || !result.data){
 
 msg.innerHTML=
-"❌ Uživatel neexistuje";
+"❌ Uživatel neexistuje.";
 
 return;
 
 }
 
 
-if(data.id===currentClient.id){
+if(result.data.id===currentClient.id){
 
 msg.innerHTML=
-"❌ Nemůžeš poslat sám sobě";
+"❌ Nemůžeš poslat sám sobě.";
 
 return;
 
 }
 
 
-sendReceiver=data;
-
+sendReceiver=result.data;
 sendAmount=amount;
 
 
@@ -1521,15 +1461,13 @@ document
 .innerHTML=
 
 `
-
 👤 Komu:
-<b>${data.name}</b>
+<b>${sendReceiver.name}</b>
 
 <br><br>
 
 💰 Částka:
 <b>${amount.toLocaleString("cs-CZ")} Kč</b>
-
 `;
 
 
@@ -1540,15 +1478,19 @@ document
 }
 
 
+/* ========================================= */
+/* ODESLÁNÍ */
+/* ========================================= */
+
 async function finishSend(){
 
-let pin=document
+const pin=document
 .getElementById("sendPin")
 .value
 .trim();
 
 
-if(pin!==currentClient.pin){
+if(pin!==String(currentClient.pin)){
 
 stcbAlert("❌ Špatný PIN");
 
@@ -1557,7 +1499,7 @@ return;
 }
 
 
-let date=new Date()
+const date=new Date()
 .toLocaleString("cs-CZ");
 
 
@@ -1607,28 +1549,46 @@ date:date
 });
 
 
+const senderUpdate=
 await supabaseClient
 .from("clients")
 .update({
 
 money:currentClient.money,
-
 history:currentClient.history
 
 })
 .eq("id",currentClient.id);
 
 
+if(senderUpdate.error){
+
+stcbAlert("❌ Platbu se nepodařilo odeslat.");
+
+return;
+
+}
+
+
+const receiverUpdate=
 await supabaseClient
 .from("clients")
 .update({
 
 money:sendReceiver.money,
-
 history:sendReceiver.history
 
 })
 .eq("id",sendReceiver.id);
+
+
+if(receiverUpdate.error){
+
+stcbAlert("❌ Platbu se nepodařilo dokončit.");
+
+return;
+
+}
 
 
 await supabaseClient
@@ -1636,17 +1596,15 @@ await supabaseClient
 .insert({
 
 sender:currentClient.name,
-
 receiver:sendReceiver.name,
-
 amount:sendAmount,
-
 date:date
 
 });
 
 
 stcbAlert("✅ Platba odeslána");
+
 
 updateAccount();
 
@@ -1668,41 +1626,24 @@ document
 /* ========================================= */
 
 let qrScanner=null;
-
 let qrReceiver=null;
-
 let qrAmount=0;
-
 let qrRunning=false;
-
-
-const oldOpenPageQR=openPage;
-
-
-openPage=function(id){
-
-oldOpenPageQR(id);
-
-
-if(id==="qr"){
-
-startQR();
-
-}
-
-};
 
 
 async function startQR(){
 
-if(qrRunning)return;
+if(qrRunning){
+
+return;
+
+}
 
 
 try{
 
-qrScanner=new Html5Qrcode(
-"qrReader"
-);
+qrScanner=
+new Html5Qrcode("qrReader");
 
 
 await qrScanner.start(
@@ -1716,7 +1657,7 @@ fps:15,
 qrbox:300
 },
 
-(text)=>{
+text=>{
 
 readQR(text);
 
@@ -1730,29 +1671,33 @@ qrRunning=true;
 }
 catch(error){
 
-console.log(error);
+console.error(error);
 
 stcbAlert(
-"❌ Kamera nebyla povolena"
+"❌ Kamera nebyla povolena."
 );
 
 }
 
 }
 
+
+/* ========================================= */
+/* NAČTENÍ QR */
+/* ========================================= */
 
 async function readQR(text){
 
 text=text.trim();
 
 
-let parts=text.split("-");
+const parts=text.split("-");
 
 
 if(parts.length!==2){
 
 stcbAlert(
-"❌ Špatný QR kód"
+"❌ Špatný QR kód."
 );
 
 return;
@@ -1760,15 +1705,15 @@ return;
 }
 
 
-let amount=Number(parts[0]);
+const amount=Number(parts[0]);
 
-let name=parts[1].trim();
+const name=parts[1].trim();
 
 
 if(amount<=0){
 
 stcbAlert(
-"❌ Špatná částka"
+"❌ Špatná částka."
 );
 
 return;
@@ -1776,17 +1721,18 @@ return;
 }
 
 
-const {data:user,error}=await supabaseClient
+const result=
+await supabaseClient
 .from("clients")
 .select("*")
 .ilike("name",`%${name}%`)
 .maybeSingle();
 
 
-if(error || !user){
+if(result.error || !result.data){
 
 stcbAlert(
-"❌ Příjemce neexistuje"
+"❌ Příjemce neexistuje."
 );
 
 return;
@@ -1794,10 +1740,10 @@ return;
 }
 
 
-if(user.id===currentClient.id){
+if(result.data.id===currentClient.id){
 
 stcbAlert(
-"❌ Nemůžeš poslat sám sobě"
+"❌ Nemůžeš poslat sám sobě."
 );
 
 return;
@@ -1808,7 +1754,7 @@ return;
 if(Number(currentClient.money)<amount){
 
 stcbAlert(
-"❌ Nemáš dost peněz"
+"❌ Nemáš dost peněz."
 );
 
 return;
@@ -1816,8 +1762,7 @@ return;
 }
 
 
-qrReceiver=user;
-
+qrReceiver=result.data;
 qrAmount=amount;
 
 
@@ -1826,20 +1771,13 @@ document
 .innerHTML=
 
 `
-
 👤 Komu:
-<b>${user.name}</b>
+<b>${qrReceiver.name}</b>
 
 <br><br>
 
 💰 Částka:
-<b>${amount.toLocaleString("cs-CZ")} Kč</b>
-
-<br><br>
-
-📤 Odesílá:
-<b>${currentClient.name}</b>
-
+<b>${qrAmount.toLocaleString("cs-CZ")} Kč</b>
 `;
 
 
@@ -1849,13 +1787,22 @@ document
 
 
 stcbAlert(
-"✅ QR nalezen"
+"✅ QR nalezen."
 );
 
 
 if(qrScanner){
 
+try{
+
 await qrScanner.stop();
+
+}
+catch(error){
+
+console.error(error);
+
+}
 
 qrRunning=false;
 
@@ -1870,16 +1817,16 @@ qrRunning=false;
 
 async function finishQR(){
 
-let pin=document
+const pin=document
 .getElementById("qrPin")
 .value
 .trim();
 
 
-if(pin!==currentClient.pin){
+if(pin!==String(currentClient.pin)){
 
 stcbAlert(
-"❌ Špatný PIN"
+"❌ Špatný PIN."
 );
 
 return;
@@ -1887,7 +1834,7 @@ return;
 }
 
 
-let date=new Date()
+const date=new Date()
 .toLocaleString("cs-CZ");
 
 
@@ -1937,28 +1884,50 @@ date:date
 });
 
 
+const senderUpdate=
 await supabaseClient
 .from("clients")
 .update({
 
 money:currentClient.money,
-
 history:currentClient.history
 
 })
 .eq("id",currentClient.id);
 
 
+if(senderUpdate.error){
+
+stcbAlert(
+"❌ Platbu se nepodařilo odeslat."
+);
+
+return;
+
+}
+
+
+const receiverUpdate=
 await supabaseClient
 .from("clients")
 .update({
 
 money:qrReceiver.money,
-
 history:qrReceiver.history
 
 })
 .eq("id",qrReceiver.id);
+
+
+if(receiverUpdate.error){
+
+stcbAlert(
+"❌ Platbu se nepodařilo dokončit."
+);
+
+return;
+
+}
 
 
 await supabaseClient
@@ -1966,18 +1935,15 @@ await supabaseClient
 .insert({
 
 sender:currentClient.name,
-
 receiver:qrReceiver.name,
-
 amount:qrAmount,
-
 date:date
 
 });
 
 
 stcbAlert(
-"✅ QR platba odeslána"
+"✅ QR platba odeslána."
 );
 
 
@@ -2002,7 +1968,7 @@ document
 
 function loadHistory(){
 
-let box=document
+const box=document
 .getElementById("historyList");
 
 
@@ -2013,7 +1979,7 @@ return;
 }
 
 
-let history=
+const history=
 currentClient.history || [];
 
 
@@ -2035,19 +2001,18 @@ history
 .reverse()
 .forEach(item=>{
 
-box.innerHTML+=`
+const card=document.createElement("div");
 
-<div class="card">
+card.className="card";
 
+card.innerHTML=
+`
 ${item.text}
-
 <br>
-
 🕒 ${item.date}
-
-</div>
-
 `;
+
+box.appendChild(card);
 
 });
 
@@ -2055,24 +2020,29 @@ ${item.text}
 
 
 /* ========================================= */
-/* AUTOMATICKÉ OBNOVENÍ ÚČTU */
+/* AUTOMATICKÉ OBNOVENÍ */
 /* ========================================= */
 
 setInterval(async()=>{
 
-if(!currentClient)return;
+if(!currentClient){
+
+return;
+
+}
 
 
-const {data,error}=await supabaseClient
+const result=
+await supabaseClient
 .from("clients")
 .select("*")
 .eq("id",currentClient.id)
 .maybeSingle();
 
 
-if(!error && data){
+if(!result.error && result.data){
 
-currentClient=data;
+currentClient=result.data;
 
 updateAccount();
 
@@ -2082,12 +2052,14 @@ updateAccount();
 
 
 /* ========================================= */
-/* ENTER = DALŠÍ */
+/* ENTER */
 /* ========================================= */
 
 document
 .getElementById("loginPassword")
-.addEventListener("keydown",(event)=>{
+.addEventListener(
+"keydown",
+event=>{
 
 if(event.key==="Enter"){
 
@@ -2100,7 +2072,9 @@ login();
 
 document
 .getElementById("authCode")
-.addEventListener("keydown",(event)=>{
+.addEventListener(
+"keydown",
+event=>{
 
 if(event.key==="Enter"){
 
