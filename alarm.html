@@ -8,7 +8,7 @@
 
 <title>STCB Bank Final</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@Supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 
@@ -61,7 +61,6 @@ border-color:#00c8ff;
 }
 
 #login,
-#deviceVerification,
 #authenticator{
 height:100vh;
 display:flex;
@@ -283,56 +282,6 @@ Přihlásit
 
 
 <!-- ========================= -->
-<!-- OVĚŘENÍ ZAŘÍZENÍ -->
-<!-- ========================= -->
-
-<div id="deviceVerification" class="hidden">
-
-<div class="box">
-
-<div class="securityIcon">
-🔐
-</div>
-
-<h1 class="securityTitle">
-Ověření zařízení
-</h1>
-
-<p class="securityText">
-Potvrď, že používáš své zařízení.
-</p>
-
-<div class="step">
-
-<div id="step1" class="stepDot done"></div>
-
-<div id="step2" class="stepDot active"></div>
-
-<div id="step3" class="stepDot"></div>
-
-</div>
-
-<button onclick="verifyDevice()">
-👆 Ověřit otisk / PIN zařízení
-</button>
-
-<div id="deviceStatus" class="status">
-Čeká se na ověření zařízení…
-</div>
-
-<button
-onclick="backToLogin()"
-style="background:#17243a;"
->
-← Zpět
-</button>
-
-</div>
-
-</div>
-
-
-<!-- ========================= -->
 <!-- AUTHENTICATOR -->
 <!-- ========================= -->
 
@@ -353,8 +302,6 @@ Zadej 6místný kód z Authenticatoru.
 </p>
 
 <div class="step">
-
-<div class="stepDot done"></div>
 
 <div class="stepDot done"></div>
 
@@ -666,8 +613,6 @@ let currentClient=null;
 
 let pendingClient=null;
 
-let deviceVerified=false;
-
 let authenticatorVerified=false;
 
 let totpSecret=null;
@@ -733,10 +678,6 @@ function hideSecurityScreens(){
 
 document
 .getElementById("login")
-.classList.add("hidden");
-
-document
-.getElementById("deviceVerification")
 .classList.add("hidden");
 
 document
@@ -847,9 +788,6 @@ pendingClient=data;
 
 /*
    Supabase Auth účet.
-
-   Pokud už existuje, přihlásíme se.
-   Pokud ještě neexistuje, vytvoříme ho.
 */
 
 let authResult=
@@ -904,288 +842,28 @@ return;
 }
 
 
-document
-.getElementById("login")
-.classList.add("hidden");
+/*
+   Už nepotřebujeme otisk,
+   PIN zařízení ani Passkey.
 
-document
-.getElementById("deviceVerification")
-.classList.remove("hidden");
+   Rovnou pokračujeme na Authenticator.
+*/
 
-document
-.getElementById("deviceStatus")
-.innerHTML=
-"Čeká se na ověření zařízení…";
+msg.innerHTML="⏳ Přihlašování…";
+
+await afterLogin();
+
 
 }
 
 
 /* ========================================= */
-/* KROK 2 */
-/* OTISK / PIN ZAŘÍZENÍ */
+/* PO PŘIHLÁŠENÍ */
 /* ========================================= */
 
-async function verifyDevice(){
-
-let status=document
-.getElementById("deviceStatus");
-
-if(!pendingClient){
-
-status.innerHTML=
-"❌ Přihlášení není připravené";
-
-return;
-
-}
-
-
-if(!window.PublicKeyCredential){
-
-status.innerHTML=
-"❌ Tento prohlížeč nepodporuje ověření zařízení.";
-
-return;
-
-}
-
+async function afterLogin(){
 
 try{
-
-status.innerHTML=
-"⏳ Čekám na otisk / PIN zařízení…";
-
-
-/*
-   Použijeme Supabase Passkey, pokud je
-   v daném buildu podporovaný.
-*/
-
-if(
-supabaseClient.auth.passkey &&
-supabaseClient.auth.passkey.list
-){
-
-let list=
-await supabaseClient.auth.passkey.list();
-
-if(list.error){
-
-throw list.error;
-
-}
-
-
-let passkeys=list.data || [];
-
-
-/*
-   PRVNÍ REGISTRACE ZAŘÍZENÍ
-*/
-
-if(passkeys.length===0){
-
-if(!supabaseClient.auth.registerPasskey){
-
-throw new Error(
-"Supabase Passkeys nejsou v této verzi knihovny dostupné."
-);
-
-}
-
-
-let registered=
-await supabaseClient.auth.registerPasskey();
-
-if(registered.error){
-
-throw registered.error;
-
-}
-
-
-deviceVerified=true;
-
-status.innerHTML=
-"✅ Zařízení bylo zaregistrováno.";
-
-
-/*
-   Pokračujeme na další krok.
-*/
-
-await afterDevice();
-
-return;
-
-}
-
-
-/*
-   EXISTUJÍCÍ ZAŘÍZENÍ
-*/
-
-await supabaseClient.auth.signOut();
-
-
-let signed=
-await supabaseClient.auth.signInWithPasskey();
-
-
-if(signed.error){
-
-throw signed.error;
-
-}
-
-
-if(
-signed.data.user &&
-signed.data.user.email &&
-pendingClient.email &&
-signed.data.user.email.toLowerCase()===
-pendingClient.email.toLowerCase()
-){
-
-deviceVerified=true;
-
-status.innerHTML=
-"✅ Zařízení ověřeno.";
-
-await afterDevice();
-
-return;
-
-}
-
-
-throw new Error(
-"Toto zařízení nepatří k tomuto účtu."
-);
-
-}
-
-
-/*
-   Záložní WebAuthn režim.
-*/
-
-const challenge=
-crypto.getRandomValues(
-new Uint8Array(32)
-);
-
-const userId=
-crypto.getRandomValues(
-new Uint8Array(16)
-);
-
-
-const credential=
-await navigator.credentials.create({
-
-publicKey:{
-
-challenge:challenge,
-
-rp:{
-name:"STCB Bank"
-},
-
-user:{
-
-id:userId,
-
-name:String(
-pendingClient.email ||
-pendingClient.name
-),
-
-displayName:String(
-pendingClient.name
-)
-
-},
-
-pubKeyCredParams:[
-
-{
-type:"public-key",
-alg:-7
-},
-
-{
-type:"public-key",
-alg:-257
-}
-
-],
-
-authenticatorSelection:{
-
-authenticatorAttachment:"platform",
-
-userVerification:"required"
-
-},
-
-timeout:60000
-
-}
-
-});
-
-
-if(!credential){
-
-throw new Error(
-"Ověření zařízení nebylo dokončeno."
-);
-
-}
-
-
-deviceVerified=true;
-
-status.innerHTML=
-"✅ Zařízení ověřeno.";
-
-await afterDevice();
-
-
-}
-catch(error){
-
-console.error(error);
-
-status.innerHTML=
-"❌ Ověření zařízení selhalo.<br><small>"+
-(error.message || "")+
-"</small>";
-
-}
-
-}
-
-
-/* ========================================= */
-/* PO OVĚŘENÍ ZAŘÍZENÍ */
-/* ========================================= */
-
-async function afterDevice(){
-
-document
-.getElementById("step2")
-.classList.remove("active");
-
-document
-.getElementById("step2")
-.classList.add("done");
-
-
-/*
-   Zjistíme skutečné Supabase TOTP faktory.
-*/
 
 const factors=
 await supabaseClient.auth.mfa.listFactors();
@@ -1206,7 +884,7 @@ factor=>factor.status==="verified"
 
 
 /*
-   Už existuje Authenticator.
+   Authenticator už existuje.
 */
 
 if(
@@ -1217,7 +895,7 @@ totpFactorId=
 verifiedFactors[0].id;
 
 document
-.getElementById("deviceVerification")
+.getElementById("login")
 .classList.add("hidden");
 
 document
@@ -1226,7 +904,7 @@ document
 
 document
 .getElementById("authText")
-innerHTML=
+.innerHTML=
 "Zadej 6místný kód z Authenticatoru.";
 
 document
@@ -1254,6 +932,19 @@ return;
 await setupAuthenticator();
 
 }
+catch(error){
+
+console.error(error);
+
+document
+.getElementById("loginMsg")
+.innerHTML=
+"❌ Nepodařilo se načíst Authenticator:<br>"+
+(error.message || "");
+
+}
+
+}
 
 
 /* ========================================= */
@@ -1263,7 +954,7 @@ await setupAuthenticator();
 async function setupAuthenticator(){
 
 document
-.getElementById("deviceVerification")
+.getElementById("login")
 .classList.add("hidden");
 
 document
@@ -1273,13 +964,13 @@ document
 
 document
 .getElementById("authText")
-innerHTML=
+.innerHTML=
 "První přihlášení: naskenuj QR kód v Authenticatoru.";
 
 
 document
 .getElementById("authStatus")
-innerHTML=
+.innerHTML=
 "⏳ Vytvářím QR kód…";
 
 
@@ -1309,21 +1000,18 @@ throw result.error;
 totpFactorId=
 result.data.id;
 
+
 totpSecret=
 result.data.totp.secret;
 
 
 /*
-   QR je SVG přímo od Supabase.
+   Skutečný QR kód přímo ze Supabase.
 */
 
 let qrSvg=
 result.data.totp.qr_code;
 
-
-/*
-   Vykreslení QR bez změny designu.
-*/
 
 let qrBox=
 document.getElementById("authQr");
@@ -1334,7 +1022,7 @@ qrBox.innerHTML=qrSvg;
 
 
 /*
-   Secret pro případ, že QR nejde načíst.
+   Tajný klíč jako záloha.
 */
 
 let secretBox=
@@ -1370,7 +1058,7 @@ document
 
 
 /* ========================================= */
-/* KROK 3 */
+/* KROK 2 */
 /* SKUTEČNÝ SUPABASE TOTP */
 /* ========================================= */
 
@@ -1431,7 +1119,8 @@ throw challenge.error;
 
 
 /*
-   Supabase skutečně ověří 6místný TOTP.
+   Supabase skutečně ověří
+   6místný TOTP kód.
 */
 
 let verification=
@@ -1454,14 +1143,14 @@ throw verification.error;
 
 
 /*
-   Tady už máme skutečně AAL2.
+   AAL2 úspěšně ověřeno.
 */
 
 authenticatorVerified=true;
 
 
 /*
-   Zapíšeme do stávající tabulky clients.
+   Zapíšeme stav do clients.
 */
 
 let update=
@@ -1524,12 +1213,6 @@ return;
 
 }
 
-if(!deviceVerified){
-
-return;
-
-}
-
 
 /*
    Pokud je Authenticator aktivní,
@@ -1549,8 +1232,6 @@ return;
 currentClient=pendingClient;
 
 pendingClient=null;
-
-deviceVerified=false;
 
 authenticatorVerified=false;
 
@@ -1587,18 +1268,12 @@ await supabaseClient.auth.signOut();
 
 pendingClient=null;
 
-deviceVerified=false;
-
 authenticatorVerified=false;
 
 totpFactorId=null;
 
 totpSecret=null;
 
-
-document
-.getElementById("deviceVerification")
-.classList.add("hidden");
 
 document
 .getElementById("authenticator")
@@ -1724,8 +1399,6 @@ currentClient=null;
 
 pendingClient=null;
 
-deviceVerified=false;
-
 authenticatorVerified=false;
 
 totpFactorId=null;
@@ -1741,11 +1414,6 @@ document
 document
 .getElementById("login")
 .classList.remove("hidden");
-
-
-document
-.getElementById("deviceVerification")
-.classList.add("hidden");
 
 
 document
