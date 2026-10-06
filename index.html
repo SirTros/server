@@ -2,1622 +2,586 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
->
-
-<title>SirTros Compass</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SirTros Magnetometer</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html,
-body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #000;
-    color: #fff;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-body {
-    touch-action: manipulation;
-}
-
-button {
-    font-family: inherit;
-}
-
-/* =========================
-   APP
-========================= */
-
-#app {
-    width: 100vw;
-    height: 100dvh;
-    position: relative;
-    overflow: hidden;
-    background: #000;
-}
-
-/* =========================
-   START
-========================= */
-
-#startScreen {
-    position: absolute;
-    inset: 0;
-    z-index: 100;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    padding: 30px;
-    text-align: center;
-
-    background: #000;
-}
-
-.logo {
-    width: 86px;
-    height: 86px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 26px;
-
-    background: #fff;
-    color: #000;
-
-    font-size: 42px;
-
-    margin-bottom: 24px;
-}
-
-#startScreen h1 {
-    margin: 0 0 12px;
-    font-size: 30px;
-}
-
-#startScreen p {
-    max-width: 350px;
-    margin: 0 0 25px;
-
-    color: #999;
-    line-height: 1.5;
-}
-
-#startButton {
-    border: 0;
-    border-radius: 999px;
-
-    padding: 15px 30px;
-
-    background: #fff;
-    color: #000;
-
-    font-size: 17px;
-    font-weight: 700;
-
-    cursor: pointer;
-}
-
-/* =========================
-   KOMPAS
-========================= */
-
-#compassArea {
-    position: absolute;
-    inset: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* =========================
-   DIAL
-========================= */
-
-#dial {
-    width: min(84vw, 410px);
-    height: min(84vw, 410px);
-
-    position: relative;
-
-    border: 2px solid #333;
-    border-radius: 50%;
-}
-
-#dialInner {
-    position: absolute;
-    inset: 7%;
-
-    border: 1px solid #222;
-    border-radius: 50%;
-}
-
-/* =========================
-   CARDINAL POINTS
-========================= */
-
-.point {
-    position: absolute;
-
-    font-size: 28px;
-    font-weight: 700;
-
-    z-index: 2;
-}
-
-#north {
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-
-    color: #ff3b30;
-}
-
-#east {
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-#south {
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-#west {
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-/* =========================
-   INTERCARDINAL
-========================= */
-
-.subPoint {
-    position: absolute;
-
-    font-size: 13px;
-    font-weight: 600;
-
-    color: #777;
-}
-
-#ne {
-    top: 68px;
-    right: 67px;
-}
-
-#se {
-    bottom: 68px;
-    right: 67px;
-}
-
-#sw {
-    bottom: 68px;
-    left: 67px;
-}
-
-#nw {
-    top: 68px;
-    left: 67px;
-}
-
-/* =========================
-   NEEDLE
-========================= */
-
-#needle {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    width: 5px;
-    height: 78%;
-
-    transform-origin: center center;
-    transform: translate(-50%, -50%) rotate(0deg);
-
-    pointer-events: none;
-
-    will-change: transform;
-}
-
-#needleNorth {
-    position: absolute;
-
-    top: 0;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    width: 0;
-    height: 0;
-
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-bottom: 135px solid #ff3b30;
-}
-
-#needleSouth {
-    position: absolute;
-
-    bottom: 0;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    width: 0;
-    height: 0;
-
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-top: 135px solid #777;
-}
-
-/* =========================
-   CENTER
-========================= */
-
-#centerDot {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    width: 18px;
-    height: 18px;
-
-    transform: translate(-50%, -50%);
-
-    background: #fff;
-
-    border-radius: 50%;
-
-    z-index: 5;
-
-    box-shadow: 0 0 12px rgba(255,255,255,.2);
-}
-
-/* =========================
-   DATA
-========================= */
-
-#data {
-    position: absolute;
-
-    left: 0;
-    bottom: 35px;
-
-    width: 100%;
-
-    text-align: center;
-}
-
-#degrees {
-    font-size: 48px;
-    font-weight: 800;
-    line-height: 1;
-}
-
-#direction {
-    margin-top: 7px;
-
-    font-size: 21px;
-    font-weight: 600;
-
-    color: #aaa;
-}
-
-#source {
-    margin-top: 8px;
-
-    font-size: 13px;
-    color: #666;
-}
-
-#accuracy {
-    margin-top: 4px;
-
-    font-size: 12px;
-    color: #555;
-}
-
-/* =========================
-   CALIBRATION
-========================= */
-
-#calibrationButton {
-    position: absolute;
-
-    right: 18px;
-    bottom: 18px;
-
-    width: 48px;
-    height: 48px;
-
-    border: 1px solid #333;
-    border-radius: 50%;
-
-    background: #111;
-    color: #fff;
-
-    font-size: 21px;
-
-    cursor: pointer;
-}
-
-#calibrationPanel {
-    display: none;
-
-    position: absolute;
-    inset: 0;
-
-    z-index: 50;
-
-    background: rgba(0,0,0,.96);
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 25px;
-}
-
-#calibrationBox {
-    width: min(90vw, 390px);
-
-    text-align: center;
-}
-
-#calibrationBox h2 {
-    margin: 0 0 12px;
-
-    font-size: 27px;
-}
-
-#calibrationBox p {
-    color: #999;
-    line-height: 1.5;
-}
-
-#calibrationIcon {
-    font-size: 64px;
-
-    margin: 20px 0;
-}
-
-#calibrationStatus {
-    min-height: 24px;
-
-    margin: 15px 0;
-
-    color: #aaa;
-}
-
-.calButton {
-    border: 0;
-    border-radius: 999px;
-
-    padding: 14px 25px;
-    margin: 5px;
-
-    background: #fff;
-    color: #000;
-
-    font-weight: 700;
-}
-
-.calButton.secondary {
-    background: #222;
-    color: #fff;
-}
-
-/* =========================
-   ERROR
-========================= */
-
-#errorScreen {
-    display: none;
-
-    position: absolute;
-    inset: 0;
-
-    z-index: 200;
-
-    background: #000;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 30px;
-
-    text-align: center;
-}
-
-#errorBox {
-    max-width: 370px;
-}
-
-#errorBox h2 {
-    font-size: 27px;
-}
-
-#errorBox p {
-    color: #999;
-    line-height: 1.5;
-}
-
-#errorRetry {
-    border: 0;
-    border-radius: 999px;
-
-    padding: 14px 25px;
-
-    background: #fff;
-    color: #000;
-
-    font-weight: 700;
-}
-
-/* =========================
-   CALIBRATION ANIMATION
-========================= */
-
-#calibrationPhone {
-    width: 105px;
-    height: 180px;
-
-    margin: 20px auto;
-
-    border: 3px solid #fff;
-    border-radius: 20px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 35px;
-
-    animation: rotatePhone 2.2s ease-in-out infinite;
-}
-
-@keyframes rotatePhone {
-
-    0% {
-        transform: rotate(0deg);
+    * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
     }
 
-    25% {
-        transform: rotate(25deg);
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: #080808;
+        color: white;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
     }
 
-    50% {
-        transform: rotate(-25deg);
+    .app {
+        width: 100%;
+        max-width: 600px;
+        min-height: 100vh;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 16px;
     }
 
-    75% {
-        transform: rotate(25deg);
+    .title {
+        font-size: 28px;
+        font-weight: 700;
+        text-align: center;
     }
 
-    100% {
-        transform: rotate(0deg);
+    .status {
+        text-align: center;
+        color: #aaa;
+        font-size: 14px;
+        min-height: 20px;
     }
-}
+
+    .main-card {
+        background: #151515;
+        border: 1px solid #292929;
+        border-radius: 28px;
+        padding: 28px 20px;
+        text-align: center;
+    }
+
+    .value {
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: -2px;
+    }
+
+    .unit {
+        color: #aaa;
+        font-size: 17px;
+        margin-top: 4px;
+    }
+
+    .state {
+        margin-top: 18px;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .sub {
+        margin-top: 8px;
+        color: #999;
+        font-size: 13px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .axis {
+        background: #151515;
+        border: 1px solid #292929;
+        border-radius: 18px;
+        padding: 16px 8px;
+        text-align: center;
+    }
+
+    .axis-name {
+        color: #888;
+        font-size: 13px;
+    }
+
+    .axis-value {
+        margin-top: 7px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .info {
+        background: #111;
+        border: 1px solid #242424;
+        border-radius: 18px;
+        padding: 15px;
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 7px 0;
+        font-size: 14px;
+    }
+
+    .row span:first-child {
+        color: #888;
+    }
+
+    button {
+        width: 100%;
+        border: 0;
+        border-radius: 18px;
+        padding: 17px;
+        background: white;
+        color: black;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    button:active {
+        transform: scale(.98);
+    }
+
+    .warning {
+        background: #1c1408;
+        border: 1px solid #5a3d12;
+        color: #ffc766;
+        border-radius: 18px;
+        padding: 16px;
+        text-align: center;
+        line-height: 1.4;
+        display: none;
+    }
+
+    .good {
+        color: #78e08f;
+    }
+
+    .magnet {
+        color: #ffb45c;
+    }
+
+    .strong {
+        color: #ff6666;
+    }
+
+    .normal {
+        color: #aaa;
+    }
+
+    @media (max-height: 700px) {
+        .app {
+            padding: 14px;
+            gap: 10px;
+        }
+
+        .title {
+            font-size: 23px;
+        }
+
+        .main-card {
+            padding: 18px;
+        }
+
+        .value {
+            font-size: 44px;
+        }
+    }
 </style>
 </head>
 
 <body>
 
-<div id="app">
+<div class="app">
 
-    <!-- START -->
+    <div class="title">🧲 Magnetometr</div>
 
-    <div id="startScreen">
-
-        <div class="logo">🧭</div>
-
-        <h1>SirTros Compass</h1>
-
-        <p>
-            Kombinovaný kompas využívající dostupné
-            senzory telefonu.
-        </p>
-
-        <button id="startButton">
-            Spustit kompas
-        </button>
-
+    <div class="status" id="status">
+        Připravuji senzor…
     </div>
 
+    <div class="main-card">
 
-    <!-- KOMPAS -->
+        <div class="value" id="total">
+            —
+        </div>
 
-    <div id="compassArea">
+        <div class="unit">
+            µT
+        </div>
 
-        <div id="dial">
+        <div class="state normal" id="state">
+            Čekám na měření
+        </div>
 
-            <div id="dialInner"></div>
-
-            <div id="north" class="point">N</div>
-            <div id="east" class="point">E</div>
-            <div id="south" class="point">S</div>
-            <div id="west" class="point">W</div>
-
-            <div id="ne" class="subPoint">NE</div>
-            <div id="se" class="subPoint">SE</div>
-            <div id="sw" class="subPoint">SW</div>
-            <div id="nw" class="subPoint">NW</div>
-
-            <div id="needle">
-
-                <div id="needleNorth"></div>
-                <div id="needleSouth"></div>
-
-            </div>
-
-            <div id="centerDot"></div>
-
+        <div class="sub" id="change">
+            Základní hodnota: —
         </div>
 
     </div>
 
+    <div class="grid">
 
-    <!-- DATA -->
-
-    <div id="data">
-
-        <div id="degrees">
-            ---°
+        <div class="axis">
+            <div class="axis-name">X</div>
+            <div class="axis-value" id="x">—</div>
         </div>
 
-        <div id="direction">
-            Čekám na senzor…
+        <div class="axis">
+            <div class="axis-name">Y</div>
+            <div class="axis-value" id="y">—</div>
         </div>
 
-        <div id="source">
-            Kompas není spuštěný
-        </div>
-
-        <div id="accuracy">
-            ---
+        <div class="axis">
+            <div class="axis-name">Z</div>
+            <div class="axis-value" id="z">—</div>
         </div>
 
     </div>
 
+    <div class="info">
 
-    <!-- KALIBRACE -->
+        <div class="row">
+            <span>Vzorky</span>
+            <span id="samples">0</span>
+        </div>
 
-    <button id="calibrationButton" aria-label="Kalibrace">
-        ⚙
+        <div class="row">
+            <span>Minimum</span>
+            <span id="min">—</span>
+        </div>
+
+        <div class="row">
+            <span>Maximum</span>
+            <span id="max">—</span>
+        </div>
+
+        <div class="row">
+            <span>Základ</span>
+            <span id="baseline">—</span>
+        </div>
+
+    </div>
+
+    <button id="baselineBtn">
+        Nastavit aktuální hodnotu jako základ
     </button>
 
-    <div id="calibrationPanel">
+    <button id="fullscreenBtn">
+        Celá obrazovka
+    </button>
 
-        <div id="calibrationBox">
-
-            <h2>Kalibrace kompasu</h2>
-
-            <p>
-                Pomalu pohybuj telefonem do různých směrů
-                a několikrát s ním opiš osmičku.
-            </p>
-
-            <div id="calibrationPhone">
-                📱
-            </div>
-
-            <div id="calibrationStatus">
-                Připraveno
-            </div>
-
-            <button
-                id="calibrateStart"
-                class="calButton"
-            >
-                Spustit kalibraci
-            </button>
-
-            <button
-                id="calibrateClose"
-                class="calButton secondary"
-            >
-                Zavřít
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <!-- ERROR -->
-
-    <div id="errorScreen">
-
-        <div id="errorBox">
-
-            <h2>Kompas není dostupný</h2>
-
-            <p id="errorText">
-                Telefon neposkytuje potřebná data ze senzorů.
-            </p>
-
-            <button id="errorRetry">
-                Zkusit znovu
-            </button>
-
-        </div>
-
-    </div>
+    <div class="warning" id="warning"></div>
 
 </div>
 
-
 <script>
-"use strict";
 
-/*
-====================================================
- SirTros Compass
- Kombinovaný kompas
+let sensor = null;
 
- Priorita:
- 1. Magnetometer
- 2. DeviceOrientation
- 3. Kalibrace / korekce
+let samples = 0;
+let minValue = Infinity;
+let maxValue = -Infinity;
 
- Důležité:
- Web nemůže zaručit přístup k fyzickému
- magnetometru na každém Androidu.
-====================================================
-*/
+let baseline = null;
 
+let latestX = 0;
+let latestY = 0;
+let latestZ = 0;
+let latestTotal = 0;
 
-/* =========================
-   ELEMENTY
-========================= */
+let lastRender = 0;
 
-const startScreen =
-    document.getElementById("startScreen");
 
-const startButton =
-    document.getElementById("startButton");
+/* -----------------------------
+   DOM
+----------------------------- */
 
-const degreesElement =
-    document.getElementById("degrees");
+const totalEl = document.getElementById("total");
+const xEl = document.getElementById("x");
+const yEl = document.getElementById("y");
+const zEl = document.getElementById("z");
 
-const directionElement =
-    document.getElementById("direction");
+const stateEl = document.getElementById("state");
+const changeEl = document.getElementById("change");
 
-const sourceElement =
-    document.getElementById("source");
+const samplesEl = document.getElementById("samples");
+const minEl = document.getElementById("min");
+const maxEl = document.getElementById("max");
+const baselineEl = document.getElementById("baseline");
 
-const accuracyElement =
-    document.getElementById("accuracy");
+const statusEl = document.getElementById("status");
+const warningEl = document.getElementById("warning");
 
-const needle =
-    document.getElementById("needle");
 
-const calibrationButton =
-    document.getElementById("calibrationButton");
-
-const calibrationPanel =
-    document.getElementById("calibrationPanel");
-
-const calibrateStart =
-    document.getElementById("calibrateStart");
-
-const calibrateClose =
-    document.getElementById("calibrateClose");
-
-const calibrationStatus =
-    document.getElementById("calibrationStatus");
-
-const errorScreen =
-    document.getElementById("errorScreen");
-
-const errorText =
-    document.getElementById("errorText");
-
-const errorRetry =
-    document.getElementById("errorRetry");
-
-
-/* =========================
-   STAV
-========================= */
-
-let running = false;
-
-let magnetometer = null;
-
-let orientationRunning = false;
-
-let lastHeading = null;
-
-let lastRenderTime = 0;
-
-let sensorCount = 0;
-
-let calibrationOffset =
-    Number(localStorage.getItem(
-        "sirtrosCompassCalibration"
-    )) || 0;
-
-
-/* =========================
-   MATEMATIKA
-========================= */
-
-function normalize(degrees) {
-
-    degrees %= 360;
-
-    if (degrees < 0) {
-        degrees += 360;
-    }
-
-    return degrees;
-}
-
-
-function angleDifference(a, b) {
-
-    let difference =
-        normalize(a - b);
-
-    if (difference > 180) {
-        difference -= 360;
-    }
-
-    return difference;
-}
-
-
-/* =========================
-   SMĚR
-========================= */
-
-function getDirection(degrees) {
-
-    if (degrees < 22.5 || degrees >= 337.5)
-        return "Sever";
-
-    if (degrees < 67.5)
-        return "Severovýchod";
-
-    if (degrees < 112.5)
-        return "Východ";
-
-    if (degrees < 157.5)
-        return "Jihovýchod";
-
-    if (degrees < 202.5)
-        return "Jih";
-
-    if (degrees < 247.5)
-        return "Jihozápad";
-
-    if (degrees < 292.5)
-        return "Západ";
-
-    return "Severozápad";
-}
-
-
-/* =========================
-   VÝPOČET MAGNETOMETRU
-========================= */
-
-function headingFromMagnetometer(x, y) {
-
-    /*
-        Základní horizontální azimut.
-
-        Přesná osa se může lišit podle
-        implementace zařízení/prohlížeče.
-    */
-
-    let heading =
-        Math.atan2(y, x) *
-        180 /
-        Math.PI;
-
-    heading =
-        normalize(heading);
-
-    return heading;
-}
-
-
-/* =========================
-   ZOBRAZENÍ
-========================= */
-
-function renderHeading(
-    heading,
-    source,
-    accuracy = ""
-) {
-
-    heading =
-        normalize(
-            heading + calibrationOffset
-        );
-
-
-    /*
-        Omezíme počet DOM updateů.
-
-        To je důležité kvůli plynulosti.
-    */
-
-    const now =
-        performance.now();
-
-    if (
-        now - lastRenderTime < 33
-    ) {
-        return;
-    }
-
-    lastRenderTime = now;
-
-
-    /*
-        Když je změna velmi malá,
-        není nutné měnit DOM.
-    */
-
-    if (
-        lastHeading !== null &&
-        Math.abs(
-            angleDifference(
-                heading,
-                lastHeading
-            )
-        ) < 0.15
-    ) {
-        return;
-    }
-
-    lastHeading = heading;
-
-
-    degreesElement.textContent =
-        Math.round(heading) + "°";
-
-    directionElement.textContent =
-        getDirection(heading);
-
-    sourceElement.textContent =
-        source;
-
-    accuracyElement.textContent =
-        accuracy;
-
-
-    /*
-        Jehla ukazuje na sever.
-    */
-
-    needle.style.transform =
-        "translate(-50%, -50%) rotate(" +
-        (-heading) +
-        "deg)";
-}
-
-
-/* =========================
-   MAGNETOMETR
-========================= */
+/* -----------------------------
+   Magnetometr
+----------------------------- */
 
 function startMagnetometer() {
 
-    if (
-        !("Magnetometer" in window)
-    ) {
-        return false;
-    }
+    if (!("Magnetometer" in window)) {
 
+        statusEl.textContent = "Magnetometr není v tomto prohlížeči dostupný.";
+
+        warningEl.style.display = "block";
+        warningEl.innerHTML =
+            "Tento prohlížeč neposkytuje webu přístup k magnetometru.<br><br>" +
+            "Zkus stránku otevřít v aktuálním Chrome přes HTTPS.";
+
+        return;
+    }
 
     try {
 
-        magnetometer =
-            new Magnetometer({
-                frequency: 20
-            });
+        sensor = new Magnetometer({
+            frequency: 20
+        });
 
+        sensor.addEventListener("reading", onReading);
 
-        magnetometer.addEventListener(
-            "reading",
-            () => {
+        sensor.addEventListener("error", function(event) {
 
-                const x =
-                    magnetometer.x;
+            statusEl.textContent = "Chyba magnetometru.";
 
-                const y =
-                    magnetometer.y;
+            warningEl.style.display = "block";
 
-                const z =
-                    magnetometer.z;
-
-
-                if (
-                    !Number.isFinite(x) ||
-                    !Number.isFinite(y) ||
-                    !Number.isFinite(z)
-                ) {
-                    return;
-                }
-
-
-                /*
-                    Pokud je magnetické pole
-                    extrémně slabé/silné,
-                    raději data nepovažujeme
-                    za spolehlivá.
-                */
-
-                const magnitude =
-                    Math.sqrt(
-                        x * x +
-                        y * y +
-                        z * z
-                    );
-
-
-                if (
-                    magnitude < 10 ||
-                    magnitude > 100
-                ) {
-
-                    accuracyElement.textContent =
-                        "Magnetické pole: nestabilní";
-
-                    return;
-                }
-
-
-                const heading =
-                    headingFromMagnetometer(
-                        x,
-                        y
-                    );
-
-
-                sensorCount++;
-
-
-                renderHeading(
-                    heading,
-                    "Magnetometr aktivní",
-                    "Kalibrace: " +
-                    (
-                        calibrationOffset >= 0
-                            ? "+"
-                            : ""
-                    ) +
-                    calibrationOffset.toFixed(1) +
-                    "°"
-                );
-
+            if (event.error && event.error.name) {
+                warningEl.textContent =
+                    "Magnetometr se nepodařilo spustit: " +
+                    event.error.name;
+            } else {
+                warningEl.textContent =
+                    "Magnetometr se nepodařilo spustit.";
             }
-        );
 
+        });
 
-        magnetometer.addEventListener(
-            "error",
-            () => {
+        sensor.start();
 
-                stopMagnetometer();
+        statusEl.textContent = "Magnetometr běží";
 
-                startOrientationFallback();
+    } catch (error) {
 
-            }
-        );
+        statusEl.textContent = "Magnetometr nelze spustit.";
 
+        warningEl.style.display = "block";
 
-        magnetometer.start();
-
-        return true;
-
-    } catch {
-
-        magnetometer = null;
-
-        return false;
+        warningEl.textContent =
+            "Prohlížeč nepovolil přístup k magnetometru.";
     }
 }
 
 
-function stopMagnetometer() {
+/* -----------------------------
+   Měření
+----------------------------- */
 
-    if (magnetometer) {
-
-        try {
-            magnetometer.stop();
-        } catch {}
-
-        magnetometer = null;
-    }
-}
-
-
-/* =========================
-   ORIENTACE
-========================= */
-
-function handleOrientation(event) {
-
-    let heading = null;
-
-
-    /*
-        Některé prohlížeče mají
-        přímo compass heading.
-    */
+function onReading() {
 
     if (
-        typeof event.webkitCompassHeading ===
-        "number"
-    ) {
-
-        heading =
-            event.webkitCompassHeading;
-
-    }
-
-
-    /*
-        Běžný DeviceOrientation.
-    */
-
-    else if (
-        typeof event.alpha ===
-        "number"
-    ) {
-
-        heading =
-            360 - event.alpha;
-    }
-
-
-    if (
-        heading !== null &&
-        Number.isFinite(heading)
-    ) {
-
-        sensorCount++;
-
-
-        renderHeading(
-            heading,
-            "Orientace zařízení",
-            "Senzor orientace aktivní"
-        );
-    }
-}
-
-
-function startOrientationFallback() {
-
-    if (
-        orientationRunning
+        !Number.isFinite(sensor.x) ||
+        !Number.isFinite(sensor.y) ||
+        !Number.isFinite(sensor.z)
     ) {
         return;
     }
 
+    latestX = sensor.x;
+    latestY = sensor.y;
+    latestZ = sensor.z;
 
-    if (
-        typeof DeviceOrientationEvent ===
-        "undefined"
-    ) {
+    latestTotal = Math.sqrt(
+        latestX * latestX +
+        latestY * latestY +
+        latestZ * latestZ
+    );
+
+    samples++;
+
+    minValue = Math.min(minValue, latestTotal);
+    maxValue = Math.max(maxValue, latestTotal);
+
+    /*
+       Nevykreslujeme DOM při každém senzoru.
+       20 Hz senzor -> maximálně cca 10 UI aktualizací/s.
+       Díky tomu je stránka plynulejší.
+    */
+
+    const now = performance.now();
+
+    if (now - lastRender < 100) {
         return;
     }
 
+    lastRender = now;
 
-    window.addEventListener(
-        "deviceorientation",
-        handleOrientation,
-        true
-    );
-
-
-    window.addEventListener(
-        "deviceorientationabsolute",
-        handleOrientation,
-        true
-    );
-
-
-    orientationRunning = true;
-
-
-    sourceElement.textContent =
-        "Orientace zařízení";
+    render();
 }
 
 
-/* =========================
-   SENSOR PERMISSION
-========================= */
+/* -----------------------------
+   Vykreslení
+----------------------------- */
 
-async function requestSensorPermission() {
+function render() {
 
-    /*
-        iOS/Safari
-    */
+    totalEl.textContent = latestTotal.toFixed(1);
 
-    if (
-        typeof DeviceOrientationEvent !==
-        "undefined" &&
-        typeof DeviceOrientationEvent.requestPermission ===
-        "function"
-    ) {
+    xEl.textContent = latestX.toFixed(1);
+    yEl.textContent = latestY.toFixed(1);
+    zEl.textContent = latestZ.toFixed(1);
 
-        const result =
-            await DeviceOrientationEvent.requestPermission();
+    samplesEl.textContent = samples;
 
-        if (
-            result !== "granted"
-        ) {
+    minEl.textContent =
+        Number.isFinite(minValue)
+            ? minValue.toFixed(1) + " µT"
+            : "—";
 
-            throw new Error(
-                "Přístup k orientaci nebyl povolen."
-            );
+    maxEl.textContent =
+        Number.isFinite(maxValue)
+            ? maxValue.toFixed(1) + " µT"
+            : "—";
+
+    if (baseline !== null) {
+
+        const difference = latestTotal - baseline;
+        const absoluteDifference = Math.abs(difference);
+
+        changeEl.textContent =
+            "Změna oproti základu: " +
+            (difference >= 0 ? "+" : "") +
+            difference.toFixed(1) +
+            " µT";
+
+        if (absoluteDifference >= 80) {
+
+            stateEl.textContent =
+                "🧲 Velmi silná změna pole";
+
+            stateEl.className =
+                "state strong";
+
+        } else if (absoluteDifference >= 25) {
+
+            stateEl.textContent =
+                "🧲 Výrazná změna pole";
+
+            stateEl.className =
+                "state magnet";
+
+        } else {
+
+            stateEl.textContent =
+                "🌍 Běžné magnetické pole";
+
+            stateEl.className =
+                "state good";
         }
-    }
 
+    } else {
 
-    /*
-        Generic Sensor API
-        může vyžadovat permission.
-    */
+        changeEl.textContent =
+            "Základní hodnota: nenastavena";
 
-    if (
-        typeof navigator.permissions !==
-        "undefined"
-    ) {
+        stateEl.textContent =
+            "🌍 Měření probíhá";
 
-        try {
-
-            const permission =
-                await navigator.permissions.query({
-                    name: "accelerometer"
-                });
-
-            if (
-                permission.state ===
-                "denied"
-            ) {
-
-                throw new Error(
-                    "Přístup k senzorům byl zamítnut."
-                );
-            }
-
-        } catch (e) {
-
-            /*
-                Některé prohlížeče
-                permission accelerometer
-                vůbec neznají.
-                To není chyba.
-            */
-        }
+        stateEl.className =
+            "state normal";
     }
 }
 
 
-/* =========================
-   START KOMPASU
-========================= */
+/* -----------------------------
+   Základní hodnota
+----------------------------- */
 
-async function startCompass() {
+document.getElementById("baselineBtn")
+    .addEventListener("click", function() {
 
-    startButton.disabled = true;
+        if (samples === 0) {
+            return;
+        }
 
-    try {
+        baseline = latestTotal;
 
-        await requestSensorPermission();
+        baselineEl.textContent =
+            baseline.toFixed(1) + " µT";
 
+        changeEl.textContent =
+            "Změna oproti základu: 0.0 µT";
 
-        running = true;
+        stateEl.textContent =
+            "🌍 Základ nastaven";
 
-        sensorCount = 0;
-
-        lastHeading = null;
-
-        lastRenderTime = 0;
-
-
-        startScreen.style.display =
-            "none";
-
-
-        sourceElement.textContent =
-            "Spouštím senzory…";
-
-        directionElement.textContent =
-            "Čekám na data…";
-
-        degreesElement.textContent =
-            "---°";
+        stateEl.className =
+            "state good";
+    });
 
 
-        /*
-            Nejprve zkusíme magnetometr.
-        */
+/* -----------------------------
+   Fullscreen
+----------------------------- */
 
-        const magnetometerStarted =
-            startMagnetometer();
-
-
-        /*
-            Současně posloucháme orientaci.
-
-            Pokud magnetometr funguje,
-            jeho data mají přednost v praxi
-            díky vlastnímu renderování.
-        */
-
-        startOrientationFallback();
-
-
-        /*
-            Pokud za 5 sekund nepřijdou
-            žádná data, zobrazíme chybu.
-        */
-
-        setTimeout(() => {
-
-            if (
-                running &&
-                sensorCount === 0
-            ) {
-
-                showError(
-                    "Telefon neposkytl data z kompasu. " +
-                    "Zkus povolit senzory a otevřít stránku " +
-                    "přímo v prohlížeči telefonu."
-                );
-
-            }
-
-        }, 5000);
-
-
-        /*
-            Fullscreen
-        */
+document.getElementById("fullscreenBtn")
+    .addEventListener("click", async function() {
 
         try {
 
-            if (
-                !document.fullscreenElement &&
-                document.documentElement.requestFullscreen
-            ) {
+            if (!document.fullscreenElement) {
 
                 await document.documentElement.requestFullscreen();
 
-            }
-
-        } catch {}
-
-
-        /*
-            Wake Lock
-        */
-
-        await requestWakeLock();
-
-
-        /*
-            Pokud magnetometr není dostupný,
-            zobrazíme fallback.
-        */
-
-        if (
-            !magnetometerStarted
-        ) {
-
-            sourceElement.textContent =
-                "Používám orientaci zařízení";
-
-        }
-
-    } catch (e) {
-
-        showError(
-            e.message ||
-            "Kompas se nepodařilo spustit."
-        );
-
-    }
-
-    startButton.disabled = false;
-}
-
-
-/* =========================
-   CHYBA
-========================= */
-
-function showError(message) {
-
-    running = false;
-
-    stopMagnetometer();
-
-    if (
-        orientationRunning
-    ) {
-
-        window.removeEventListener(
-            "deviceorientation",
-            handleOrientation,
-            true
-        );
-
-        window.removeEventListener(
-            "deviceorientationabsolute",
-            handleOrientation,
-            true
-        );
-
-        orientationRunning = false;
-    }
-
-
-    errorText.textContent =
-        message;
-
-    errorScreen.style.display =
-        "flex";
-}
-
-
-/* =========================
-   KALIBRACE
-========================= */
-
-calibrationButton.addEventListener(
-    "click",
-    () => {
-
-        calibrationPanel.style.display =
-            "flex";
-
-        calibrationStatus.textContent =
-            "Připraveno ke kalibraci.";
-
-    }
-);
-
-
-calibrateClose.addEventListener(
-    "click",
-    () => {
-
-        calibrationPanel.style.display =
-            "none";
-
-    }
-);
-
-
-calibrateStart.addEventListener(
-    "click",
-    async () => {
-
-        calibrationStatus.textContent =
-            "Kalibruji… pomalu otáčej telefonem.";
-
-        calibrateStart.disabled =
-            true;
-
-
-        /*
-            Kalibrace zde hledá změny senzoru.
-
-            Nedělá falešné "dokonalé"
-            automatické vyrovnání.
-        */
-
-        let samples = [];
-
-        const calibrationHandler =
-            (event) => {
-
-                let value = null;
-
-                if (
-                    typeof event.webkitCompassHeading ===
-                    "number"
-                ) {
-
-                    value =
-                        event.webkitCompassHeading;
-
-                } else if (
-                    typeof event.alpha ===
-                    "number"
-                ) {
-
-                    value =
-                        360 - event.alpha;
-
-                }
-
-
-                if (
-                    Number.isFinite(value)
-                ) {
-
-                    samples.push(
-                        normalize(value)
-                    );
-                }
-            };
-
-
-        window.addEventListener(
-            "deviceorientation",
-            calibrationHandler,
-            true
-        );
-
-
-        window.addEventListener(
-            "deviceorientationabsolute",
-            calibrationHandler,
-            true
-        );
-
-
-        /*
-            4 sekundy kalibrace.
-        */
-
-        setTimeout(() => {
-
-            window.removeEventListener(
-                "deviceorientation",
-                calibrationHandler,
-                true
-            );
-
-            window.removeEventListener(
-                "deviceorientationabsolute",
-                calibrationHandler,
-                true
-            );
-
-
-            if (
-                samples.length >= 5
-            ) {
-
-                /*
-                    Uložíme korekci.
-
-                    Pro webový kompas je bezpečnější
-                    nabídnout korekci než předstírat,
-                    že známe fyzickou kalibraci
-                    magnetometru.
-                */
-
-                calibrationOffset = 0;
-
-                localStorage.setItem(
-                    "sirtrosCompassCalibration",
-                    "0"
-                );
-
-
-                calibrationStatus.textContent =
-                    "Kalibrace dokončena.";
-
             } else {
 
-                calibrationStatus.textContent =
-                    "Málo dat ze senzoru. Zkus to znovu.";
+                await document.exitFullscreen();
 
             }
 
-
-            calibrateStart.disabled =
-                false;
-
-        }, 4000);
-
-    }
-);
+        } catch (e) {
+            // Některé prohlížeče fullscreen nepovolují.
+        }
+    });
 
 
-/* =========================
-   RETRY
-========================= */
-
-errorRetry.addEventListener(
-    "click",
-    () => {
-
-        errorScreen.style.display =
-            "none";
-
-        startCompass();
-
-    }
-);
-
-
-/* =========================
-   WAKE LOCK
-========================= */
+/* -----------------------------
+   Wake Lock
+----------------------------- */
 
 let wakeLock = null;
 
 async function requestWakeLock() {
 
+    if (!("wakeLock" in navigator)) {
+        return;
+    }
+
     try {
-
-        if (
-            "wakeLock" in navigator
-        ) {
-
-            wakeLock =
-                await navigator.wakeLock.request(
-                    "screen"
-                );
-        }
-
-    } catch {}
+        wakeLock = await navigator.wakeLock.request("screen");
+    } catch (e) {
+        // Wake Lock není podporován nebo nebyl povolen.
+    }
 }
 
 
-document.addEventListener(
-    "visibilitychange",
-    () => {
+/* -----------------------------
+   Spuštění
+----------------------------- */
 
-        if (
-            document.visibilityState ===
-            "visible" &&
-            running
-        ) {
+requestWakeLock();
+startMagnetometer();
 
-            requestWakeLock();
 
-        }
+/* -----------------------------
+   Obnovení Wake Locku
+----------------------------- */
 
+document.addEventListener("visibilitychange", function() {
+
+    if (document.visibilityState === "visible") {
+        requestWakeLock();
     }
-);
 
-
-/* =========================
-   INIT
-========================= */
-
-sourceElement.textContent =
-    "Připraveno";
+});
 
 </script>
 
