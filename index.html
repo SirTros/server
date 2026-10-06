@@ -2,17 +2,11 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width,
-               initial-scale=1,
-               maximum-scale=1,
-               user-scalable=no">
-
-<title>SirTros Phone Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#05070a">
+<title>SirTros Phone Diagnostic</title>
 
 <style>
-
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
@@ -23,1768 +17,2256 @@ html,body{
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#000;
+    background:#05070a;
     color:#fff;
-    font-family:Segoe UI,Arial,sans-serif;
+    font-family:Segoe UI,Roboto,Arial,sans-serif;
     touch-action:none;
+}
+
+body{
     user-select:none;
 }
 
 button{
-    font-family:inherit;
+    font:inherit;
 }
 
-.screen{
-    position:fixed;
-    inset:0;
-    display:none;
-}
-
-.screen.active{
+.app{
+    width:100%;
+    height:100%;
     display:flex;
-}
-
-
-/* =========================
-   START
-========================= */
-
-#startScreen{
-    align-items:center;
-    justify-content:center;
     flex-direction:column;
-    gap:20px;
-    text-align:center;
+    background:
+        radial-gradient(circle at 50% -15%,rgba(64,145,255,.16),transparent 40%),
+        #05070a;
 }
 
-.title{
-    font-size:30px;
-    font-weight:700;
+.topbar{
+    height:70px;
+    flex:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 18px;
+    border-bottom:1px solid #202832;
+    background:rgba(5,7,10,.94);
+    backdrop-filter:blur(15px);
+    z-index:20;
 }
 
-.subtitle{
-    color:#999;
+.brand{
+    display:flex;
+    align-items:center;
+    gap:11px;
+}
+
+.logo{
+    width:42px;
+    height:42px;
+    border-radius:13px;
+    display:grid;
+    place-items:center;
+    background:#101821;
+    border:1px solid #293746;
+    font-size:20px;
+}
+
+.brand strong{
+    display:block;
     font-size:14px;
 }
 
-#startButton{
-    border:0;
-    border-radius:18px;
-    padding:17px 35px;
-    background:#087cff;
-    color:white;
-    font-size:18px;
-    font-weight:700;
-    box-shadow:0 0 30px rgba(8,124,255,.35);
+.brand span{
+    display:block;
+    margin-top:3px;
+    color:#8793a1;
+    font-size:10px;
 }
 
-#startButton:active{
-    transform:scale(.96);
+.step{
+    padding:9px 12px;
+    border-radius:11px;
+    border:1px solid #26313d;
+    background:#0d1218;
+    color:#aeb8c3;
+    font-size:11px;
 }
 
-
-/* =========================
-   TEST
-========================= */
-
-#testScreen{
-    background:#000;
+.progress{
+    height:3px;
+    background:#10151b;
+    flex:none;
 }
 
-#touchArea{
+.progressBar{
+    height:100%;
+    width:0;
+    background:#4da3ff;
+    box-shadow:0 0 16px rgba(77,163,255,.6);
+    transition:.35s;
+}
+
+main{
+    flex:1;
+    min-height:0;
+    position:relative;
+}
+
+.view{
     position:absolute;
     inset:0;
-    overflow:hidden;
-    touch-action:none;
+    display:none;
+    overflow:auto;
 }
 
+.view.active{
+    display:flex;
+}
 
-/* =========================
-   HORNÍ INFORMACE
-========================= */
+/* START */
 
-#top{
-    position:absolute;
-    z-index:1000;
-    top:10px;
-    left:0;
-    right:0;
+.welcome{
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+}
+
+.startCard{
+    width:min(650px,100%);
+    padding:34px;
     text-align:center;
-    pointer-events:none;
+    border:1px solid #202b36;
+    border-radius:27px;
+    background:linear-gradient(180deg,#0e141b,#090d12);
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
 }
 
-#name{
-    font-size:18px;
-    font-weight:700;
+.startIcon{
+    width:82px;
+    height:82px;
+    margin:0 auto 20px;
+    border-radius:25px;
+    display:grid;
+    place-items:center;
+    font-size:38px;
+    background:#111b25;
+    border:1px solid #2a3948;
 }
 
-#hint{
-    margin-top:3px;
-    color:#aaa;
-    font-size:12px;
+.startCard h1{
+    margin:0;
+    font-size:29px;
 }
 
-
-/* =========================
-   STŘEDNÍ INFORMACE
-========================= */
-
-#info{
-    position:absolute;
-    z-index:500;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    width:92%;
-    text-align:center;
-    pointer-events:none;
+.startCard p{
+    max-width:510px;
+    margin:12px auto 23px;
+    color:#8995a3;
+    line-height:1.5;
+    font-size:13px;
 }
 
-.big{
-    font-size:32px;
-    font-weight:700;
+.infoGrid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:9px;
+    margin-bottom:23px;
+}
+
+.info{
+    padding:13px 8px;
+    border-radius:14px;
+    background:#0d131a;
+    border:1px solid #202b36;
+}
+
+.info b{
+    display:block;
+    font-size:14px;
+}
+
+.info span{
+    display:block;
+    margin-top:4px;
+    color:#768391;
+    font-size:9px;
+}
+
+.primary{
+    width:100%;
+    padding:16px;
+    border:0;
+    border-radius:16px;
+    color:#fff;
+    background:linear-gradient(135deg,#4da3ff,#397fce);
+    font-weight:800;
+    cursor:pointer;
+}
+
+.primary:active{
+    transform:scale(.985);
+}
+
+.skipInfo{
+    margin-top:13px;
+    color:#687584;
+    font-size:10px;
+}
+
+.skipInfo b{
+    color:#aeb8c3;
+}
+
+/* DIAGNOSTIC */
+
+.diagnostic{
+    flex-direction:column;
+    padding:19px;
+}
+
+.header{
+    flex:none;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:15px;
     margin-bottom:14px;
 }
 
-.value{
-    color:#ddd;
-    font-size:17px;
-    line-height:1.6;
-    white-space:pre-line;
+.header h2{
+    margin:0;
+    font-size:23px;
 }
 
-
-/* =========================
-   DOTYKOVÉ BODY
-========================= */
-
-.point{
-    position:absolute;
-
-    width:30px;
-    height:30px;
-
-    background:#fff;
-
-    border:2px solid #aaa;
-
-    border-radius:5px;
-
-    z-index:100;
-
-    pointer-events:auto;
-
-    touch-action:none;
-
-    transition:
-        background .12s,
-        box-shadow .12s,
-        border-color .12s;
-}
-
-.point.done{
-    background:#087cff;
-
-    border-color:#62adff;
-
-    box-shadow:
-        0 0 10px rgba(8,124,255,.9),
-        0 0 22px rgba(8,124,255,.45);
-}
-
-
-/* =========================
-   PROGRESS
-========================= */
-
-#progressBox{
-    position:absolute;
-    z-index:2000;
-
-    left:50%;
-    bottom:14px;
-
-    transform:translateX(-50%);
-
-    width:min(420px,82vw);
-
-    text-align:center;
-
-    pointer-events:none;
-}
-
-#progressText{
-    color:#aaa;
+.header p{
+    margin:6px 0 0;
+    color:#8793a1;
     font-size:12px;
-    margin-bottom:5px;
 }
 
-#progress{
-    width:100%;
-    height:5px;
+.status{
+    padding:8px 10px;
+    border-radius:10px;
+    border:1px solid #27333f;
+    background:#0b1016;
+    color:#8995a3;
+    font-size:10px;
+    white-space:nowrap;
+}
 
-    background:#222;
+.status.ok{
+    color:#42d392;
+    border-color:rgba(66,211,146,.25);
+}
 
-    border-radius:20px;
+.status.warn{
+    color:#ffd45a;
+    border-color:rgba(255,212,90,.25);
+}
 
+.area{
+    position:relative;
+    flex:1;
+    min-height:0;
+    overflow:hidden;
+    border-radius:23px;
+    border:1px solid #202b36;
+    background:#0d131a;
+}
+
+.controls{
+    flex:none;
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:11px;
+}
+
+.secondary{
+    padding:11px 15px;
+    border-radius:13px;
+    border:1px solid #26313d;
+    background:#0d131a;
+    color:#fff;
+    cursor:pointer;
+}
+
+/* TOUCH */
+
+.touchGrid{
+    position:absolute;
+    inset:0;
+}
+
+.touchPoint{
+    position:absolute;
+    width:34px;
+    height:34px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    border:2px solid #607080;
+    background:#131c25;
+    transition:.12s;
+}
+
+.touchPoint.hit{
+    background:rgba(66,211,146,.2);
+    border-color:#42d392;
+    box-shadow:0 0 20px rgba(66,211,146,.45);
+    transform:translate(-50%,-50%) scale(.78);
+}
+
+.touchCounter{
+    position:absolute;
+    right:13px;
+    bottom:13px;
+    z-index:5;
+    padding:8px 11px;
+    border-radius:10px;
+    background:rgba(0,0,0,.65);
+    border:1px solid rgba(255,255,255,.1);
+    font-size:11px;
+}
+
+/* MOVE */
+
+.moveCanvas{
+    position:absolute;
+    inset:0;
     overflow:hidden;
 }
 
-#fill{
-    width:0%;
-    height:100%;
-
-    background:#087cff;
-
-    transition:width .1s;
+.moveLine{
+    position:absolute;
+    inset:0;
 }
 
-
-/* =========================
-   MULTITOUCH BODY
-========================= */
-
-.multiDot{
+.moveCursor{
     position:absolute;
-
     width:45px;
     height:45px;
-
     border-radius:50%;
-
-    background:#087cff;
-
-    box-shadow:
-        0 0 20px rgba(8,124,255,.8);
-
     transform:translate(-50%,-50%);
-
+    border:2px solid #4da3ff;
+    background:rgba(77,163,255,.18);
+    box-shadow:0 0 25px rgba(77,163,255,.45);
     pointer-events:none;
-
-    z-index:300;
 }
 
+.moveText{
+    position:absolute;
+    top:15px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:9px 13px;
+    border-radius:11px;
+    background:rgba(0,0,0,.65);
+    color:#fff;
+    font-size:11px;
+    z-index:4;
+    white-space:nowrap;
+}
 
-/* =========================
-   FINISH
-========================= */
+.moveStats{
+    position:absolute;
+    bottom:14px;
+    left:14px;
+    padding:9px 11px;
+    border-radius:11px;
+    background:rgba(0,0,0,.65);
+    font-size:11px;
+    z-index:4;
+}
 
-#finishScreen{
+/* COLOR */
+
+.colorStage{
+    position:absolute;
+    inset:0;
+}
+
+.colorLabel{
+    position:absolute;
+    top:15px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:9px 13px;
+    border-radius:11px;
+    background:rgba(0,0,0,.58);
+    font-size:11px;
+    z-index:5;
+}
+
+.colorControls{
+    position:absolute;
+    left:50%;
+    bottom:14px;
+    transform:translateX(-50%);
+    display:flex;
+    gap:7px;
+    z-index:5;
+}
+
+.colorControls button{
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(0,0,0,.7);
+    color:#fff;
+    border-radius:11px;
+    padding:9px 12px;
+    cursor:pointer;
+}
+
+/* SENSOR */
+
+.sensorCenter{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+}
+
+.sensorCircle{
+    width:min(260px,60vw);
+    aspect-ratio:1;
+    border-radius:50%;
+    border:1px solid #2c3a48;
+    background:
+        radial-gradient(circle,#1a2734 0 2%,transparent 2.5%),
+        linear-gradient(#17222d,#0c131b);
+    display:grid;
+    place-items:center;
+    position:relative;
+}
+
+.sensorCircle:before{
+    content:"";
+    position:absolute;
+    width:1px;
+    height:100%;
+    background:#2b3845;
+}
+
+.sensorCircle:after{
+    content:"";
+    position:absolute;
+    width:100%;
+    height:1px;
+    background:#2b3845;
+}
+
+.sensorValue{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    padding:17px;
+    border-radius:16px;
+    background:rgba(0,0,0,.58);
+}
+
+.sensorValue strong{
+    display:block;
+    font-size:27px;
+}
+
+.sensorValue span{
+    color:#8995a3;
+    font-size:10px;
+}
+
+/* BATTERY */
+
+.batteryWrap{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    padding:20px;
+}
+
+.batteryCard{
+    width:min(440px,100%);
+    padding:25px;
+    border-radius:22px;
+    background:#090f15;
+    border:1px solid #202b36;
+}
+
+.battery{
+    width:110px;
+    height:51px;
+    padding:4px;
+    margin:0 auto 18px;
+    border:3px solid #687583;
+    border-radius:10px;
+    position:relative;
+}
+
+.battery:after{
+    content:"";
+    position:absolute;
+    width:6px;
+    height:18px;
+    right:-9px;
+    top:13px;
+    border-radius:0 4px 4px 0;
+    background:#687583;
+}
+
+.batteryFill{
+    height:100%;
+    width:0;
+    border-radius:4px;
+    background:#42d392;
+    transition:.3s;
+}
+
+.batteryPercent{
+    text-align:center;
+    font-size:37px;
+    font-weight:800;
+}
+
+.batteryState{
+    text-align:center;
+    color:#8995a3;
+    margin-top:6px;
+}
+
+.batteryDetails{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+    margin-top:20px;
+}
+
+.detail{
+    padding:12px;
+    border-radius:13px;
+    border:1px solid #202b36;
+    background:#0d131a;
+}
+
+.detail span{
+    color:#71808e;
+    font-size:9px;
+}
+
+.detail b{
+    display:block;
+    margin-top:4px;
+    font-size:12px;
+}
+
+/* NETWORK */
+
+.networkWrap{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    padding:20px;
+}
+
+.networkCard{
+    width:min(520px,100%);
+    padding:22px;
+    border-radius:21px;
+    border:1px solid #202b36;
+    background:#090f15;
+}
+
+.networkRow{
+    display:flex;
+    justify-content:space-between;
+    padding:14px 0;
+    border-bottom:1px solid #202b36;
+    font-size:12px;
+}
+
+.networkRow:last-child{
+    border-bottom:0;
+}
+
+.networkRow span{
+    color:#7f8b98;
+}
+
+/* MULTITOUCH */
+
+.multiArea{
+    position:absolute;
+    inset:0;
+}
+
+.finger{
+    position:absolute;
+    width:72px;
+    height:72px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    border:2px solid #fff;
+    background:rgba(77,163,255,.2);
+    box-shadow:0 0 25px rgba(77,163,255,.45);
+    pointer-events:none;
+}
+
+.multiText{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    text-align:center;
+    pointer-events:none;
+}
+
+.multiText strong{
+    display:block;
+    font-size:48px;
+}
+
+.multiText span{
+    color:#8995a3;
+    font-size:11px;
+}
+
+/* VIBRATION */
+
+.vibration{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    text-align:center;
+}
+
+.vibrationIcon{
+    font-size:70px;
+}
+
+.vibration p{
+    color:#8995a3;
+    font-size:12px;
+}
+
+/* RESULT */
+
+.result{
     align-items:center;
     justify-content:center;
-    flex-direction:column;
+    padding:20px;
+}
 
+.resultCard{
+    width:min(700px,100%);
+    max-height:100%;
+    overflow:auto;
+    padding:27px;
+    border-radius:25px;
+    border:1px solid #202b36;
+    background:linear-gradient(180deg,#0e141b,#090d12);
+}
+
+.resultTitle{
     text-align:center;
-
-    gap:10px;
+    margin-bottom:22px;
 }
 
-.finishTitle{
-    font-size:30px;
-    font-weight:700;
+.resultIcon{
+    font-size:43px;
 }
 
-.finishText{
-    color:#aaa;
+.resultTitle h2{
+    margin:8px 0 0;
+    font-size:27px;
 }
 
+.resultTitle p{
+    color:#8995a3;
+    font-size:12px;
+}
+
+.results{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.resultRow{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 14px;
+    border-radius:13px;
+    background:#0d131a;
+    border:1px solid #202b36;
+}
+
+.resultName{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    font-size:12px;
+}
+
+.dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#42d392;
+}
+
+.dot.warn{
+    background:#ffd45a;
+}
+
+.dot.bad{
+    background:#ff5d6c;
+}
+
+.resultState{
+    color:#7e8a97;
+    font-size:10px;
+}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:20px;
+    z-index:100;
+    transform:translate(-50%,20px);
+    opacity:0;
+    pointer-events:none;
+    padding:11px 15px;
+    border-radius:13px;
+    background:#121a22;
+    border:1px solid #2b3947;
+    box-shadow:0 15px 40px rgba(0,0,0,.45);
+    font-size:11px;
+    transition:.25s;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+.hidden{
+    display:none!important;
+}
+
+@media(max-width:600px){
+
+    .topbar{
+        height:65px;
+        padding:9px 12px;
+    }
+
+    .logo{
+        width:37px;
+        height:37px;
+    }
+
+    .brand strong{
+        font-size:12px;
+    }
+
+    .brand span{
+        font-size:9px;
+    }
+
+    .diagnostic{
+        padding:12px;
+    }
+
+    .header h2{
+        font-size:20px;
+    }
+
+    .header p{
+        font-size:10px;
+    }
+
+    .area{
+        border-radius:19px;
+    }
+
+    .startCard{
+        padding:25px 17px;
+    }
+
+    .startCard h1{
+        font-size:24px;
+    }
+
+    .infoGrid{
+        grid-template-columns:1fr;
+    }
+}
 </style>
 </head>
 
 <body>
 
+<div class="app">
 
-<!-- =========================
-     START
-========================= -->
+<header class="topbar">
 
-<div id="startScreen" class="screen active">
+    <div class="brand">
 
-    <div class="title">
-        SirTros Phone Test
-    </div>
+        <div class="logo">📱</div>
 
-    <div class="subtitle">
-        Diagnostika telefonu
-    </div>
-
-    <button id="startButton">
-        SPUSTIT TEST
-    </button>
-
-</div>
-
-
-<!-- =========================
-     TEST
-========================= -->
-
-<div id="testScreen" class="screen">
-
-    <div id="top">
-
-        <div id="name"></div>
-
-        <div id="hint"></div>
-
-    </div>
-
-
-    <div id="touchArea"></div>
-
-
-    <div id="info"></div>
-
-
-    <div id="progressBox">
-
-        <div id="progressText"></div>
-
-        <div id="progress">
-
-            <div id="fill"></div>
-
+        <div>
+            <strong>SirTros Phone Diagnostic</strong>
+            <span id="subtitle">Připraveno k diagnostice</span>
         </div>
 
     </div>
 
+    <div class="step" id="step">
+        START
+    </div>
+
+</header>
+
+<div class="progress">
+    <div class="progressBar" id="progress"></div>
 </div>
 
+<main>
 
-<!-- =========================
-     FINISH
-========================= -->
+<!-- START -->
 
-<div id="finishScreen" class="screen">
+<section class="view welcome active" id="welcome">
 
-    <div class="finishTitle">
-        TEST DOKONČEN
+    <div class="startCard">
+
+        <div class="startIcon">🔧</div>
+
+        <h1>Diagnostika telefonu</h1>
+
+        <p>
+            Komplexní kontrola dotyku, displeje, senzorů,
+            napájení, sítě, multitouchu a vibrací.
+        </p>
+
+        <div class="infoGrid">
+
+            <div class="info">
+                <b id="device">—</b>
+                <span>ZAŘÍZENÍ</span>
+            </div>
+
+            <div class="info">
+                <b id="browser">—</b>
+                <span>PROHLÍŽEČ</span>
+            </div>
+
+            <div class="info">
+                <b id="resolution">—</b>
+                <span>DISPLEJ</span>
+            </div>
+
+        </div>
+
+        <button class="primary" id="start">
+            SPUSTIT DIAGNOSTIKU
+        </button>
+
+        <div class="skipInfo">
+            Přeskočení aktuálního testu:
+            <b>3× změna napájení během 15 sekund</b>
+        </div>
+
     </div>
 
-    <div class="finishText">
-        Diagnostika dokončena.
+</section>
+
+
+<!-- DIAGNOSTIC -->
+
+<section class="view diagnostic" id="diagnostic">
+
+    <div class="header">
+
+        <div>
+            <h2 id="title">Test</h2>
+            <p id="description">—</p>
+        </div>
+
+        <div class="status" id="status">
+            PŘIPRAVENO
+        </div>
+
     </div>
+
+    <div class="area" id="area"></div>
+
+    <div class="controls">
+
+        <button class="secondary hidden" id="done">
+            ✓ HOTOVO
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- RESULT -->
+
+<section class="view result" id="result">
+
+    <div class="resultCard">
+
+        <div class="resultTitle">
+
+            <div class="resultIcon">✅</div>
+
+            <h2>Diagnostika dokončena</h2>
+
+            <p id="summary">—</p>
+
+        </div>
+
+        <div class="results" id="results"></div>
+
+        <br>
+
+        <button class="primary" id="restart">
+            SPUSTIT ZNOVU
+        </button>
+
+    </div>
+
+</section>
+
+</main>
+
+<div class="toast" id="toast"></div>
 
 </div>
 
 
 <script>
-
-
-/* =========================================================
-   ELEMENTY
-========================================================= */
-
-const startScreen =
-    document.getElementById("startScreen");
-
-const testScreen =
-    document.getElementById("testScreen");
-
-const finishScreen =
-    document.getElementById("finishScreen");
-
-const startButton =
-    document.getElementById("startButton");
-
-const touchArea =
-    document.getElementById("touchArea");
-
-const nameEl =
-    document.getElementById("name");
-
-const hintEl =
-    document.getElementById("hint");
-
-const info =
-    document.getElementById("info");
-
-const progressBox =
-    document.getElementById("progressBox");
-
-const progressText =
-    document.getElementById("progressText");
-
-const fill =
-    document.getElementById("fill");
-
-
-/* =========================================================
-   STAV
-========================================================= */
-
-let currentTest = 0;
-
-let points = [];
-
-let pointerData = new Map();
-
-let touchCompleted = false;
-
-let sensorTimer = null;
-
+"use strict";
 
 /* =========================================================
    TESTY
-========================================================= */
+   ========================================================= */
 
 const tests = [
 
     {
         id:"touch",
-        name:"DISPLEJ – DOTYK",
-        hint:"Dotýkej se nebo přejížděj přes čtverečky"
-    },
-
-    {
-        id:"movement",
-        name:"POHYB",
-        hint:"Pohybuj telefonem NAHORU / DOLŮ / DOLEVA / DOPRAVA"
+        title:"Dotyková obrazovka",
+        description:"Dotkni se všech bodů na displeji.",
+        run:touchTest
     },
 
     {
         id:"screen",
-        name:"OBRAZOVKA",
-        hint:"Kontrola rozlišení, DPR a velikosti"
+        title:"Displej a pixely",
+        description:"Prohlédni celou plochu displeje na různých barvách.",
+        run:screenTest
     },
 
     {
-        id:"battery",
-        name:"BATERIE",
-        hint:"Průběžná kontrola baterie"
+        id:"movement",
+        title:"Pohyb",
+        description:"Táhni prstem po ploše a zároveň pohybuj telefonem.",
+        run:movementTest
     },
 
     {
         id:"orientation",
-        name:"ORIENTACE",
-        hint:"Nakláněj telefon"
+        title:"Orientace",
+        description:"Otáčej telefonem mezi různými polohami.",
+        run:orientationTest
     },
 
     {
         id:"rotation",
-        name:"ROTACE",
-        hint:"Otáčej telefonem"
+        title:"Rotace",
+        description:"Otáčej telefonem kolem různých os.",
+        run:rotationTest
     },
 
     {
         id:"compass",
-        name:"KOMPAS",
-        hint:"Otáčej telefonem"
+        title:"Kompas",
+        description:"Otáčej telefonem a sleduj změnu směru.",
+        run:compassTest
+    },
+
+    {
+        id:"power",
+        title:"Napájení",
+        description:"Kontrola baterie a stavu nabíjení.",
+        run:powerTest
     },
 
     {
         id:"network",
-        name:"SÍŤ",
-        hint:"Průběžná kontrola připojení"
+        title:"Síť",
+        description:"Kontrola dostupného síťového připojení.",
+        run:networkTest
     },
 
     {
         id:"multitouch",
-        name:"MULTITOUCH",
-        hint:"Dotkni se více míst současně"
+        title:"Multitouch",
+        description:"Použij alespoň dva prsty současně.",
+        run:multitouchTest
     },
 
     {
         id:"vibration",
-        name:"VIBRACE",
-        hint:"Test vibračního motoru"
+        title:"Vibrace",
+        description:"Kontrola vibračního motoru.",
+        run:vibrationTest
     }
 
 ];
 
 
 /* =========================================================
-   START
-========================================================= */
+   STAV
+   ========================================================= */
 
-startButton.addEventListener(
+let index = -1;
+let running = false;
+let results = [];
+
+let cleanupFunctions = [];
+let timer = null;
+
+let wakeLock = null;
+
+let battery = null;
+let chargingChanges = [];
+
+let skipLock = false;
+
+
+/* =========================================================
+   ELEMENTY
+   ========================================================= */
+
+const welcome =
+    document.getElementById("welcome");
+
+const diagnostic =
+    document.getElementById("diagnostic");
+
+const result =
+    document.getElementById("result");
+
+const start =
+    document.getElementById("start");
+
+const restart =
+    document.getElementById("restart");
+
+const done =
+    document.getElementById("done");
+
+const area =
+    document.getElementById("area");
+
+const title =
+    document.getElementById("title");
+
+const description =
+    document.getElementById("description");
+
+const status =
+    document.getElementById("status");
+
+const progress =
+    document.getElementById("progress");
+
+const step =
+    document.getElementById("step");
+
+const subtitle =
+    document.getElementById("subtitle");
+
+const toast =
+    document.getElementById("toast");
+
+const resultsElement =
+    document.getElementById("results");
+
+const summary =
+    document.getElementById("summary");
+
+
+/* =========================================================
+   INFO
+   ========================================================= */
+
+function deviceName(){
+
+    const ua = navigator.userAgent;
+
+    if(/Samsung/i.test(ua))
+        return "Samsung";
+
+    if(/Android/i.test(ua))
+        return "Android";
+
+    if(/iPhone/i.test(ua))
+        return "iPhone";
+
+    if(/iPad/i.test(ua))
+        return "iPad";
+
+    if(/Windows/i.test(ua))
+        return "Windows";
+
+    if(/Macintosh/i.test(ua))
+        return "Mac";
+
+    return "Zařízení";
+}
+
+function browserName(){
+
+    const ua = navigator.userAgent;
+
+    if(/Edg/i.test(ua))
+        return "Edge";
+
+    if(/Chrome/i.test(ua))
+        return "Chrome";
+
+    if(/Firefox/i.test(ua))
+        return "Firefox";
+
+    if(/Safari/i.test(ua))
+        return "Safari";
+
+    return "Prohlížeč";
+}
+
+document.getElementById("device").textContent =
+    deviceName();
+
+document.getElementById("browser").textContent =
+    browserName();
+
+document.getElementById("resolution").textContent =
+    `${screen.width}×${screen.height}`;
+
+
+/* =========================================================
+   POMOCNÉ FUNKCE
+   ========================================================= */
+
+function show(view){
+
+    welcome.classList.remove("active");
+    diagnostic.classList.remove("active");
+    result.classList.remove("active");
+
+    view.classList.add("active");
+}
+
+function clean(){
+
+    clearTimeout(timer);
+
+    timer = null;
+
+    for(const fn of cleanupFunctions){
+
+        try{
+            fn();
+        }catch(e){}
+
+    }
+
+    cleanupFunctions = [];
+
+    area.innerHTML = "";
+}
+
+function addCleanup(fn){
+
+    cleanupFunctions.push(fn);
+}
+
+function setStatus(text,type=""){
+
+    status.textContent = text;
+
+    status.className = "status";
+
+    if(type)
+        status.classList.add(type);
+}
+
+function message(text){
+
+    toast.textContent = text;
+
+    toast.classList.add("show");
+
+    clearTimeout(toast._timer);
+
+    toast._timer =
+        setTimeout(()=>{
+            toast.classList.remove("show");
+        },2500);
+}
+
+function finish(resultType="ok"){
+
+    if(!running)
+        return;
+
+    const current =
+        tests[index];
+
+    results.push({
+        id:current.id,
+        title:current.title,
+        result:resultType
+    });
+
+    clean();
+
+    index++;
+
+    if(index >= tests.length){
+
+        finishDiagnostic();
+
+    }else{
+
+        showTest();
+    }
+}
+
+
+/* =========================================================
+   SKIP KÓD
+   3× ZMĚNA NAPÁJENÍ / 15 S
+   ========================================================= */
+
+function skipCurrent(){
+
+    if(!running)
+        return;
+
+    if(skipLock)
+        return;
+
+    skipLock = true;
+
+    const current =
+        tests[index];
+
+    results.push({
+        id:current.id,
+        title:current.title,
+        result:"skip"
+    });
+
+    message(
+        `⏭️ Přeskočeno: ${current.title}`
+    );
+
+    clean();
+
+    index++;
+
+    setTimeout(()=>{
+
+        skipLock = false;
+
+        if(index >= tests.length){
+
+            finishDiagnostic();
+
+        }else{
+
+            showTest();
+        }
+
+    },400);
+}
+
+
+async function setupBattery(){
+
+    if(!navigator.getBattery)
+        return;
+
+    try{
+
+        battery =
+            await navigator.getBattery();
+
+        function chargingChanged(){
+
+            if(!running)
+                return;
+
+            const now =
+                Date.now();
+
+            chargingChanges.push(now);
+
+            chargingChanges =
+                chargingChanges.filter(
+                    time =>
+                    now-time <= 15000
+                );
+
+            /*
+             * TOTO NENÍ TEST.
+             *
+             * Je to pouze skip kód.
+             *
+             * 3 skutečné změny:
+             * nabíjí -> nenabíjí
+             * nebo
+             * nenabíjí -> nabíjí
+             *
+             * během 15 sekund.
+             */
+
+            if(chargingChanges.length >= 3){
+
+                chargingChanges = [];
+
+                skipCurrent();
+            }
+        }
+
+        battery.addEventListener(
+            "chargingchange",
+            chargingChanged
+        );
+
+        window._chargingChanged =
+            chargingChanged;
+
+    }catch(e){}
+}
+
+
+/* =========================================================
+   WAKE LOCK
+   ========================================================= */
+
+async function wake(){
+
+    if(!navigator.wakeLock)
+        return;
+
+    try{
+
+        wakeLock =
+            await navigator.wakeLock.request(
+                "screen"
+            );
+
+    }catch(e){}
+}
+
+async function releaseWake(){
+
+    try{
+
+        if(wakeLock){
+
+            await wakeLock.release();
+
+            wakeLock = null;
+        }
+
+    }catch(e){}
+}
+
+document.addEventListener(
+    "visibilitychange",
+    async()=>{
+
+        if(
+            running &&
+            document.visibilityState === "visible" &&
+            !wakeLock
+        ){
+            await wake();
+        }
+
+    }
+);
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+start.addEventListener(
     "click",
     async()=>{
 
+        if(running)
+            return;
+
+        running = true;
+        index = 0;
+        results = [];
+        chargingChanges = [];
+
+        await wake();
+
+        await setupBattery();
+
         try{
 
-            if(
-                document.documentElement.requestFullscreen
-            ){
+            if(document.documentElement.requestFullscreen){
 
                 await document.documentElement
                     .requestFullscreen();
-
             }
 
         }catch(e){}
 
-
-        startScreen.classList.remove("active");
-
-        testScreen.classList.add("active");
-
-        currentTest=0;
+        show(diagnostic);
 
         showTest();
-
     }
 );
 
 
 /* =========================================================
-   TEST
-========================================================= */
+   SHOW TEST
+   ========================================================= */
 
 function showTest(){
 
-    clearSensorTimer();
+    clean();
 
-    touchArea.innerHTML="";
+    const current =
+        tests[index];
 
-    info.innerHTML="";
+    title.textContent =
+        current.title;
 
-    progressBox.style.display="none";
+    description.textContent =
+        current.description;
 
-    if(currentTest>=tests.length){
+    step.textContent =
+        `${index+1} / ${tests.length}`;
 
-        testScreen.classList.remove("active");
+    subtitle.textContent =
+        `Test: ${current.title}`;
 
-        finishScreen.classList.add("active");
+    progress.style.width =
+        `${(index/tests.length)*100}%`;
 
-        return;
-    }
+    setStatus("PROBÍHÁ");
 
+    done.classList.add("hidden");
 
-    const test=tests[currentTest];
-
-    nameEl.textContent=test.name;
-
-    hintEl.textContent=test.hint;
-
-
-    if(test.id==="touch")
-        startTouch();
-
-    if(test.id==="movement")
-        startMovement();
-
-    if(test.id==="screen")
-        startScreenInfo();
-
-    if(test.id==="battery")
-        startBattery();
-
-    if(test.id==="orientation")
-        startOrientation();
-
-    if(test.id==="rotation")
-        startRotation();
-
-    if(test.id==="compass")
-        startCompass();
-
-    if(test.id==="network")
-        startNetwork();
-
-    if(test.id==="multitouch")
-        startMultitouch();
-
-    if(test.id==="vibration")
-        startVibration();
-
+    current.run();
 }
 
 
 /* =========================================================
-   DALŠÍ TEST
-========================================================= */
+   1. DOTYK
+   ========================================================= */
 
-function nextTest(){
+function touchTest(){
 
-    clearSensorTimer();
+    const grid =
+        document.createElement("div");
 
-    currentTest++;
+    grid.className =
+        "touchGrid";
 
-    showTest();
+    const counter =
+        document.createElement("div");
 
-}
+    counter.className =
+        "touchCounter";
 
-
-/* =========================================================
-   TIMER
-========================================================= */
-
-function clearSensorTimer(){
-
-    if(sensorTimer){
-
-        clearTimeout(sensorTimer);
-
-        sensorTimer=null;
-
-    }
-
-}
-
-
-/* =========================================================
-   DOTYK
-========================================================= */
-
-function startTouch(){
-
-    progressBox.style.display="block";
-
-    points=[];
-
-    touchCompleted=false;
-
-    createTouchPoints();
-
-    updateTouchProgress();
-
-}
-
-
-/* =========================================================
-   VYTVOŘENÍ BODŮ
-========================================================= */
-
-function createTouchPoints(){
-
-    touchArea.innerHTML="";
-
-    points=[];
-
-
-    const w=window.innerWidth;
-
-    const h=window.innerHeight;
-
-    const size=30;
-
-    const spacing=45;
-
-
-    const positions=[];
-
-
-    function addPoint(x,y){
-
-        x=Math.round(
-            Math.max(
-                0,
-                Math.min(
-                    w-size,
-                    x
-                )
-            )
-        );
-
-        y=Math.round(
-            Math.max(
-                0,
-                Math.min(
-                    h-size,
-                    y
-                )
-            )
-        );
-
-
-        const exists=
-            positions.some(
-                p=>
-                    Math.abs(p.x-x)<3 &&
-                    Math.abs(p.y-y)<3
-            );
-
-
-        if(!exists){
-
-            positions.push({
-                x:x,
-                y:y
-            });
-
-        }
-
-    }
-
-
-    /* =========================
-       OKRAJ
-    ========================= */
-
-    for(
-        let x=0;
-        x<=w-size;
-        x+=spacing
-    ){
-
-        addPoint(x,0);
-
-    }
-
-    addPoint(w-size,0);
-
-
-    for(
-        let y=spacing;
-        y<=h-size;
-        y+=spacing
-    ){
-
-        addPoint(
-            w-size,
-            y
-        );
-
-    }
-
-    addPoint(
-        w-size,
-        h-size
-    );
-
-
-    for(
-        let x=w-size-spacing;
-        x>=0;
-        x-=spacing
-    ){
-
-        addPoint(
-            x,
-            h-size
-        );
-
-    }
-
-    addPoint(
-        0,
-        h-size
-    );
-
-
-    for(
-        let y=h-size-spacing;
-        y>0;
-        y-=spacing
-    ){
-
-        addPoint(
-            0,
-            y
-        );
-
-    }
-
-
-    /* =========================
-       X – PRVNÍ ÚHLOPŘÍČKA
-    ========================= */
-
-    const max=Math.max(w,h);
-
-
-    for(
-        let d=0;
-        d<=max;
-        d+=spacing
-    ){
-
-        const t=d/max;
-
-
-        addPoint(
-            (w-size)*t,
-            (h-size)*t
-        );
-
-    }
-
-
-    /* =========================
-       X – DRUHÁ ÚHLOPŘÍČKA
-    ========================= */
-
-    for(
-        let d=0;
-        d<=max;
-        d+=spacing
-    ){
-
-        const t=d/max;
-
-
-        addPoint(
-            (w-size)*(1-t),
-            (h-size)*t
-        );
-
-    }
-
-
-    /* =========================
-       ELEMENTY
-    ========================= */
-
-    positions.forEach(
-        (pos,index)=>{
-
-            const el=
-                document.createElement("div");
-
-            el.className="point";
-
-            el.style.left=
-                pos.x+"px";
-
-            el.style.top=
-                pos.y+"px";
-
-
-            touchArea.appendChild(el);
-
-
-            const point={
-
-                x:pos.x,
-
-                y:pos.y,
-
-                cx:pos.x+size/2,
-
-                cy:pos.y+size/2,
-
-                done:false,
-
-                element:el
-
-            };
-
-
-            points.push(point);
-
-
-            /* =====================
-               KLIK PŘÍMO NA BOD
-            ===================== */
-
-            el.addEventListener(
-                "pointerdown",
-                event=>{
-
-                    event.preventDefault();
-
-                    event.stopPropagation();
-
-                    completePoint(point);
-
-                }
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   DOKONČENÍ BODU
-========================================================= */
-
-function completePoint(point){
-
-    if(point.done)
-        return;
-
-
-    point.done=true;
-
+    area.appendChild(grid);
+    area.appendChild(counter);
 
     /*
-       ČTVEREČEK ZŮSTÁVÁ.
-       NIC SE NESMAŽE.
-    */
+     * Zachovaný princip:
+     * síť bodů přes celou plochu.
+     */
 
-    point.element.classList.add("done");
+    const cols =
+        innerWidth < 600 ? 5 : 8;
 
+    const rows =
+        innerHeight < 700 ? 6 : 8;
 
-    updateTouchProgress();
+    const points = [];
 
+    let hit = 0;
 
-    checkTouchFinished();
+    const total =
+        cols*rows;
 
-}
+    for(let y=0;y<rows;y++){
 
+        for(let x=0;x<cols;x++){
 
-/* =========================================================
-   PROGRESS
-========================================================= */
+            const point =
+                document.createElement("div");
 
-function updateTouchProgress(){
+            point.className =
+                "touchPoint";
 
-    const total=points.length;
+            point.style.left =
+                `${((x+.5)/cols)*100}%`;
 
-    const done=
-        points.filter(
-            p=>p.done
-        ).length;
+            point.style.top =
+                `${((y+.5)/rows)*100}%`;
 
+            grid.appendChild(point);
 
-    progressText.textContent=
-        done+" / "+total;
-
-
-    fill.style.width=
-        total ?
-        (done/total*100)+"%" :
-        "0%";
-
-}
-
-
-/* =========================================================
-   HOTOVO
-========================================================= */
-
-function checkTouchFinished(){
-
-    if(touchCompleted)
-        return;
-
-
-    if(
-        points.length>0 &&
-        points.every(
-            p=>p.done
-        )
-    ){
-
-        touchCompleted=true;
-
-
-        progressText.textContent=
-            "DOTYK OK";
-
-
-        fill.style.width="100%";
-
-
-        /*
-           NEPŘEPÍNÁME HNED.
-           Chvíli zůstane výsledek vidět.
-        */
-
-        setTimeout(
-            nextTest,
-            1000
-        );
-
+            points.push(point);
+        }
     }
 
-}
+    counter.textContent =
+        `0 / ${total}`;
 
+    function pointer(e){
 
-/* =========================================================
-   TAHÁNÍ
-========================================================= */
+        const rect =
+            area.getBoundingClientRect();
 
-touchArea.addEventListener(
-    "pointerdown",
-    event=>{
+        const x =
+            e.clientX-rect.left;
 
-        pointerData.set(
-            event.pointerId,
-            {
-                x:event.clientX,
-                y:event.clientY
+        const y =
+            e.clientY-rect.top;
+
+        let nearest = null;
+        let nearestDistance = Infinity;
+
+        for(const point of points){
+
+            if(point.classList.contains("hit"))
+                continue;
+
+            const r =
+                point.getBoundingClientRect();
+
+            const px =
+                r.left+r.width/2-rect.left;
+
+            const py =
+                r.top+r.height/2-rect.top;
+
+            const distance =
+                Math.hypot(x-px,y-py);
+
+            if(distance < nearestDistance){
+
+                nearestDistance = distance;
+                nearest = point;
             }
-        );
-
-
-        try{
-
-            touchArea.setPointerCapture(
-                event.pointerId
-            );
-
-        }catch(e){}
-
-    }
-);
-
-
-touchArea.addEventListener(
-    "pointermove",
-    event=>{
-
-        const old=
-            pointerData.get(
-                event.pointerId
-            );
-
-
-        if(!old){
-
-            pointerData.set(
-                event.pointerId,
-                {
-                    x:event.clientX,
-                    y:event.clientY
-                }
-            );
-
-            return;
-
         }
 
+        if(
+            nearest &&
+            nearestDistance < 60
+        ){
 
-        const x=event.clientX;
+            nearest.classList.add("hit");
 
-        const y=event.clientY;
+            hit++;
 
+            counter.textContent =
+                `${hit} / ${total}`;
 
-        /*
-           Kontrolujeme celou trasu.
-           POŘADÍ NENÍ DŮLEŽITÉ.
-        */
+            if(hit >= total){
 
-        points.forEach(
-            point=>{
+                setStatus("DOTYK OK","ok");
 
-                if(point.done)
-                    return;
-
-
-                const distance=
-                    distancePointToSegment(
-                        point.cx,
-                        point.cy,
-                        old.x,
-                        old.y,
-                        x,
-                        y
-                    );
-
-
-                if(distance<=32){
-
-                    completePoint(point);
-
-                }
-
+                timer =
+                    setTimeout(()=>{
+                        finish("ok");
+                    },500);
             }
-        );
-
-
-        pointerData.set(
-            event.pointerId,
-            {
-                x:x,
-                y:y
-            }
-        );
-
-    }
-);
-
-
-touchArea.addEventListener(
-    "pointerup",
-    event=>{
-
-        pointerData.delete(
-            event.pointerId
-        );
-
-    }
-);
-
-
-touchArea.addEventListener(
-    "pointercancel",
-    event=>{
-
-        pointerData.delete(
-            event.pointerId
-        );
-
-    }
-);
-
-
-/* =========================================================
-   VZDÁLENOST OD ÚSEČKY
-========================================================= */
-
-function distancePointToSegment(
-    px,
-    py,
-    x1,
-    y1,
-    x2,
-    y2
-){
-
-    const dx=x2-x1;
-
-    const dy=y2-y1;
-
-
-    if(
-        dx===0 &&
-        dy===0
-    ){
-
-        return Math.hypot(
-            px-x1,
-            py-y1
-        );
-
+        }
     }
 
-
-    let t=
-        (
-            (px-x1)*dx+
-            (py-y1)*dy
-        )/
-        (
-            dx*dx+
-            dy*dy
-        );
-
-
-    t=Math.max(
-        0,
-        Math.min(
-            1,
-            t
-        )
+    area.addEventListener(
+        "pointerdown",
+        pointer
     );
 
+    addCleanup(()=>{
 
-    const x=
-        x1+t*dx;
-
-    const y=
-        y1+t*dy;
-
-
-    return Math.hypot(
-        px-x,
-        py-y
-    );
-
+        area.removeEventListener(
+            "pointerdown",
+            pointer
+        );
+    });
 }
 
 
 /* =========================================================
-   POHYB
-   NAHORU / DOLŮ / DOLEVA / DOPRAVA / STŘED
-========================================================= */
+   2. DISPLEJ + PIXELY
+   ========================================================= */
 
-function startMovement(){
+function screenTest(){
 
-    info.innerHTML=`
+    const colors = [
 
-        <div class="big">
-            POHYB
-        </div>
+        ["ČERNÁ","#000"],
+        ["BÍLÁ","#fff"],
+        ["ČERVENÁ","#f00"],
+        ["ZELENÁ","#0f0"],
+        ["MODRÁ","#00f"],
+        ["ŽLUTÁ","#ff0"],
+        ["PURPUROVÁ","#f0f"],
+        ["AZUROVÁ","#0ff"]
 
-        <div id="movementValue"
-             class="value">
-            Čekám na pohyb…
-        </div>
+    ];
 
-    `;
+    let colorIndex = 0;
+    let badPixel = false;
+
+    const stage =
+        document.createElement("div");
+
+    stage.className =
+        "colorStage";
+
+    const label =
+        document.createElement("div");
+
+    label.className =
+        "colorLabel";
+
+    const controls =
+        document.createElement("div");
+
+    controls.className =
+        "colorControls";
+
+    const prev =
+        document.createElement("button");
+
+    prev.textContent =
+        "‹";
+
+    const next =
+        document.createElement("button");
+
+    next.textContent =
+        "DALŠÍ";
+
+    const bad =
+        document.createElement("button");
+
+    bad.textContent =
+        "⚠ VADNÝ PIXEL";
+
+    controls.append(
+        prev,
+        next,
+        bad
+    );
+
+    stage.append(
+        label,
+        controls
+    );
+
+    area.appendChild(stage);
+
+    function render(){
+
+        stage.style.background =
+            colors[colorIndex][1];
+
+        label.textContent =
+            `${colors[colorIndex][0]} • ${colorIndex+1}/${colors.length}`;
+    }
+
+    prev.addEventListener(
+        "click",
+        ()=>{
+            colorIndex =
+                (colorIndex-1+colors.length) %
+                colors.length;
+
+            render();
+        }
+    );
+
+    next.addEventListener(
+        "click",
+        ()=>{
+
+            if(
+                colorIndex <
+                colors.length-1
+            ){
+
+                colorIndex++;
+                render();
+
+            }else{
+
+                finish(
+                    badPixel
+                        ? "warn"
+                        : "ok"
+                );
+            }
+        }
+    );
+
+    bad.addEventListener(
+        "click",
+        ()=>{
+
+            badPixel = true;
+
+            bad.textContent =
+                "⚠ NALEZEN";
+
+            bad.style.background =
+                "rgba(255,80,90,.35)";
+
+            setStatus(
+                "VADNÝ PIXEL",
+                "warn"
+            );
+        }
+    );
+
+    addCleanup(()=>{
+
+        prev.onclick = null;
+        next.onclick = null;
+        bad.onclick = null;
+
+    });
+
+    render();
+}
 
 
-    let lastX=null;
+/* =========================================================
+   3. POHYB
+   TAŽENÍ + POHYBOVÝ SENZOR
+   ========================================================= */
 
-    let lastY=null;
+function movementTest(){
 
+    const canvas =
+        document.createElement("div");
 
-    function handler(event){
+    canvas.className =
+        "moveCanvas";
 
-        const a=
-            event.accelerationIncludingGravity;
+    const text =
+        document.createElement("div");
 
+    text.className =
+        "moveText";
+
+    text.textContent =
+        "Táhni prstem po celé ploše";
+
+    const cursor =
+        document.createElement("div");
+
+    cursor.className =
+        "moveCursor";
+
+    const stats =
+        document.createElement("div");
+
+    stats.className =
+        "moveStats";
+
+    stats.textContent =
+        "Tažení: 0 px • Senzor: čekám";
+
+    canvas.append(
+        text,
+        cursor,
+        stats
+    );
+
+    area.appendChild(canvas);
+
+    let dragging = false;
+
+    let lastX = 0;
+    let lastY = 0;
+
+    let distance = 0;
+    let sensorDetected = false;
+
+    let lastSensor = null;
+
+    /*
+     * TAŽENÍ PRSTEM
+     */
+
+    function down(e){
+
+        dragging = true;
+
+        lastX = e.clientX;
+        lastY = e.clientY;
+
+        cursor.style.left =
+            `${e.clientX}px`;
+
+        cursor.style.top =
+            `${e.clientY}px`;
+
+        cursor.style.display =
+            "block";
+
+        area.setPointerCapture?.(
+            e.pointerId
+        );
+
+        updateStats();
+    }
+
+    function move(e){
+
+        if(!dragging)
+            return;
+
+        const dx =
+            e.clientX-lastX;
+
+        const dy =
+            e.clientY-lastY;
+
+        distance +=
+            Math.hypot(dx,dy);
+
+        lastX =
+            e.clientX;
+
+        lastY =
+            e.clientY;
+
+        cursor.style.left =
+            `${e.clientX}px`;
+
+        cursor.style.top =
+            `${e.clientY}px`;
+
+        updateStats();
+
+        if(distance >= 500){
+
+            setStatus(
+                "POHYB PRSTEM OK",
+                "ok"
+            );
+
+            if(sensorDetected){
+
+                finish("ok");
+            }else{
+
+                /*
+                 * Tažení samo o sobě stačí,
+                 * senzor je pouze další kontrola.
+                 */
+
+                timer =
+                    setTimeout(()=>{
+                        finish("ok");
+                    },500);
+            }
+        }
+    }
+
+    function up(){
+
+        dragging = false;
+    }
+
+    area.addEventListener(
+        "pointerdown",
+        down
+    );
+
+    area.addEventListener(
+        "pointermove",
+        move
+    );
+
+    area.addEventListener(
+        "pointerup",
+        up
+    );
+
+    area.addEventListener(
+        "pointercancel",
+        up
+    );
+
+    /*
+     * POHYBOVÝ SENZOR
+     */
+
+    function motion(e){
+
+        const a =
+            e.accelerationIncludingGravity;
 
         if(!a)
             return;
 
+        const x =
+            a.x || 0;
 
-        const x=a.x||0;
+        const y =
+            a.y || 0;
 
-        const y=a.y||0;
+        const z =
+            a.z || 0;
 
-        const z=a.z||0;
+        const value =
+            Math.sqrt(x*x+y*y+z*z);
 
+        if(lastSensor === null){
 
-        let direction="STŘED";
+            lastSensor = value;
 
+        }else{
 
-        /*
-           Orientace telefonu:
+            if(
+                Math.abs(value-lastSensor) > .8
+            ){
 
-           X kladné → DOPRAVA
-           X záporné → DOLEVA
-           Y kladné → DOLŮ
-           Y záporné → NAHORU
-        */
+                sensorDetected = true;
 
+                stats.textContent =
+                    `Tažení: ${Math.round(distance)} px • Senzor: OK`;
+            }
 
-        if(Math.abs(x)>2){
-
-            if(x>0)
-                direction="DOPRAVA";
-            else
-                direction="DOLEVA";
-
+            lastSensor = value;
         }
-        else if(Math.abs(y)>2){
-
-            if(y>0)
-                direction="DOLŮ";
-            else
-                direction="NAHORU";
-
-        }
-        else{
-
-            direction="STŘED";
-
-        }
-
-
-        const value=
-            document.getElementById(
-                "movementValue"
-            );
-
-
-        if(value){
-
-            value.textContent=
-
-                direction+
-
-                "\n\n"+
-
-                "X: "+
-                x.toFixed(2)+
-
-                "\nY: "+
-                y.toFixed(2)+
-
-                "\nZ: "+
-                z.toFixed(2);
-
-        }
-
     }
-
-
-    window.addEventListener(
-        "devicemotion",
-        handler
-    );
-
 
     /*
-       Pohybový test zůstane aktivní.
-       Automaticky ho NEVYPNEME.
-    */
-
-    window._movementHandler=handler;
-
-}
-
-
-/* =========================================================
-   OBRAZOVKA
-========================================================= */
-
-function startScreenInfo(){
-
-    info.innerHTML=`
-
-        <div class="big">
-            OBRAZOVKA
-        </div>
-
-        <div id="screenValue"
-             class="value">
-        </div>
-
-    `;
-
-
-    function update(){
-
-        const el=
-            document.getElementById(
-                "screenValue"
-            );
-
-
-        if(!el)
-            return;
-
-
-        const width=
-            window.innerWidth;
-
-        const height=
-            window.innerHeight;
-
-
-        const sw=
-            screen.width;
-
-        const sh=
-            screen.height;
-
-
-        const dpr=
-            window.devicePixelRatio||1;
-
-
-        const orientation=
-            screen.orientation ?
-            screen.orientation.type :
-            "neznámá";
-
-
-        el.textContent=
-
-            "Okno: "+
-            width+
-            " × "+
-            height+
-
-            "\nDisplej: "+
-            sw+
-            " × "+
-            sh+
-
-            "\nDPR: "+
-            dpr+
-
-            "\nOrientace: "+
-            orientation+
-
-            "\nPoměr: "+
-            (width/height).toFixed(2);
-
-    }
-
-
-    update();
-
-
-    window.addEventListener(
-        "resize",
-        update
-    );
-
-
-    window.addEventListener(
-        "orientationchange",
-        update
-    );
-
-
-    window._screenUpdate=update;
-
-}
-
-
-/* =========================================================
-   BATERIE
-========================================================= */
-
-async function startBattery(){
-
-    info.innerHTML=`
-
-        <div class="big">
-            BATERIE
-        </div>
-
-        <div id="batteryValue"
-             class="value">
-            Načítám…
-        </div>
-
-    `;
-
-
-    if(!navigator.getBattery){
-
-        document.getElementById(
-            "batteryValue"
-        ).textContent=
-            "Battery API není dostupné.";
-
-        return;
-
-    }
-
+     * Některé telefony potřebují oprávnění.
+     */
 
     try{
 
-        const battery=
-            await navigator.getBattery();
+        if(
+            typeof DeviceMotionEvent !== "undefined" &&
+            typeof DeviceMotionEvent.requestPermission ===
+            "function"
+        ){
 
-
-        function update(){
-
-            const el=
-                document.getElementById(
-                    "batteryValue"
-                );
-
-
-            if(!el)
-                return;
-
-
-            const percent=
-                Math.round(
-                    battery.level*100
-                );
-
-
-            el.textContent=
-
-                percent+
-                " %"+
-
-                "\n\n"+
-
-                (
-                    battery.charging
-                    ?
-                    "NABÍJÍ SE"
-                    :
-                    "NENABÍJÍ SE"
-                )+
-
-                "\n\nNapětí není přes web dostupné.";
-
+            DeviceMotionEvent
+                .requestPermission()
+                .catch(()=>{});
         }
 
+    }catch(e){}
 
-        update();
+    window.addEventListener(
+        "devicemotion",
+        motion
+    );
 
+    function updateStats(){
 
-        battery.addEventListener(
-            "levelchange",
-            update
-        );
-
-
-        battery.addEventListener(
-            "chargingchange",
-            update
-        );
-
-
-        window._battery=battery;
-
-    }
-    catch(error){
-
-        document.getElementById(
-            "batteryValue"
-        ).textContent=
-            "Baterii nelze přečíst.";
-
+        stats.textContent =
+            `Tažení: ${Math.round(distance)} px • ` +
+            `Senzor: ${sensorDetected ? "OK" : "čekám"}`;
     }
 
+    addCleanup(()=>{
+
+        area.removeEventListener(
+            "pointerdown",
+            down
+        );
+
+        area.removeEventListener(
+            "pointermove",
+            move
+        );
+
+        area.removeEventListener(
+            "pointerup",
+            up
+        );
+
+        area.removeEventListener(
+            "pointercancel",
+            up
+        );
+
+        window.removeEventListener(
+            "devicemotion",
+            motion
+        );
+    });
+
+    timer =
+        setTimeout(()=>{
+
+            if(distance >= 500){
+
+                finish("ok");
+
+            }else{
+
+                setStatus(
+                    "POHYB NEDOSTATEČNÝ",
+                    "warn"
+                );
+
+                finish("warn");
+            }
+
+        },10000);
 }
 
 
 /* =========================================================
-   ORIENTACE
-========================================================= */
+   4. ORIENTACE
+   ========================================================= */
 
-function startOrientation(){
+function orientationTest(){
 
-    info.innerHTML=`
+    createSensorUI(
+        "Orientace",
+        "0°"
+    );
 
-        <div class="big">
-            ORIENTACE
-        </div>
+    let startBeta = null;
+    let changed = false;
 
-        <div id="orientationValue"
-             class="value">
-            Čekám…
-        </div>
+    function handler(e){
 
-    `;
+        const beta =
+            Number(e.beta || 0);
 
+        const gamma =
+            Number(e.gamma || 0);
 
-    function handler(event){
+        updateSensor(
+            `${Math.round(beta)}°`
+        );
 
-        const beta=
-            event.beta||0;
+        if(startBeta === null)
+            startBeta = beta;
 
-        const gamma=
-            event.gamma||0;
-
-
-        let direction="STŘED";
-
-
-        if(beta<-15)
-            direction="NAHORU";
-
-        else if(beta>15)
-            direction="DOLŮ";
-
-        else if(gamma<-15)
-            direction="DOLEVA";
-
-        else if(gamma>15)
-            direction="DOPRAVA";
-
-
-        const el=
-            document.getElementById(
-                "orientationValue"
-            );
-
-
-        if(el){
-
-            el.textContent=
-
-                direction+
-
-                "\n\nBeta: "+
-                beta.toFixed(1)+
-                "°"+
-
-                "\nGamma: "+
-                gamma.toFixed(1)+
-                "°";
-
+        if(
+            Math.abs(beta-startBeta)>25 ||
+            Math.abs(gamma)>25
+        ){
+            changed = true;
         }
 
+        if(changed){
+
+            setStatus(
+                "ORIENTACE OK",
+                "ok"
+            );
+
+            timer =
+                setTimeout(()=>{
+                    finish("ok");
+                },500);
+        }
     }
 
+    requestOrientation();
 
     window.addEventListener(
         "deviceorientation",
         handler
     );
 
+    addCleanup(()=>{
 
-    window._orientationHandler=
-        handler;
+        window.removeEventListener(
+            "deviceorientation",
+            handler
+        );
+    });
 
+    timer =
+        setTimeout(()=>{
+
+            if(!changed)
+                finish("warn");
+
+        },8000);
 }
 
 
 /* =========================================================
-   ROTACE
-========================================================= */
+   5. ROTACE
+   ========================================================= */
 
-function startRotation(){
+function rotationTest(){
 
-    info.innerHTML=`
+    createSensorUI(
+        "Rotace",
+        "0°"
+    );
 
-        <div class="big">
-            ROTACE
-        </div>
+    let first = null;
+    let changed = false;
 
-        <div id="rotationValue"
-             class="value">
-            Čekám…
-        </div>
+    function handler(e){
 
-    `;
+        const alpha =
+            Number(e.alpha || 0);
 
+        if(first === null)
+            first = alpha;
 
-    function handler(event){
+        let diff =
+            Math.abs(alpha-first);
 
-        const r=
-            event.rotationRate;
+        if(diff>180)
+            diff = 360-diff;
 
+        updateSensor(
+            `${Math.round(diff)}°`
+        );
 
-        if(!r)
-            return;
+        if(diff>30)
+            changed = true;
 
+        if(changed){
 
-        const alpha=
-            r.alpha||0;
-
-        const beta=
-            r.beta||0;
-
-        const gamma=
-            r.gamma||0;
-
-
-        const el=
-            document.getElementById(
-                "rotationValue"
+            setStatus(
+                "ROTACE OK",
+                "ok"
             );
 
-
-        if(el){
-
-            el.textContent=
-
-                "Alpha: "+
-                alpha.toFixed(1)+
-                "°/s"+
-
-                "\nBeta: "+
-                beta.toFixed(1)+
-                "°/s"+
-
-                "\nGamma: "+
-                gamma.toFixed(1)+
-                "°/s";
-
+            timer =
+                setTimeout(()=>{
+                    finish("ok");
+                },500);
         }
-
     }
 
+    requestOrientation();
 
     window.addEventListener(
-        "devicemotion",
+        "deviceorientation",
         handler
     );
 
+    addCleanup(()=>{
 
-    window._rotationHandler=
-        handler;
+        window.removeEventListener(
+            "deviceorientation",
+            handler
+        );
+    });
 
+    timer =
+        setTimeout(()=>{
+
+            if(!changed)
+                finish("warn");
+
+        },8000);
 }
 
 
 /* =========================================================
-   KOMPAS
-========================================================= */
+   6. KOMPAS
+   ========================================================= */
 
-function startCompass(){
+function compassTest(){
 
-    info.innerHTML=`
+    createSensorUI(
+        "Kompas",
+        "0°"
+    );
 
-        <div class="big">
-            KOMPAS
-        </div>
+    let first = null;
+    let changed = false;
 
-        <div id="compassValue"
-             class="value">
-            Čekám…
-        </div>
+    function handler(e){
 
-    `;
-
-
-    function handler(event){
-
-        let heading=
-            event.webkitCompassHeading;
-
+        let heading;
 
         if(
-            heading===undefined &&
-            event.alpha!==null
+            typeof e.webkitCompassHeading ===
+            "number"
         ){
 
-            heading=
-                360-event.alpha;
+            heading =
+                e.webkitCompassHeading;
 
+        }else{
+
+            heading =
+                e.alpha;
         }
-
-
-        const el=
-            document.getElementById(
-                "compassValue"
-            );
-
-
-        if(!el)
-            return;
-
-
-        if(heading===undefined){
-
-            el.textContent=
-                "Kompas není dostupný.";
-
-            return;
-
-        }
-
-
-        heading=
-            (heading+360)%360;
-
-
-        let direction="S";
-
 
         if(
-            heading>=22.5 &&
-            heading<67.5
+            typeof heading !==
+            "number"
         )
-            direction="SV";
+            return;
 
-        else if(
-            heading>=67.5 &&
-            heading<112.5
-        )
-            direction="V";
+        if(first === null)
+            first = heading;
 
-        else if(
-            heading>=112.5 &&
-            heading<157.5
-        )
-            direction="JV";
+        let diff =
+            Math.abs(heading-first);
 
-        else if(
-            heading>=157.5 &&
-            heading<202.5
-        )
-            direction="J";
+        if(diff>180)
+            diff = 360-diff;
 
-        else if(
-            heading>=202.5 &&
-            heading<247.5
-        )
-            direction="JZ";
+        updateSensor(
+            `${Math.round(heading)}°`
+        );
 
-        else if(
-            heading>=247.5 &&
-            heading<292.5
-        )
-            direction="Z";
+        if(diff>15)
+            changed = true;
 
-        else if(
-            heading>=292.5 &&
-            heading<337.5
-        )
-            direction="SZ";
+        if(changed){
 
+            setStatus(
+                "KOMPAS OK",
+                "ok"
+            );
 
-        el.textContent=
-
-            direction+
-
-            "\n\n"+
-
-            heading.toFixed(1)+
-            "°";
-
+            timer =
+                setTimeout(()=>{
+                    finish("ok");
+                },500);
+        }
     }
 
+    requestOrientation();
 
     window.addEventListener(
         "deviceorientation",
@@ -1792,373 +2274,745 @@ function startCompass(){
         true
     );
 
+    addCleanup(()=>{
 
-    window._compassHandler=
-        handler;
+        window.removeEventListener(
+            "deviceorientation",
+            handler,
+            true
+        );
+    });
 
+    timer =
+        setTimeout(()=>{
+
+            if(!changed)
+                finish("warn");
+
+        },8000);
 }
 
 
 /* =========================================================
-   SÍŤ
-========================================================= */
+   SENSOR UI
+   ========================================================= */
 
-function startNetwork(){
+function createSensorUI(label,value){
 
-    info.innerHTML=`
+    const center =
+        document.createElement("div");
 
-        <div class="big">
-            SÍŤ
+    center.className =
+        "sensorCenter";
+
+    const circle =
+        document.createElement("div");
+
+    circle.className =
+        "sensorCircle";
+
+    const text =
+        document.createElement("div");
+
+    text.className =
+        "sensorValue";
+
+    text.innerHTML =
+        `
+        <strong>${value}</strong>
+        <span>${label}</span>
+        `;
+
+    circle.appendChild(text);
+    center.appendChild(circle);
+
+    area.appendChild(center);
+}
+
+function updateSensor(value){
+
+    const element =
+        area.querySelector(
+            ".sensorValue strong"
+        );
+
+    if(element)
+        element.textContent =
+            value;
+}
+
+function requestOrientation(){
+
+    try{
+
+        if(
+            typeof DeviceOrientationEvent !==
+            "undefined" &&
+            typeof DeviceOrientationEvent
+                .requestPermission ===
+            "function"
+        ){
+
+            DeviceOrientationEvent
+                .requestPermission()
+                .catch(()=>{});
+        }
+
+    }catch(e){}
+}
+
+
+/* =========================================================
+   7. NAPÁJENÍ
+   ========================================================= */
+
+function powerTest(){
+
+    const wrap =
+        document.createElement("div");
+
+    wrap.className =
+        "batteryWrap";
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "batteryCard";
+
+    card.innerHTML =
+        `
+        <div class="battery">
+            <div class="batteryFill"></div>
         </div>
 
-        <div id="networkValue"
-             class="value">
+        <div class="batteryPercent">
+            —
         </div>
 
-    `;
+        <div class="batteryState">
+            Zjišťuji stav napájení…
+        </div>
 
+        <div class="batteryDetails">
+
+            <div class="detail">
+                <span>NABÍJENÍ</span>
+                <b class="charging">—</b>
+            </div>
+
+            <div class="detail">
+                <span>ÚROVEŇ</span>
+                <b class="level">—</b>
+            </div>
+
+        </div>
+        `;
+
+    wrap.appendChild(card);
+    area.appendChild(wrap);
+
+    if(!battery){
+
+        card.querySelector(
+            ".batteryPercent"
+        ).textContent = "N/A";
+
+        card.querySelector(
+            ".batteryState"
+        ).textContent =
+            "Battery API není dostupné.";
+
+        setStatus(
+            "OMEZENÉ",
+            "warn"
+        );
+
+        timer =
+            setTimeout(()=>{
+                finish("warn");
+            },1800);
+
+        return;
+    }
 
     function update(){
 
-        const online=
-            navigator.onLine;
-
-
-        const connection=
-            navigator.connection ||
-            navigator.webkitConnection ||
-            navigator.mozConnection;
-
-
-        let text=
-            online ?
-            "ONLINE" :
-            "OFFLINE";
-
-
-        if(connection){
-
-            text+=
-                "\n\nTyp: "+
-                (
-                    connection.effectiveType||
-                    "?"
-                );
-
-
-            if(
-                connection.downlink!==undefined
-            ){
-
-                text+=
-                    "\nRychlost: "+
-                    connection.downlink+
-                    " Mb/s";
-
-            }
-
-        }
-
-
-        const el=
-            document.getElementById(
-                "networkValue"
+        const percent =
+            Math.round(
+                battery.level*100
             );
 
+        card.querySelector(
+            ".batteryPercent"
+        ).textContent =
+            `${percent}%`;
 
-        if(el)
-            el.textContent=text;
+        card.querySelector(
+            ".level"
+        ).textContent =
+            `${percent}%`;
 
+        card.querySelector(
+            ".batteryFill"
+        ).style.width =
+            `${percent}%`;
+
+        card.querySelector(
+            ".charging"
+        ).textContent =
+            battery.charging
+                ? "ANO"
+                : "NE";
+
+        card.querySelector(
+            ".batteryState"
+        ).textContent =
+            battery.charging
+                ? "Telefon je připojen k napájení."
+                : "Telefon není připojen k napájení.";
+
+        setStatus(
+            "NAPÁJENÍ OK",
+            "ok"
+        );
     }
-
 
     update();
 
-
-    window.addEventListener(
-        "online",
+    battery.addEventListener(
+        "levelchange",
         update
     );
 
-
-    window.addEventListener(
-        "offline",
+    battery.addEventListener(
+        "chargingchange",
         update
     );
 
+    addCleanup(()=>{
 
-    window._networkUpdate=
-        update;
+        battery.removeEventListener(
+            "levelchange",
+            update
+        );
 
+        battery.removeEventListener(
+            "chargingchange",
+            update
+        );
+    });
+
+    /*
+     * Napájení je skutečný test.
+     *
+     * Ale změny chargingchange zároveň
+     * sleduje globální skip mechanismus.
+     */
+
+    timer =
+        setTimeout(()=>{
+            finish("ok");
+        },3500);
 }
 
 
 /* =========================================================
-   MULTITOUCH
-========================================================= */
+   8. SÍŤ
+   ========================================================= */
 
-function startMultitouch(){
+function networkTest(){
 
-    info.innerHTML=`
+    const wrap =
+        document.createElement("div");
 
-        <div class="big">
-            MULTITOUCH
+    wrap.className =
+        "networkWrap";
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "networkCard";
+
+    const connection =
+        navigator.connection ||
+        navigator.mozConnection ||
+        navigator.webkitConnection;
+
+    const online =
+        navigator.onLine;
+
+    card.innerHTML =
+        `
+        <div class="networkRow">
+            <span>Připojení</span>
+            <b>${online ? "ONLINE" : "OFFLINE"}</b>
         </div>
 
-        <div id="multiValue"
-             class="value">
-            Dotkni se více míst současně
+        <div class="networkRow">
+            <span>Typ</span>
+            <b>${connection?.effectiveType || "N/A"}</b>
         </div>
 
-    `;
+        <div class="networkRow">
+            <span>Downlink</span>
+            <b>${connection?.downlink ? connection.downlink+" Mb/s" : "N/A"}</b>
+        </div>
+
+        <div class="networkRow">
+            <span>RTT</span>
+            <b>${connection?.rtt ? connection.rtt+" ms" : "N/A"}</b>
+        </div>
+        `;
+
+    wrap.appendChild(card);
+    area.appendChild(wrap);
+
+    setStatus(
+        online ? "ONLINE" : "OFFLINE",
+        online ? "ok" : "warn"
+    );
+
+    timer =
+        setTimeout(()=>{
+            finish(
+                online
+                    ? "ok"
+                    : "warn"
+            );
+        },1800);
+}
 
 
-    const dots=new Map();
+/* =========================================================
+   9. MULTITOUCH
+   ========================================================= */
 
+function multitouchTest(){
 
-    function down(event){
+    const multi =
+        document.createElement("div");
 
-        const dot=
+    multi.className =
+        "multiArea";
+
+    const text =
+        document.createElement("div");
+
+    text.className =
+        "multiText";
+
+    text.innerHTML =
+        `
+        <div>
+            <strong>0</strong>
+            <span>současných dotyků</span>
+        </div>
+        `;
+
+    multi.appendChild(text);
+    area.appendChild(multi);
+
+    const fingers =
+        new Map();
+
+    let max =
+        0;
+
+    function down(e){
+
+        const finger =
             document.createElement("div");
 
+        finger.className =
+            "finger";
 
-        dot.className="multiDot";
-
-
-        dot.style.left=
-            event.clientX+"px";
-
-        dot.style.top=
-            event.clientY+"px";
-
-
-        touchArea.appendChild(dot);
-
-
-        dots.set(
-            event.pointerId,
-            dot
+        positionFinger(
+            finger,
+            e
         );
 
+        multi.appendChild(finger);
 
-        update();
-
-    }
-
-
-    function move(event){
-
-        const dot=
-            dots.get(
-                event.pointerId
-            );
-
-
-        if(!dot)
-            return;
-
-
-        dot.style.left=
-            event.clientX+"px";
-
-        dot.style.top=
-            event.clientY+"px";
-
-    }
-
-
-    function up(event){
-
-        const dot=
-            dots.get(
-                event.pointerId
-            );
-
-
-        if(dot)
-            dot.remove();
-
-
-        dots.delete(
-            event.pointerId
+        fingers.set(
+            e.pointerId,
+            finger
         );
 
-
         update();
-
     }
 
+    function move(e){
+
+        const finger =
+            fingers.get(e.pointerId);
+
+        if(finger)
+            positionFinger(
+                finger,
+                e
+            );
+    }
+
+    function up(e){
+
+        const finger =
+            fingers.get(e.pointerId);
+
+        if(finger)
+            finger.remove();
+
+        fingers.delete(
+            e.pointerId
+        );
+
+        update();
+    }
+
+    function positionFinger(
+        finger,
+        e
+    ){
+
+        const rect =
+            area.getBoundingClientRect();
+
+        finger.style.left =
+            `${e.clientX-rect.left}px`;
+
+        finger.style.top =
+            `${e.clientY-rect.top}px`;
+    }
 
     function update(){
 
-        const el=
-            document.getElementById(
-                "multiValue"
+        const current =
+            fingers.size;
+
+        text.querySelector(
+            "strong"
+        ).textContent =
+            current;
+
+        max =
+            Math.max(
+                max,
+                current
             );
 
+        if(max>=2){
 
-        if(el){
+            setStatus(
+                `MULTITOUCH ${max}`,
+                "ok"
+            );
 
-            el.textContent=
-                "Aktivní dotyky: "+
-                dots.size;
-
+            timer =
+                setTimeout(()=>{
+                    finish("ok");
+                },600);
         }
-
     }
 
-
-    touchArea.addEventListener(
+    area.addEventListener(
         "pointerdown",
         down
     );
 
-    touchArea.addEventListener(
+    area.addEventListener(
         "pointermove",
         move
     );
 
-    touchArea.addEventListener(
+    area.addEventListener(
         "pointerup",
         up
     );
 
-    touchArea.addEventListener(
+    area.addEventListener(
         "pointercancel",
         up
     );
 
+    addCleanup(()=>{
+
+        area.removeEventListener(
+            "pointerdown",
+            down
+        );
+
+        area.removeEventListener(
+            "pointermove",
+            move
+        );
+
+        area.removeEventListener(
+            "pointerup",
+            up
+        );
+
+        area.removeEventListener(
+            "pointercancel",
+            up
+        );
+    });
+
+    timer =
+        setTimeout(()=>{
+
+            finish(
+                max>=2
+                    ? "ok"
+                    : "warn"
+            );
+
+        },7000);
 }
 
 
 /* =========================================================
-   VIBRACE
-========================================================= */
+   10. VIBRACE
+   ========================================================= */
 
-function startVibration(){
+function vibrationTest(){
 
-    info.innerHTML=`
+    const box =
+        document.createElement("div");
 
-        <div class="big">
-            VIBRACE
+    box.className =
+        "vibration";
+
+    box.innerHTML =
+        `
+        <div>
+            <div class="vibrationIcon">📳</div>
+            <h3>Test vibrací</h3>
+            <p>Probíhá krátká vibrační zkouška.</p>
         </div>
+        `;
 
-        <div class="value">
-            Probíhá test…
-        </div>
+    area.appendChild(box);
 
-    `;
+    if(
+        typeof navigator.vibrate ===
+        "function"
+    ){
 
+        try{
 
-    if(navigator.vibrate){
+            navigator.vibrate([
+                180,
+                100,
+                180
+            ]);
 
-        navigator.vibrate([
-            150,
-            100,
-            150,
-            100,
-            300
-        ]);
+            setStatus(
+                "VIBRACE SPUŠTĚNA",
+                "ok"
+            );
 
+            timer =
+                setTimeout(()=>{
+                    finish("ok");
+                },1800);
+
+        }catch(e){
+
+            finish("warn");
+        }
+
+    }else{
+
+        setStatus(
+            "NENÍ PODPOROVÁNO",
+            "warn"
+        );
+
+        timer =
+            setTimeout(()=>{
+                finish("warn");
+            },1800);
     }
-
 }
 
 
 /* =========================================================
-   ÚKLID STARÝCH SENSORŮ
-========================================================= */
+   HOTOVO
+   ========================================================= */
 
-function cleanupSensors(){
-
-    if(window._movementHandler){
-
-        window.removeEventListener(
-            "devicemotion",
-            window._movementHandler
-        );
-
-        window._movementHandler=null;
-
-    }
-
-
-    if(window._orientationHandler){
-
-        window.removeEventListener(
-            "deviceorientation",
-            window._orientationHandler
-        );
-
-        window._orientationHandler=null;
-
-    }
-
-
-    if(window._rotationHandler){
-
-        window.removeEventListener(
-            "devicemotion",
-            window._rotationHandler
-        );
-
-        window._rotationHandler=null;
-
-    }
-
-
-    if(window._compassHandler){
-
-        window.removeEventListener(
-            "deviceorientation",
-            window._compassHandler,
-            true
-        );
-
-        window._compassHandler=null;
-
-    }
-
-}
-
-
-/* =========================================================
-   PŘEPSÁNÍ NEXT – ÚKLID
-========================================================= */
-
-const originalNextTest=nextTest;
-
-
-/* =========================================================
-   PŘED PŘECHODEM VYČISTIT
-========================================================= */
-
-function safeNext(){
-
-    cleanupSensors();
-
-    originalNextTest();
-
-}
-
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-window.addEventListener(
-    "resize",
+done.addEventListener(
+    "click",
     ()=>{
+        finish("ok");
+    }
+);
 
-        if(
-            tests[currentTest] &&
-            tests[currentTest].id==="touch"
-        ){
 
-            createTouchPoints();
+/* =========================================================
+   KONEC
+   ========================================================= */
 
-            updateTouchProgress();
+async function finishDiagnostic(){
 
+    running = false;
+
+    clean();
+
+    if(
+        battery &&
+        window._chargingChanged
+    ){
+
+        try{
+
+            battery.removeEventListener(
+                "chargingchange",
+                window._chargingChanged
+            );
+
+        }catch(e){}
+    }
+
+    await releaseWake();
+
+    progress.style.width =
+        "100%";
+
+    step.textContent =
+        "HOTOVO";
+
+    subtitle.textContent =
+        "Diagnostika dokončena";
+
+    showResults();
+}
+
+
+/* =========================================================
+   VÝSLEDKY
+   ========================================================= */
+
+function showResults(){
+
+    show(result);
+
+    resultsElement.innerHTML = "";
+
+    let ok = 0;
+    let skip = 0;
+    let warn = 0;
+
+    for(const item of results){
+
+        if(item.result === "ok")
+            ok++;
+
+        else if(item.result === "skip")
+            skip++;
+
+        else
+            warn++;
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "resultRow";
+
+        let dot =
+            "";
+
+        let text =
+            "";
+
+        if(item.result === "ok"){
+
+            dot = "";
+            text = "OK";
+
+        }else if(item.result === "skip"){
+
+            dot = "warn";
+            text = "PŘESKOČENO";
+
+        }else{
+
+            dot = "bad";
+            text = "UPOZORNĚNÍ";
+        }
+
+        row.innerHTML =
+            `
+            <div class="resultName">
+                <div class="dot ${dot}"></div>
+                <span>${escapeHTML(item.title)}</span>
+            </div>
+
+            <div class="resultState">
+                ${text}
+            </div>
+            `;
+
+        resultsElement.appendChild(row);
+    }
+
+    summary.textContent =
+        `${ok} OK • ${warn} upozornění • ${skip} přeskočeno`;
+}
+
+
+/* =========================================================
+   RESTART
+   ========================================================= */
+
+restart.addEventListener(
+    "click",
+    async()=>{
+
+        clean();
+
+        await releaseWake();
+
+        running = false;
+
+        index = -1;
+
+        results = [];
+
+        chargingChanges = [];
+
+        skipLock = false;
+
+        progress.style.width =
+            "0%";
+
+        step.textContent =
+            "START";
+
+        subtitle.textContent =
+            "Připraveno k diagnostice";
+
+        show(welcome);
+    }
+);
+
+
+/* =========================================================
+   ESC
+   ========================================================= */
+
+document.addEventListener(
+    "keydown",
+    e=>{
+
+        if(e.key === "Escape"){
+
+            if(document.fullscreenElement){
+
+                document.exitFullscreen()
+                    .catch(()=>{});
+            }
         }
 
     }
@@ -2166,35 +3020,43 @@ window.addEventListener(
 
 
 /* =========================================================
-   ZÁKAZ ZOOMU / MENU
-========================================================= */
+   ZÁKAZ CONTEXT MENU
+   ========================================================= */
 
 document.addEventListener(
     "contextmenu",
-    event=>{
-        event.preventDefault();
+    e=>{
+        e.preventDefault();
     }
 );
 
 
 /* =========================================================
-   OPRAVA PŘECHODU U DOTYKU
-========================================================= */
+   HTML ESCAPE
+   ========================================================= */
 
-function goNext(){
+function escapeHTML(value){
 
-    cleanupSensors();
-
-    currentTest++;
-
-    showTest();
-
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
 }
 
 
 /* =========================================================
-   PŘEPSÁNÍ AUTOMATICKÝCH PŘECHODŮ
-========================================================= */
+   KONZOLE
+   ========================================================= */
+
+console.log(
+    "SirTros Phone Diagnostic"
+);
+
+console.log(
+    "SKIP: 3× změna napájení během 15 sekund."
+);
 
 </script>
 
