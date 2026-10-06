@@ -2,7 +2,8 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <title>SirTros Compass</title>
 
@@ -12,273 +13,276 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html,
+body {
     margin: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
     background: #000;
     color: #fff;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 body {
     touch-action: none;
 }
 
-#compass {
+#app {
     width: 100vw;
     height: 100dvh;
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-}
-
-/* Stupnice */
-#scale {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 90px;
-    overflow: hidden;
-    border-bottom: 1px solid #333;
-}
-
-#scaleInner {
-    position: absolute;
-    top: 0;
-    height: 90px;
-    display: flex;
-    align-items: flex-end;
-    transition: transform .08s linear;
-}
-
-.tick {
-    width: 30px;
-    height: 22px;
-    border-left: 1px solid #777;
     position: relative;
+    background: #000;
 }
 
-.tick.major {
-    height: 36px;
-    border-left: 2px solid #fff;
-}
+/* START */
 
-.tick span {
+#start {
     position: absolute;
-    bottom: 42px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px;
-    color: #aaa;
+    inset: 0;
+    z-index: 20;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: #000;
+    text-align: center;
+    padding: 30px;
 }
 
-.tick.major span {
-    color: #fff;
-    font-size: 12px;
+#startIcon {
+    font-size: 64px;
+    margin-bottom: 20px;
 }
 
-/* Středový ukazatel */
-#indicator {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 2px;
-    height: 90px;
-    transform: translateX(-50%);
+#start h1 {
+    margin: 0 0 12px;
+    font-size: 30px;
+}
+
+#start p {
+    margin: 0 0 25px;
+    color: #999;
+    max-width: 340px;
+    line-height: 1.5;
+}
+
+#startButton {
+    border: 0;
     background: #fff;
-    z-index: 10;
+    color: #000;
+    border-radius: 999px;
+    padding: 15px 30px;
+    font-size: 17px;
+    font-weight: 700;
 }
 
-/* Kompas */
-#dial {
-    width: min(78vw, 390px);
-    height: min(78vw, 390px);
-    border: 2px solid #444;
+/* KOMPAS */
+
+#compass {
+    width: min(86vw, 390px);
+    height: min(86vw, 390px);
+
+    border: 2px solid #333;
     border-radius: 50%;
+
     position: relative;
+
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-#dial::before {
-    content: "";
+/* Vnitřní kruh */
+
+#inner {
     position: absolute;
-    width: 86%;
-    height: 86%;
+    width: 88%;
+    height: 88%;
     border: 1px solid #222;
     border-radius: 50%;
 }
 
+/* SMĚRY */
+
 .direction {
     position: absolute;
-    font-size: 28px;
+    font-size: 27px;
     font-weight: 700;
 }
 
-#north {
-    top: 24px;
-    color: #ff4b4b;
+#n {
+    top: 20px;
+    color: #ff3b30;
 }
 
-#south {
-    bottom: 24px;
-    color: #fff;
+#e {
+    right: 20px;
 }
 
-#east {
-    right: 28px;
-    color: #fff;
+#s {
+    bottom: 20px;
 }
 
-#west {
-    left: 28px;
-    color: #fff;
+#w {
+    left: 20px;
 }
+
+/* Menší směry */
+
+.smallDirection {
+    position: absolute;
+    font-size: 13px;
+    color: #777;
+    font-weight: 600;
+}
+
+#ne {
+    top: 72px;
+    right: 70px;
+}
+
+#se {
+    bottom: 72px;
+    right: 70px;
+}
+
+#sw {
+    bottom: 72px;
+    left: 70px;
+}
+
+#nw {
+    top: 72px;
+    left: 70px;
+}
+
+/* JEHLA */
 
 #needle {
     position: absolute;
-    width: 4px;
+    width: 5px;
     height: 78%;
-    transform-origin: center;
-    transition: transform .08s linear;
+
+    transform-origin: center center;
+
+    pointer-events: none;
 }
 
 #needleNorth {
     position: absolute;
     top: 0;
     left: 50%;
+    transform: translateX(-50%);
+
     width: 0;
     height: 0;
-    transform: translateX(-50%);
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 125px solid #ff3333;
+
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 130px solid #ff3b30;
 }
 
 #needleSouth {
     position: absolute;
     bottom: 0;
     left: 50%;
+    transform: translateX(-50%);
+
     width: 0;
     height: 0;
-    transform: translateX(-50%);
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 125px solid #ddd;
+
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 130px solid #777;
 }
+
+/* STŘED */
 
 #center {
+    position: absolute;
+
     width: 18px;
     height: 18px;
+
     background: #fff;
     border-radius: 50%;
-    position: absolute;
+
     z-index: 5;
-    box-shadow: 0 0 15px rgba(255,255,255,.3);
 }
 
-/* Hodnoty */
+/* INFORMACE */
+
 #info {
     position: absolute;
-    bottom: 45px;
+    bottom: 35px;
     left: 0;
     width: 100%;
+
     text-align: center;
 }
 
-#degrees {
+#heading {
     font-size: 48px;
     font-weight: 800;
-    line-height: 1;
 }
 
-#cardinal {
-    margin-top: 8px;
-    font-size: 22px;
-    font-weight: 600;
+#directionText {
+    margin-top: 5px;
+    font-size: 21px;
     color: #aaa;
 }
 
 #status {
-    margin-top: 12px;
+    margin-top: 10px;
     font-size: 13px;
-    color: #777;
+    color: #666;
 }
 
-/* Start tlačítko */
-#start {
-    position: absolute;
-    inset: 0;
-    z-index: 100;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 18px;
-}
-
-#start h1 {
-    margin: 0;
-    font-size: 30px;
-}
-
-#start p {
-    margin: 0;
-    color: #999;
-    text-align: center;
-    max-width: 330px;
-    line-height: 1.5;
-}
-
-#start button {
-    border: 0;
-    border-radius: 999px;
-    padding: 15px 30px;
-    background: #fff;
-    color: #000;
-    font-weight: 700;
-    font-size: 17px;
-    cursor: pointer;
-}
+/* CHYBA */
 
 #error {
     display: none;
+
     position: absolute;
     inset: 0;
-    z-index: 200;
+    z-index: 30;
+
     background: #000;
+
     align-items: center;
     justify-content: center;
+
     text-align: center;
     padding: 30px;
 }
 
 #errorBox {
-    max-width: 400px;
+    max-width: 350px;
 }
 
 #error h2 {
-    margin-top: 0;
+    font-size: 25px;
 }
 
 #error p {
-    color: #aaa;
+    color: #999;
     line-height: 1.5;
 }
 
-#retry {
+#error button {
     border: 0;
     border-radius: 999px;
-    padding: 13px 24px;
+    padding: 14px 25px;
+
     background: #fff;
     color: #000;
+
     font-weight: 700;
 }
 </style>
@@ -286,149 +290,129 @@ body {
 
 <body>
 
-<div id="compass">
+<div id="app">
+
+    <!-- START -->
 
     <div id="start">
-        <div class="logo">🧭</div>
+
+        <div id="startIcon">🧭</div>
+
         <h1>Kompas</h1>
+
         <p>
-            Pro správné fungování povol přístup k orientaci zařízení.
+            Tento test používá orientační senzor telefonu.
         </p>
-        <button id="startButton">Spustit kompas</button>
+
+        <button id="startButton">
+            Spustit kompas
+        </button>
+
     </div>
 
-    <div id="error">
-        <div id="errorBox">
-            <h2>Kompas není dostupný</h2>
-            <p id="errorText">
-                Tento prohlížeč neposkytuje potřebný orientační senzor.
-            </p>
-            <button id="retry">Zkusit znovu</button>
-        </div>
-    </div>
 
-    <div id="scale">
-        <div id="scaleInner"></div>
-        <div id="indicator"></div>
-    </div>
+    <!-- KOMPAS -->
 
-    <div id="dial">
+    <div id="compass">
 
-        <div id="north" class="direction">N</div>
-        <div id="east" class="direction">E</div>
-        <div id="south" class="direction">S</div>
-        <div id="west" class="direction">W</div>
+        <div id="inner"></div>
+
+        <div id="directionText"></div>
+
+        <div id="n" class="direction">N</div>
+        <div id="e" class="direction">E</div>
+        <div id="s" class="direction">S</div>
+        <div id="w" class="direction">W</div>
+
+        <div id="ne" class="smallDirection">NE</div>
+        <div id="se" class="smallDirection">SE</div>
+        <div id="sw" class="smallDirection">SW</div>
+        <div id="nw" class="smallDirection">NW</div>
 
         <div id="needle">
+
             <div id="needleNorth"></div>
             <div id="needleSouth"></div>
+
         </div>
 
         <div id="center"></div>
 
     </div>
 
+
+    <!-- INFO -->
+
     <div id="info">
-        <div id="degrees">---°</div>
-        <div id="cardinal">Čekám na senzor…</div>
-        <div id="status">Kompas není spuštěný</div>
+
+        <div id="heading">
+            ---°
+        </div>
+
+        <div id="directionText">
+            Čekám na senzor…
+        </div>
+
+        <div id="status">
+            Kompas není spuštěný
+        </div>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div id="error">
+
+        <div id="errorBox">
+
+            <h2>Kompas není dostupný</h2>
+
+            <p id="errorMessage">
+                Prohlížeč neposílá data z orientačního senzoru.
+            </p>
+
+            <button id="retry">
+                Zkusit znovu
+            </button>
+
+        </div>
+
     </div>
 
 </div>
 
 <script>
-"use strict";
-
-const degreesEl = document.getElementById("degrees");
-const cardinalEl = document.getElementById("cardinal");
-const statusEl = document.getElementById("status");
 
 const start = document.getElementById("start");
 const startButton = document.getElementById("startButton");
 
-const error = document.getElementById("error");
-const errorText = document.getElementById("errorText");
-const retry = document.getElementById("retry");
-
+const compass = document.getElementById("compass");
 const needle = document.getElementById("needle");
-const scaleInner = document.getElementById("scaleInner");
 
-let heading = null;
-let running = false;
+const headingElement =
+    document.getElementById("heading");
 
-/* =========================
-   STUPNICE
-========================= */
+const infoDirection =
+    document.querySelector("#info #directionText");
 
-function createScale() {
+const status =
+    document.getElementById("status");
 
-    scaleInner.innerHTML = "";
+const error =
+    document.getElementById("error");
 
-    /*
-        360° + 360° + 360°
-        aby šla stupnice plynule posouvat.
-    */
+const errorMessage =
+    document.getElementById("errorMessage");
 
-    for (let i = -360; i <= 720; i += 10) {
+const retry =
+    document.getElementById("retry");
 
-        const tick = document.createElement("div");
+let started = false;
+let gotSensorData = false;
 
-        tick.className = "tick";
+let lastHeading = null;
 
-        if (i % 30 === 0) {
-            tick.classList.add("major");
-
-            const label = document.createElement("span");
-
-            let value = ((i % 360) + 360) % 360;
-
-            label.textContent = value + "°";
-
-            tick.appendChild(label);
-        }
-
-        scaleInner.appendChild(tick);
-    }
-}
-
-createScale();
-
-/* =========================
-   SMĚR
-========================= */
-
-function getDirection(deg) {
-
-    if (deg >= 337.5 || deg < 22.5) {
-        return "Sever";
-    }
-
-    if (deg >= 22.5 && deg < 67.5) {
-        return "Severovýchod";
-    }
-
-    if (deg >= 67.5 && deg < 112.5) {
-        return "Východ";
-    }
-
-    if (deg >= 112.5 && deg < 157.5) {
-        return "Jihovýchod";
-    }
-
-    if (deg >= 157.5 && deg < 202.5) {
-        return "Jih";
-    }
-
-    if (deg >= 202.5 && deg < 247.5) {
-        return "Jihozápad";
-    }
-
-    if (deg >= 247.5 && deg < 292.5) {
-        return "Západ";
-    }
-
-    return "Severozápad";
-}
 
 /* =========================
    NORMALIZACE
@@ -436,7 +420,7 @@ function getDirection(deg) {
 
 function normalize(value) {
 
-    value %= 360;
+    value = value % 360;
 
     if (value < 0) {
         value += 360;
@@ -445,62 +429,94 @@ function normalize(value) {
     return value;
 }
 
+
 /* =========================
-   KOMPAS
+   SMĚR
+========================= */
+
+function getDirection(deg) {
+
+    if (deg < 22.5 || deg >= 337.5)
+        return "Sever";
+
+    if (deg < 67.5)
+        return "Severovýchod";
+
+    if (deg < 112.5)
+        return "Východ";
+
+    if (deg < 157.5)
+        return "Jihovýchod";
+
+    if (deg < 202.5)
+        return "Jih";
+
+    if (deg < 247.5)
+        return "Jihozápad";
+
+    if (deg < 292.5)
+        return "Západ";
+
+    return "Severozápad";
+}
+
+
+/* =========================
+   AKTUALIZACE
 ========================= */
 
 function updateCompass(value) {
 
-    if (!Number.isFinite(value)) {
+    if (!Number.isFinite(value))
+        return;
+
+    value = normalize(value);
+
+    gotSensorData = true;
+
+    /*
+        Omezíme zbytečné překreslování.
+    */
+
+    if (
+        lastHeading !== null &&
+        Math.abs(value - lastHeading) < 0.5
+    ) {
         return;
     }
 
-    heading = normalize(value);
+    lastHeading = value;
 
-    const rounded = Math.round(heading);
+    headingElement.textContent =
+        Math.round(value) + "°";
 
-    degreesEl.textContent =
-        String(rounded).padStart(3, "0") + "°";
+    infoDirection.textContent =
+        getDirection(value);
 
-    cardinalEl.textContent = getDirection(heading);
-
-    statusEl.textContent = "Senzor aktivní";
+    status.textContent =
+        "Senzor aktivní";
 
     /*
         Jehla ukazuje na sever.
-        Když se telefon otočí třeba o 90°,
-        otočíme jehlu opačným směrem.
     */
 
     needle.style.transform =
-        "rotate(" + (-heading) + "deg)";
-
-    /*
-        Horní stupnice.
-    */
-
-    const center = window.innerWidth / 2;
-
-    const pxPer10 = 30;
-
-    const offset =
-        center -
-        (heading / 10) * pxPer10;
-
-    scaleInner.style.transform =
-        "translateX(" + offset + "px)";
+        "rotate(" + (-value) + "deg)";
 }
+
 
 /* =========================
    ORIENTACE
 ========================= */
 
-function handleOrientation(event) {
+function orientationHandler(event) {
 
-    let value = null;
+    let heading = null;
+
 
     /*
-        iOS / některá zařízení
+        Některé telefony / Safari
+        mají přímo compass heading.
     */
 
     if (
@@ -508,28 +524,32 @@ function handleOrientation(event) {
         Number.isFinite(event.webkitCompassHeading)
     ) {
 
-        value = event.webkitCompassHeading;
+        heading =
+            event.webkitCompassHeading;
 
-    } else if (
+    }
+
+
+    /*
+        Android / běžný DeviceOrientation.
+    */
+
+    else if (
         typeof event.alpha === "number" &&
         Number.isFinite(event.alpha)
     ) {
 
-        /*
-            Android většinou:
-            alpha = rotace kolem osy Z.
+        heading =
+            360 - event.alpha;
 
-            Přibližný kompas:
-            360 - alpha
-        */
-
-        value = 360 - event.alpha;
     }
 
-    if (value !== null) {
-        updateCompass(value);
+
+    if (heading !== null) {
+        updateCompass(heading);
     }
 }
+
 
 /* =========================
    START
@@ -542,7 +562,8 @@ async function startCompass() {
     try {
 
         /*
-            iOS vyžaduje povolení přes tlačítko.
+            iPhone / Safari může chtít
+            explicitní povolení.
         */
 
         if (
@@ -561,65 +582,93 @@ async function startCompass() {
             }
         }
 
+
         if (
             typeof DeviceOrientationEvent === "undefined"
         ) {
 
             throw new Error(
-                "Tento prohlížeč nepodporuje DeviceOrientation."
+                "Tento prohlížeč nepodporuje orientační senzor."
             );
         }
 
-        window.addEventListener(
-            "deviceorientationabsolute",
-            handleOrientation,
-            true
-        );
+
+        /*
+            Posloucháme oba typy.
+        */
 
         window.addEventListener(
             "deviceorientation",
-            handleOrientation,
+            orientationHandler,
             true
         );
 
-        running = true;
+        window.addEventListener(
+            "deviceorientationabsolute",
+            orientationHandler,
+            true
+        );
+
+
+        started = true;
 
         start.style.display = "none";
 
-        statusEl.textContent =
-            "Čekám na data ze senzoru…";
+        status.textContent =
+            "Čekám na senzor…";
+
 
         /*
-            Kontrola, jestli senzor skutečně něco posílá.
+            Když do 5 sekund nic nepřijde,
+            nezůstane to viset.
         */
 
         setTimeout(() => {
 
             if (
-                running &&
-                heading === null
+                started &&
+                !gotSensorData
             ) {
 
                 showError(
-                    "Prohlížeč neposílá údaje z kompasu. " +
-                    "Zkontroluj oprávnění k senzorům nebo " +
-                    "zkus jiný prohlížeč."
+                    "Telefon nebo prohlížeč neposílá data z kompasu."
                 );
+
             }
 
         }, 5000);
 
+
+        /*
+            Fullscreen.
+        */
+
+        try {
+
+            if (
+                document.documentElement.requestFullscreen &&
+                !document.fullscreenElement
+            ) {
+
+                await document.documentElement.requestFullscreen();
+
+            }
+
+        } catch {}
+
+
     } catch (e) {
 
         showError(
-            e && e.message
-                ? e.message
-                : "Kompas se nepodařilo spustit."
+            e.message ||
+            "Kompas se nepodařilo spustit."
         );
+
     }
 
     startButton.disabled = false;
 }
+
 
 /* =========================
    CHYBA
@@ -627,36 +676,35 @@ async function startCompass() {
 
 function showError(message) {
 
-    running = false;
+    started = false;
 
-    errorText.textContent = message;
+    errorMessage.textContent = message;
 
     error.style.display = "flex";
-
-    statusEl.textContent =
-        "Senzor není dostupný";
 }
+
 
 /* =========================
    ZNOVU
 ========================= */
 
-retry.addEventListener("click", () => {
+retry.addEventListener(
+    "click",
+    () => {
 
-    error.style.display = "none";
+        error.style.display = "none";
 
-    heading = null;
+        gotSensorData = false;
+        lastHeading = null;
 
-    degreesEl.textContent = "---°";
+        startCompass();
 
-    cardinalEl.textContent =
-        "Čekám na senzor…";
+    }
+);
 
-    startCompass();
-});
 
 /* =========================
-   START BUTTON
+   START
 ========================= */
 
 startButton.addEventListener(
@@ -664,23 +712,6 @@ startButton.addEventListener(
     startCompass
 );
 
-/* =========================
-   FULLSCREEN
-========================= */
-
-document.addEventListener("click", async () => {
-
-    try {
-
-        if (
-            !document.fullscreenElement &&
-            document.documentElement.requestFullscreen
-        ) {
-            await document.documentElement.requestFullscreen();
-        }
-
-    } catch {}
-}, { once: true });
 
 /* =========================
    WAKE LOCK
@@ -699,24 +730,12 @@ async function keepAwake() {
 
             wakeLock =
                 await navigator.wakeLock.request("screen");
+
         }
 
     } catch {}
+
 }
-
-document.addEventListener(
-    "visibilitychange",
-    () => {
-
-        if (
-            document.visibilityState === "visible" &&
-            running
-        ) {
-            keepAwake();
-        }
-
-    }
-);
 
 startButton.addEventListener(
     "click",
