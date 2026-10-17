@@ -1,514 +1,214 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080b13">
 <title>SirTros NFC Drop</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{color-scheme:dark;--bg:#080b13;--panel:#111827;--line:#273149;--text:#f5f7ff;--muted:#9ba8c0;--blue:#83baff;--purple:#b7a0ff;--green:#62eab2}
+:root{color-scheme:dark;--bg:#080b13;--panel:#111827;--line:#263149;--text:#f5f7ff;--muted:#9aa8c0;--blue:#8bc5ff;--purple:#b5a0ff;--green:#65eab2;--red:#ff9a9a}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",system-ui,sans-serif}
-body{min-height:100vh;min-height:100dvh;background:radial-gradient(ellipse at 15% 0%,#202e55 0,transparent 40%),radial-gradient(ellipse at 100% 40%,#291b49 0,transparent 36%),var(--bg)}
+body{min-height:100vh;min-height:100dvh;background:radial-gradient(ellipse at 10% 0%,#24365c 0,transparent 38%),radial-gradient(ellipse at 100% 35%,#2b1b4b 0,transparent 35%),var(--bg)}
 button,input{font:inherit}
-button{cursor:pointer}
-button:disabled{opacity:.5;cursor:wait}
-*{-webkit-tap-highlight-color:transparent}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:disabled{opacity:.55;cursor:wait}
 .app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px clamp(16px,4vw,42px);border-bottom:1px solid #ffffff12;background:#080b13bd;backdrop-filter:blur(18px)}
-.brand{display:flex;align-items:center;gap:12px;font-weight:850}
-.logo{width:43px;height:43px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#8bc7ff,#a18aff);font-size:23px;color:#101426}
-.brand small{display:block;margin-top:3px;color:var(--muted);font-size:11px;font-weight:500}
-.connection{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px}
-.dot{width:8px;height:8px;background:#68758b;border-radius:50%}
-.dot.on{background:var(--green);box-shadow:0 0 12px #62eab2}
-main{width:100%;max-width:1150px;padding:28px clamp(14px,4vw,40px);margin:auto;flex:1}
-.hero{text-align:center;margin:8px auto 27px;max-width:680px}
-.eyebrow{font-size:11px;font-weight:800;letter-spacing:1.4px;color:#c8d8ff;border:1px solid #8ba8ff35;background:#8ba8ff0c;border-radius:100px;padding:8px 13px;display:inline-block}
-h1{font-size:clamp(37px,7vw,67px);line-height:1.04;letter-spacing:-2.5px;margin:17px 0 10px}
-.gradient{background:linear-gradient(100deg,#8bc7ff,#b9a4ff,#75e6d0);background-clip:text;color:transparent}
-.hero p{margin:0 auto;color:var(--muted);font-size:14px;line-height:1.8;max-width:530px}
-.columns{display:grid;grid-template-columns:1fr 1fr;gap:17px;align-items:stretch}
-.panel{min-width:0;padding:clamp(18px,3vw,28px);border:1px solid var(--line);border-radius:25px;background:#111827e8;box-shadow:0 20px 65px #0002}
-.heading{display:flex;align-items:center;gap:12px;margin-bottom:22px}
-.heading-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:14px;background:#ffffff09;border:1px solid #ffffff10;font-size:21px}
-h2{font-size:18px;margin:0;letter-spacing:-.4px}
-.muted{font-size:12px;color:var(--muted);line-height:1.65;margin-top:5px}
-label{display:block;font-size:12px;font-weight:750;margin-bottom:8px;color:#dce5f6}
-.field{margin-bottom:16px}
-.inputbox{position:relative}
-.inputbox span{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:17px}
-input{width:100%;height:51px;border-radius:14px;border:1px solid #ffffff19;background:#080c15;color:white;padding:12px 13px 12px 43px;outline:none}
-input:focus{border-color:#83baff;box-shadow:0 0 0 3px #83baff19}
-input::placeholder{color:#6e7b94}
-.primary,.secondary{width:100%;min-height:51px;border-radius:14px;font-weight:850;padding:12px 15px;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .18s,filter .18s}
-.primary{border:0;color:#0b1020;background:linear-gradient(110deg,#8bc7ff,#b8a2ff);box-shadow:0 8px 28px #8c9cff20}
-.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.secondary{border:1px solid #ffffff17;background:#ffffff06;color:#e3eaff}
-.secondary:hover{background:#ffffff0d}
-.hint{font-size:11px;line-height:1.7;color:#8997af;margin-top:8px}
-.room{display:none;margin-top:17px;border:1px dashed #8faaff60;background:#809dff0c;border-radius:17px;padding:16px;text-align:center}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px clamp(15px,4vw,40px);border-bottom:1px solid #ffffff12;background:#080b13bd;backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:11px;font-weight:850}
+.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#111629;display:grid;place-items:center;font-size:24px}
+.brand small{display:block;color:var(--muted);font-size:11px;font-weight:500;margin-top:3px}
+.net{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:#65718a}
+.dot.on{background:var(--green);box-shadow:0 0 12px #65eab2}
+main{width:100%;max-width:1080px;margin:auto;padding:25px clamp(13px,4vw,36px);flex:1}
+.hero{text-align:center;margin:5px auto 25px}
+.pill{display:inline-block;border:1px solid #9ab5ff30;background:#8ca8ff0b;border-radius:100px;padding:7px 12px;color:#c9d8ff;font-size:10px;font-weight:850;letter-spacing:1.4px}
+h1{font-size:clamp(38px,7vw,65px);letter-spacing:-2.8px;line-height:1.02;margin:15px 0 9px}
+.gradient{color:transparent;background:linear-gradient(100deg,var(--blue),var(--purple),#75e6d1);background-clip:text}
+.hero p{font-size:13px;line-height:1.7;color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.panel{min-width:0;padding:clamp(17px,3vw,25px);border:1px solid var(--line);border-radius:23px;background:#111827e8;box-shadow:0 20px 60px #0002}
+.heading{display:flex;gap:11px;align-items:center;margin-bottom:20px}
+.ico{width:42px;height:42px;display:grid;place-items:center;border:1px solid #ffffff12;border-radius:14px;background:#ffffff08;font-size:21px}
+h2{font-size:17px;margin:0}
+.muted{font-size:11px;color:var(--muted);line-height:1.65;margin-top:4px}
+.field{margin-bottom:15px}
+label{display:block;font-size:12px;font-weight:750;margin-bottom:8px}
+.input{position:relative}
+.input span{position:absolute;left:13px;top:50%;transform:translateY(-50%)}
+input{width:100%;height:49px;border:1px solid #ffffff19;border-radius:13px;background:#080c15;color:white;padding:11px 12px 11px 40px;outline:none}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #8bc5ff17}
+input::placeholder{color:#697790}
+.help{font-size:11px;color:#8d9ab1;line-height:1.65;margin-top:7px}
+.btn{width:100%;min-height:49px;padding:12px 15px;border-radius:13px;font-weight:850;display:flex;align-items:center;justify-content:center;gap:9px}
+.primary{border:0;color:#101629;background:linear-gradient(105deg,var(--blue),var(--purple));box-shadow:0 8px 25px #8baaff20}
+.secondary{border:1px solid #ffffff18;color:#e1e9fb;background:#ffffff06}
+.room{display:none;margin-top:15px;padding:15px;text-align:center;border:1px dashed #91afff60;border-radius:16px;background:#819cff0b}
 .room.show{display:block}
-.room small{display:block;font-size:10px;color:#a7b9df;font-weight:800;letter-spacing:1.5px}
-.code{font-size:clamp(29px,5vw,40px);font-weight:900;letter-spacing:7px;margin:9px 0 12px;font-variant-numeric:tabular-nums}
-.room .secondary{min-height:42px;font-size:12px}
-.status{margin-top:14px;border:1px solid #ffffff10;background:#ffffff05;padding:12px 13px;border-radius:13px;display:flex;gap:9px;color:#bac7dc;font-size:12px;line-height:1.65;overflow-wrap:anywhere}
-.status.error{border-color:#ff858544;color:#ffb2b2;background:#ff858508}
-.status.ok{border-color:#62eab244;color:#a7f3d0;background:#62eab208}
-.nfc-stage{min-height:255px;border:1px solid #ffffff0d;border-radius:19px;background:radial-gradient(ellipse at center,#6888ff19,transparent 68%),#070b14;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative}
-.orbit{position:absolute;width:150px;height:150px;border:1px solid #91b5ff40;border-radius:50%;animation:pulse 2.8s ease-out infinite}
-.orbit:nth-child(2){animation-delay:.9s}.orbit:nth-child(3){animation-delay:1.8s}
-.nfc-core{z-index:1;width:91px;height:91px;display:grid;place-items:center;border-radius:27px;border:1px solid #b8caff55;background:linear-gradient(145deg,#76b6ff2c,#a187ff2b);box-shadow:0 0 40px #8ca4ff20;animation:float 3s ease-in-out infinite}
-.nfc-core span{font-size:43px;filter:drop-shadow(0 0 9px #8cbcff99)}
-.nfc-title{font-size:17px;font-weight:850;margin-top:13px;text-align:center}
-.nfc-help{font-size:11px;color:var(--muted);line-height:1.7;text-align:center;padding:0 20px;margin-top:6px;max-width:310px}
-.nfc-stage.ready .nfc-core{border-color:#62eab277;background:#62eab21a}
-.nfc-stage.ready .orbit{border-color:#62eab255}
-.devices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}
-.device{padding:13px 10px;border:1px solid #ffffff12;border-radius:15px;background:#ffffff04;min-width:0;transition:.3s}
-.device.active{border-color:#62eab277;background:#62eab20c}
-.device .emoji{font-size:24px}
-.device .label{font-size:12px;font-weight:850;margin-top:9px}
-.device .name{font-size:12px;color:#9caac2;margin-top:4px;overflow-wrap:anywhere}
-.device .state{font-size:10px;color:#8b98b0;margin-top:10px;line-height:1.5}
-.device.active .state{color:var(--green)}
-.bar{height:5px;background:#ffffff12;border-radius:9px;margin-top:13px;overflow:hidden}
-.bar div{width:0;height:100%;background:linear-gradient(90deg,#80baff,#62eab2);transition:width .35s}
-.tutorial{margin-top:17px;padding:20px;border:1px solid var(--line);border-radius:21px;background:#111827c9}
-.tutorial-head{display:flex;gap:11px;align-items:center;margin-bottom:17px}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.step{padding:14px;border:1px solid #ffffff0e;border-radius:15px;background:#ffffff03}
-.num{width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:#8da8ff20;font-weight:900;font-size:12px}
-.step .emoji{font-size:22px;margin-top:12px}
-.step h3{font-size:12px;margin:9px 0 6px}
-.step p{font-size:11px;line-height:1.7;color:var(--muted);margin:0}
-footer{text-align:center;color:#6e7b94;font-size:10px;padding:19px}
-.hidden{display:none!important}
-#dropOverlay{position:fixed;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:20px;background:#050711f5;backdrop-filter:blur(22px);overflow:hidden}
-#dropOverlay.show{display:flex;animation:fade .25s ease}
-.drop-content{width:100%;max-width:700px;text-align:center;position:relative;z-index:2}
-.drop-kicker{color:#9dbbff;font-size:11px;font-weight:900;letter-spacing:3px}
-.drop-title{font-size:clamp(43px,10vw,94px);font-weight:950;letter-spacing:-4px;margin:13px 0;animation:titleIn .65s cubic-bezier(.2,.8,.2,1) both}
-.drop-title span{background:linear-gradient(90deg,#8bc7ff,#c3a5ff,#75efd1);background-clip:text;color:transparent}
-.drop-sub{color:#b0bdd3;font-size:14px;line-height:1.7}
-.drop-devices{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:28px auto;max-width:560px}
-.drop-device{border:1px solid #ffffff22;background:#ffffff09;border-radius:22px;padding:24px 12px;animation:deviceIn .8s cubic-bezier(.2,.8,.2,1) both}
-.drop-device:nth-child(2){animation-delay:.15s}
-.drop-device .emoji{font-size:40px}
-.drop-device .number{font-size:10px;color:#9dbbff;letter-spacing:2px;font-weight:900;margin-top:13px}
-.drop-device .name{font-size:clamp(15px,3vw,22px);font-weight:900;overflow-wrap:anywhere;margin-top:7px}
-.drop-device .done{color:var(--green);font-size:11px;margin-top:8px}
-.drop-actions{max-width:280px;margin:auto}
-.spark{position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:50%;background:#a4d5ff;box-shadow:0 0 20px #a4d5ff;animation:burst 1.1s ease-out both}
-@keyframes pulse{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.7);opacity:0}}
-@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+.room small{font-size:10px;font-weight:850;letter-spacing:1.5px;color:#adbee5}
+.code{font-size:36px;font-weight:950;letter-spacing:7px;margin:7px 0 11px}
+.room .btn{min-height:40px;font-size:11px}
+.status{margin-top:13px;padding:12px;border-radius:12px;border:1px solid #ffffff10;background:#ffffff05;color:#c1cce0;font-size:11px;line-height:1.65;overflow-wrap:anywhere}
+.status.error{color:#ffb5b5;border-color:#ff858544}
+.status.ok{color:#a6f3d0;border-color:#65eab244}
+.stage{min-height:230px;position:relative;overflow:hidden;border:1px solid #ffffff0e;border-radius:18px;background:radial-gradient(ellipse at center,#7893ff1a,transparent 68%),#070b14;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.orbit{position:absolute;width:130px;height:130px;border:1px solid #8fb5ff40;border-radius:50%;animation:wave 2.6s ease-out infinite}
+.orbit:nth-child(2){animation-delay:.85s}
+.orbit:nth-child(3){animation-delay:1.7s}
+.core{width:84px;height:84px;border:1px solid #b4caff50;border-radius:25px;background:linear-gradient(145deg,#82bdff28,#a38aff2a);box-shadow:0 0 35px #8ba4ff20;display:grid;place-items:center;z-index:1;animation:float 3s ease-in-out infinite}
+.core span{font-size:43px}
+.stageTitle{font-weight:850;font-size:16px;margin-top:13px;z-index:1;text-align:center}
+.stageHelp{max-width:290px;padding:0 15px;color:var(--muted);font-size:11px;line-height:1.6;text-align:center;margin-top:6px;z-index:1}
+.stage.done .core{border-color:#65eab2;background:#65eab21a}
+.devices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}
+.device{min-width:0;padding:12px;border:1px solid #ffffff12;border-radius:14px;background:#ffffff04}
+.device.active{border-color:#65eab270;background:#65eab20b}
+.phone{font-size:23px}
+.deviceLabel{font-size:11px;font-weight:850;margin-top:8px}
+.deviceName{font-size:12px;color:#a6b3cb;margin-top:4px;overflow-wrap:anywhere}
+.deviceState{font-size:10px;color:#8d9ab1;margin-top:8px}
+.device.active .deviceState{color:var(--green)}
+.progress{height:5px;border-radius:9px;background:#ffffff12;overflow:hidden;margin-top:12px}
+.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .3s}
+.progressText{font-size:10px;color:var(--muted);margin-top:7px}
+.tutorial{margin-top:15px}
+.tutorial .heading{margin-bottom:14px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.step{padding:13px;border:1px solid #ffffff10;border-radius:14px;background:#ffffff03}
+.num{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;background:#8ca8ff20;font-size:11px;font-weight:900}
+.step .emoji{font-size:21px;margin-top:10px}
+.step h3{font-size:11px;margin:8px 0 5px}
+.step p{font-size:10px;line-height:1.65;color:var(--muted);margin:0}
+footer{text-align:center;padding:17px;color:#69768e;font-size:10px;line-height:1.6}
+#overlay{display:none;position:fixed;inset:0;z-index:5;align-items:center;justify-content:center;padding:18px;background:#050711f5;backdrop-filter:blur(20px);overflow:hidden}
+#overlay.show{display:flex;animation:fade .25s ease}
+.drop{width:100%;max-width:620px;text-align:center;position:relative;z-index:2}
+.kicker{font-size:10px;font-weight:900;letter-spacing:3px;color:#a8c4ff}
+.drop h2{font-size:clamp(50px,11vw,90px);font-weight:950;letter-spacing:-4px;margin:13px 0;background:linear-gradient(100deg,var(--blue),var(--purple),#75e6d1);background-clip:text;color:transparent;animation:title .65s ease both}
+.drop p{font-size:13px;color:#b4c0d5;line-height:1.7}
+.dropCards{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:25px auto}
+.dropCard{border:1px solid #ffffff22;background:#ffffff09;border-radius:20px;padding:22px 10px;animation:rise .6s ease both}
+.dropCard:nth-child(2){animation-delay:.12s}
+.dropCard .phone{font-size:35px}
+.dropCard small{display:block;color:#a9c2ff;letter-spacing:2px;font-weight:850;margin-top:11px}
+.dropCard strong{display:block;font-size:clamp(14px,3vw,21px);overflow-wrap:anywhere;margin-top:7px}
+.spark{position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:#b7dfff;box-shadow:0 0 14px #b7dfff;animation:burst 1s ease-out both}
+@keyframes wave{0%{transform:scale(.45);opacity:.8}100%{transform:scale(1.65);opacity:0}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-@keyframes titleIn{from{opacity:0;transform:scale(.65) translateY(20px);filter:blur(10px)}to{opacity:1;transform:scale(1);filter:blur(0)}}
-@keyframes deviceIn{from{opacity:0;transform:translateY(35px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes burst{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--x),var(--y)) scale(0);opacity:0}}
-@media(max-width:760px){.columns{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.nfc-stage{min-height:240px}}
-@media(max-width:430px){header{padding:12px}.brand{font-size:13px}.logo{width:38px;height:38px}.connection{font-size:10px}main{padding:22px 12px}.hero{margin-top:4px}h1{letter-spacing:-1.5px}.panel{padding:17px 14px;border-radius:20px}.steps{grid-template-columns:1fr}.step{display:grid;grid-template-columns:30px 30px 1fr;gap:9px;align-items:center}.step .emoji{margin-top:0}.step h3{margin-top:0}.drop-devices{gap:8px}.drop-device{padding:20px 8px}.drop-title{letter-spacing:-2px}}
+@keyframes title{from{opacity:0;transform:scale(.65);filter:blur(9px)}to{opacity:1;transform:scale(1);filter:blur(0)}}
+@keyframes rise{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+@keyframes burst{to{transform:translate(var(--x),var(--y)) scale(0);opacity:0}}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.stage{min-height:220px}}
+@media(max-width:430px){header{padding:11px}.logo{width:37px;height:37px}.brand{font-size:13px}.net{font-size:10px}main{padding:20px 12px}h1{letter-spacing:-1.5px}.panel{padding:16px 13px}.steps{grid-template-columns:1fr}.step{display:grid;grid-template-columns:28px 25px 1fr;gap:9px;align-items:center}.step .emoji{margin:0}.step h3{margin-top:0}.code{font-size:32px;letter-spacing:5px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
 <div class="app">
-<header>
-  <div class="brand">
-    <div class="logo">↗</div>
-    <div>SirTros NFC Drop<small>Rychlé propojení dvou mobilů</small></div>
-  </div>
-  <div class="connection"><span class="dot" id="dot"></span><span id="connection">Připraveno</span></div>
-</header>
-
+<header><div class="brand"><div class="logo">↗</div><div>SirTros NFC Drop<small>Dva mobily. Jeden Drop.</small></div></div><div class="net"><span class="dot" id="dot"></span><span id="netText">Připraveno</span></div></header>
 <main>
-  <section class="hero">
-    <div class="eyebrow">NFC · PHONE TO PHONE</div>
-    <h1>Tapni. <span class="gradient">Dropni.</span></h1>
-    <p>Dva mobily. Dva NFC skeny. Jeden společný Drop.</p>
-  </section>
-
-  <section class="columns">
-    <div class="panel">
-      <div class="heading">
-        <div class="heading-icon">🔗</div>
-        <div><h2>Připojení</h2><div class="muted">Vytvoř místnost nebo se připoj ke kamarádovi.</div></div>
-      </div>
-
-      <form id="joinForm">
-        <div class="field">
-          <label for="name">Tvoje jméno</label>
-          <div class="inputbox"><span>👤</span><input id="name" maxlength="40" placeholder="Např. SirTros" required></div>
-        </div>
-        <div class="field">
-          <label for="roomInput">Kód místnosti</label>
-          <div class="inputbox"><span>🔑</span><input id="roomInput" maxlength="10" placeholder="Prázdné = vytvořit místnost" autocapitalize="characters" autocomplete="off"></div>
-          <div class="hint">První mobil nechá kód prázdný. Druhý zadá kód, který se objeví po připojení.</div>
-        </div>
-        <button class="primary" id="joinButton" type="submit">Připojit a spustit NFC →</button>
-      </form>
-
-      <div class="room" id="roomBox">
-        <small>KÓD PRO DRUHÝ MOBIL</small>
-        <div class="code" id="roomCode">------</div>
-        <button class="secondary" id="copyCode" type="button">⧉ Kopírovat kód</button>
-      </div>
-      <div class="status" id="status"><span>ℹ️</span><span>Zadej jméno a připoj se. NFC skenování vyžaduje podporovaný mobil a HTTPS.</span></div>
-    </div>
-
-    <div class="panel">
-      <div class="heading">
-        <div class="heading-icon">📡</div>
-        <div><h2>NFC Drop</h2><div class="muted">Přilož zadní stranu mobilu k NFC štítku.</div></div>
-      </div>
-
-      <div class="nfc-stage" id="nfcStage">
-        <div class="orbit"></div><div class="orbit"></div><div class="orbit"></div>
-        <div class="nfc-core"><span>⌁</span></div>
-        <div class="nfc-title" id="nfcTitle">Čekám na připojení</div>
-        <div class="nfc-help" id="nfcHelp">Po připojení se spustí skenování NFC.</div>
-      </div>
-
-      <div class="devices">
-        <div class="device" id="device1">
-          <div class="emoji">📱</div><div class="label">Mobil 1</div>
-          <div class="name" id="name1">Čeká na mobil</div>
-          <div class="state" id="state1">○ Čekám na připojení</div>
-        </div>
-        <div class="device" id="device2">
-          <div class="emoji">📱</div><div class="label">Mobil 2</div>
-          <div class="name" id="name2">Čeká na mobil</div>
-          <div class="state" id="state2">○ Čekám na připojení</div>
-        </div>
-      </div>
-      <div class="bar"><div id="progress"></div></div>
-      <div class="muted" id="progressText">Připojení 0/2 · NFC skeny 0/2</div>
-    </div>
-  </section>
-
-  <section class="tutorial">
-    <div class="heading tutorial-head">
-      <div class="heading-icon">📘</div>
-      <div><h2>Jak provést Drop</h2><div class="muted">Krátký návod krok za krokem.</div></div>
-    </div>
-    <div class="steps">
-      <div class="step"><div class="num">1</div><div class="emoji">📱</div><div><h3>První mobil</h3><p>Otevři tuto stránku, zadej jméno a nech kód prázdný. Zobrazí se kód místnosti.</p></div></div>
-      <div class="step"><div class="num">2</div><div class="emoji">🔑</div><div><h3>Druhý mobil</h3><p>Otevři stejnou stránku, zadej své jméno a přepiš kód z prvního mobilu.</p></div></div>
-      <div class="step"><div class="num">3</div><div class="emoji">📡</div><div><h3>Naskenujte NFC</h3><p>Na každém mobilu přilož zadní stranu k libovolnému podporovanému NFC/NDEF štítku.</p></div></div>
-      <div class="step"><div class="num">4</div><div class="emoji">✨</div><div><h3>Společný Drop</h3><p>Jakmile server potvrdí oba skeny, oba mobily spustí animaci a zobrazí stejná jména.</p></div></div>
-    </div>
-  </section>
+<section class="hero"><div class="pill">NFC · PHONE TO PHONE</div><h1>Tapni. <span class="gradient">Dropni.</span></h1><p>Oba mobily naskenují NFC štítek a společně spustí Drop.</p></section>
+<section class="grid">
+<div class="panel">
+<div class="heading"><div class="ico">🔗</div><div><h2>Připojení</h2><div class="muted">Jeden mobil vytvoří místnost, druhý se připojí.</div></div></div>
+<form id="form">
+<div class="field"><label for="name">Tvoje jméno</label><div class="input"><span>👤</span><input id="name" maxlength="40" placeholder="Např. SirTros" required></div></div>
+<div class="field"><label for="roomInput">Kód místnosti</label><div class="input"><span>🔑</span><input id="roomInput" maxlength="6" placeholder="Prázdné = vytvořit" autocomplete="off" autocapitalize="characters"></div><div class="help">Na prvním mobilu nech kód prázdný. Druhý mobil musí zadat přesně stejný kód, který se zobrazí.</div></div>
+<button class="btn primary" id="joinBtn" type="submit">Připojit a zapnout NFC →</button>
+</form>
+<div class="room" id="roomBox"><small>KÓD PRO DRUHÝ MOBIL</small><div class="code" id="code">------</div><button class="btn secondary" id="copyBtn" type="button">⧉ Kopírovat kód</button></div>
+<div class="status" id="status">Zadej jméno a připoj se do místnosti.</div>
+</div>
+<div class="panel">
+<div class="heading"><div class="ico">📡</div><div><h2>NFC Drop</h2><div class="muted">Skenuj libovolný podporovaný NFC štítek.</div></div></div>
+<div class="stage" id="stage"><div class="orbit"></div><div class="orbit"></div><div class="orbit"></div><div class="core"><span>⌁</span></div><div class="stageTitle" id="stageTitle">Čekám na připojení</div><div class="stageHelp" id="stageHelp">Po připojení přilož zadní stranu telefonu k NFC štítku.</div></div>
+<div class="devices">
+<div class="device" id="d0"><div class="phone">📱</div><div class="deviceLabel">Mobil 1</div><div class="deviceName" id="n0">Čeká na mobil</div><div class="deviceState" id="s0">○ Nepřipojeno</div></div>
+<div class="device" id="d1"><div class="phone">📱</div><div class="deviceLabel">Mobil 2</div><div class="deviceName" id="n1">Čeká na mobil</div><div class="deviceState" id="s1">○ Nepřipojeno</div></div>
+</div>
+<div class="progress"><div id="bar"></div></div><div class="progressText" id="progressText">Připojení 0/2 · NFC skeny 0/2</div>
+</div>
+</section>
+<section class="panel tutorial" style="margin-top:15px"><div class="heading"><div class="ico">📘</div><div><h2>Jak to funguje</h2><div class="muted">Čtyři kroky, žádná další potvrzovací tlačítka.</div></div></div><div class="steps">
+<div class="step"><div class="num">1</div><div class="emoji">📱</div><div><h3>Vytvoř místnost</h3><p>Na prvním mobilu zadej jméno a nech kód prázdný. Vygeneruje se kód místnosti.</p></div></div>
+<div class="step"><div class="num">2</div><div class="emoji">🔑</div><div><h3>Připoj druhý mobil</h3><p>Na druhém mobilu zadej své jméno a kód z prvního telefonu.</p></div></div>
+<div class="step"><div class="num">3</div><div class="emoji">📡</div><div><h3>Naskenujte NFC</h3><p>Na obou telefonech povol NFC a přilož zadní stranu k libovolnému NDEF štítku.</p></div></div>
+<div class="step"><div class="num">4</div><div class="emoji">✨</div><div><h3>Drop!</h3><p>Po potvrzení obou skenů se na obou telefonech zobrazí stejná animace a jména.</p></div></div>
+</div></section>
 </main>
-<footer>SirTros NFC Drop · NFC musí být povolené v telefonu · HTTPS je nutné</footer>
+<footer>SirTros NFC Drop · Vyžaduje HTTPS, internet a podporovaný Android/Chrome pro NFC.</footer>
 </div>
-
-<div id="dropOverlay" role="dialog" aria-label="NFC Drop dokončen">
-  <div class="drop-content">
-    <div class="drop-kicker">CONNECTION ESTABLISHED</div>
-    <div class="drop-title"><span>DROP!</span></div>
-    <div class="drop-sub">Oba NFC skeny potvrzeny. Mobily jsou propojené.</div>
-    <div class="drop-devices">
-      <div class="drop-device"><div class="emoji">📱</div><div class="number">MOBIL 1</div><div class="name" id="dropName1">Mobil 1</div><div class="done">✓ NFC potvrzeno</div></div>
-      <div class="drop-device"><div class="emoji">📱</div><div class="number">MOBIL 2</div><div class="name" id="dropName2">Mobil 2</div><div class="done">✓ NFC potvrzeno</div></div>
-    </div>
-    <div class="drop-actions"><button class="secondary" id="closeDrop" type="button">Zpět do místnosti</button></div>
-  </div>
-</div>
-
+<div id="overlay" role="dialog" aria-label="Drop dokončen"><div class="drop"><div class="kicker">CONNECTION ESTABLISHED</div><h2>DROP!</h2><p>Oba NFC skeny potvrzeny. Zařízení jsou propojená.</p><div class="dropCards"><div class="dropCard"><div class="phone">📱</div><small id="dropLabel0">MOBIL 1</small><strong id="dropName0">Mobil 1</strong></div><div class="dropCard"><div class="phone">📱</div><small id="dropLabel1">MOBIL 2</small><strong id="dropName1">Mobil 2</strong></div></div><button class="btn secondary" id="closeBtn" type="button">Zpět do místnosti</button></div></div>
 <script>
 (() => {
-  "use strict";
-
-  // Používá veřejný publishable klíč, nikdy service_role klíč.
-  const SUPABASE_URL = "https://hyesvlmxxbcalvdxztjb.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_oQlSIfPZL5EVfKVpFhgTYg_hJN1wKoC";
-
-  const $ = id => document.getElementById(id);
-  const statusEl = $("status");
-  let db = null;
-  let room = "";
-  let deviceId = "";
-  let myName = "";
-  let joined = false;
-  let scanRequested = false;
-  let pendingScan = false;
-  let polling = false;
-  let heartbeatTimer = null;
-  let pollTimer = null;
-  let dropShown = false;
-  let lastSnapshot = "";
-
-  function status(message, type = "") {
-    statusEl.className = "status" + (type ? " " + type : "");
-    statusEl.replaceChildren();
-    const icon = document.createElement("span");
-    icon.textContent = type === "error" ? "⚠️" : type === "ok" ? "✅" : "ℹ️";
-    const text = document.createElement("span");
-    text.textContent = message;
-    statusEl.append(icon, text);
-  }
-
-  function setConnection(text, online = false) {
-    $("connection").textContent = text;
-    $("dot").classList.toggle("on", online);
-  }
-
-  function makeCode() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    const bytes = new Uint8Array(6);
-    if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
-    else for (let i = 0; i < 6; i++) bytes[i] = Math.random() * 256;
-    return Array.from(bytes, b => chars[b % chars.length]).join("");
-  }
-
-  function getDeviceId() {
-    try {
-      let id = localStorage.getItem("sirtros_nfc_device_id");
-      if (!id) {
-        id = crypto.randomUUID ? crypto.randomUUID() :
-          "dev-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
-        localStorage.setItem("sirtros_nfc_device_id", id);
-      }
-      return id;
-    } catch {
-      return "dev-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
-    }
-  }
-
-  function normaliseRows(data) {
-    if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.rows)) return data.rows;
-    return data && typeof data === "object" ? [data] : [];
-  }
-
-  async function rpc(name, args) {
-    if (!db) throw new Error("Knihovna Supabase není načtená. Obnov stránku a zkus to znovu.");
-    const { data, error } = await db.rpc(name, args);
-    if (error) throw new Error(error.message || "Chyba komunikace se Supabase.");
-    return data;
-  }
-
-  function showRoomCode() {
-    $("roomCode").textContent = room;
-    $("roomBox").classList.add("show");
-  }
-
-  async function markScanned() {
-    if (!joined || !room || !deviceId) {
-      pendingScan = true;
-      return;
-    }
-    try {
-      await rpc("nfc_drop_mark_scanned", {
-        p_session_code: room,
-        p_device_id: deviceId
-      });
-      status("NFC štítek načten. Čekám, až druhý mobil také naskenuje svůj štítek.", "ok");
-      $("nfcTitle").textContent = "NFC načteno!";
-      $("nfcHelp").textContent = "Tvůj sken je potvrzen. Čekáme na druhý mobil.";
-      await refreshRoom();
-    } catch (e) {
-      status("NFC se načetlo, ale server sken nepotvrdil: " + e.message, "error");
-    }
-  }
-
-  function startNfcFromGesture() {
-    if (scanRequested) return;
-    scanRequested = true;
-
-    if (!("NDEFReader" in window)) {
-      $("nfcTitle").textContent = "NFC není dostupné";
-      $("nfcHelp").textContent = "Použij podporovaný Android a Chrome přes HTTPS.";
-      status("Tento prohlížeč nepodporuje Web NFC. Na běžném PC a iPhonu webové NFC skenování zpravidla nefunguje.", "error");
-      return;
-    }
-
-    try {
-      const reader = new NDEFReader();
-      reader.onreading = () => { void markScanned(); };
-      reader.onreadingerror = () => status("Štítek se nepodařilo přečíst. Zkus ho přiložit znovu.", "error");
-
-      // Volání probíhá přímo při stisku tlačítka, aby prohlížeč povolil NFC.
-      const scanning = reader.scan();
-      scanning.then(() => {
-        $("nfcTitle").textContent = "Přilož NFC štítek";
-        $("nfcHelp").textContent = "Skenování běží. Přilož zadní stranu mobilu k NFC štítku.";
-        status("NFC skenování je zapnuté. Teď přilož mobil k NFC štítku.", "ok");
-      }).catch(e => {
-        scanRequested = false;
-        status("NFC nelze spustit: " + (e.message || "Zkontroluj NFC, HTTPS a oprávnění prohlížeče."), "error");
-        $("nfcTitle").textContent = "NFC se nespustilo";
-        $("nfcHelp").textContent = "Povol NFC a zkus znovu načíst stránku.";
-      });
-    } catch (e) {
-      scanRequested = false;
-      status("NFC chyba: " + e.message, "error");
-    }
-  }
-
-  async function joinRoom() {
-    if (!db) throw new Error("Supabase se nenačetl. Zkontroluj internetové připojení.");
-    myName = $("name").value.trim();
-    if (!myName) throw new Error("Nejdřív zadej svoje jméno.");
-
-    const enteredCode = $("roomInput").value.trim().toUpperCase();
-    room = enteredCode || makeCode();
-    if (!/^[A-Z0-9]{6,10}$/.test(room)) {
-      throw new Error("Kód místnosti musí mít 6 až 10 písmen nebo číslic.");
-    }
-
-    deviceId = getDeviceId();
-    await rpc("nfc_drop_join", {
-      p_session_code: room,
-      p_device_id: deviceId,
-      p_display_name: myName
-    });
-
-    joined = true;
-    showRoomCode();
-    setConnection("Připojeno", true);
-    $("joinButton").textContent = "✓ Připojeno";
-    $("joinButton").disabled = true;
-    $("name").readOnly = true;
-    $("roomInput").readOnly = true;
-
-    $("nfcStage").classList.remove("ready");
-    $("nfcTitle").textContent = "Přilož NFC štítek";
-    $("nfcHelp").textContent = "Naskenuj jakýkoliv podporovaný NFC/NDEF štítek.";
-    status("Připojeno do místnosti " + room + ". Naskenuj NFC štítek.", "ok");
-
-    if (pendingScan) {
-      pendingScan = false;
-      await markScanned();
-    }
-
-    await refreshRoom();
-    pollTimer = setInterval(() => { void refreshRoom(); }, 400);
-    heartbeatTimer = setInterval(() => {
-      if (joined) void rpc("nfc_drop_heartbeat", {
-        p_session_code: room,
-        p_device_id: deviceId
-      }).catch(() => {});
-    }, 12000);
-  }
-
-  async function refreshRoom() {
-    if (!joined || polling) return;
-    polling = true;
-    try {
-      const data = await rpc("nfc_drop_get_session", {
-        p_session_code: room
-      });
-      const rows = normaliseRows(data)
-        .filter(r => r && r.device_id && r.session_code === room)
-        .sort((a, b) => String(a.device_id).localeCompare(String(b.device_id)));
-
-      const mine = rows.find(r => String(r.device_id) === deviceId);
-      const others = rows.filter(r => String(r.device_id) !== deviceId);
-      const two = [mine, ...others].filter(Boolean).slice(0, 2);
-
-      for (let i = 0; i < 2; i++) {
-        const row = two[i];
-        $("name" + (i + 1)).textContent = row ? (row.display_name || "Mobil") : "Čeká na mobil";
-        const scanned = !!(row && row.nfc_scanned);
-        $("device" + (i + 1)).classList.toggle("active", scanned);
-        $("state" + (i + 1)).textContent = !row ? "○ Čekám na připojení" : scanned ? "✓ NFC načteno" : "◌ Čekám na NFC";
-      }
-
-      // Oba klienti řadí zařízení podle stejného device_id, takže názvy odpovídají.
-      const connectedCount = two.length;
-      const scannedCount = two.filter(r => !!r.nfc_scanned).length;
-      $("progress").style.width = (connectedCount === 2 ? 50 : connectedCount * 25) + (scannedCount === 2 ? 50 : scannedCount * 25) + "%";
-      $("progressText").textContent = "Připojení " + connectedCount + "/2 · NFC skeny " + scannedCount + "/2";
-
-      const snapshot = two.map(r => r.device_id + ":" + !!r.nfc_scanned + ":" + r.display_name).join("|");
-      if (snapshot !== lastSnapshot) lastSnapshot = snapshot;
-
-      if (connectedCount === 2) {
-        $("nfcStage").classList.toggle("ready", scannedCount === 2);
-        if (scannedCount < 2) {
-          $("nfcTitle").textContent = "Čekám na oba skeny";
-          $("nfcHelp").textContent = "Oba mobily musí úspěšně načíst NFC štítek.";
-        }
-      }
-
-      if (connectedCount === 2 && scannedCount === 2 && !dropShown) {
-        dropShown = true;
-        $("dropName1").textContent = two[0].display_name || "Mobil 1";
-        $("dropName2").textContent = two[1].display_name || "Mobil 2";
-        $("nfcTitle").textContent = "DROP DOKONČEN!";
-        $("nfcHelp").textContent = "Oba NFC skeny jsou potvrzeny.";
-        status("Oba mobily naskenovaly NFC. Drop je dokončen!", "ok");
-        showDrop();
-      }
-    } catch (e) {
-      status("Chyba synchronizace: " + e.message, "error");
-    } finally {
-      polling = false;
-    }
-  }
-
-  function showDrop() {
-    $("dropOverlay").classList.add("show");
-    for (let i = 0; i < 34; i++) {
-      const spark = document.createElement("i");
-      spark.className = "spark";
-      const angle = Math.PI * 2 * i / 34;
-      const distance = 90 + Math.random() * Math.min(innerWidth, innerHeight) * .48;
-      spark.style.setProperty("--x", Math.cos(angle) * distance + "px");
-      spark.style.setProperty("--y", Math.sin(angle) * distance + "px");
-      spark.style.animationDelay = Math.random() * .25 + "s";
-      $("dropOverlay").appendChild(spark);
-      setTimeout(() => spark.remove(), 1700);
-    }
-  }
-
-  $("joinForm").addEventListener("submit", event => {
-    event.preventDefault();
-    if (joined) return;
-
-    $("joinButton").disabled = true;
-    $("joinButton").textContent = "Připojuji…";
-
-    // Spustit NFC synchronně v rámci uživatelské akce.
-    startNfcFromGesture();
-
-    void joinRoom().catch(e => {
-      status("Nepodařilo se připojit: " + e.message, "error");
-      $("joinButton").disabled = false;
-      $("joinButton").textContent = "Zkusit znovu →";
-    });
-  });
-
-  $("copyCode").addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(room);
-      $("copyCode").textContent = "✓ Zkopírováno";
-      setTimeout(() => $("copyCode").textContent = "⧉ Kopírovat kód", 1600);
-    } catch {
-      status("Kód místnosti: " + room + ". Označ ho a zkopíruj ručně.", "ok");
-    }
-  });
-
-  $("closeDrop").addEventListener("click", () => {
-    $("dropOverlay").classList.remove("show");
-  });
-
-  if (window.supabase && window.supabase.createClient) {
-    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    setConnection("Připraveno", true);
-  } else {
-    setConnection("Bez spojení");
-    status("Nepodařilo se načíst Supabase knihovnu. Zkontroluj internet nebo načtení CDN.", "error");
-    $("joinButton").disabled = true;
-  }
-
-  window.addEventListener("pagehide", () => {
-    if (pollTimer) clearInterval(pollTimer);
-    if (heartbeatTimer) clearInterval(heartbeatTimer);
-  });
+"use strict";
+const URL="https://hyesvlmxxbcalvdxztjb.supabase.co";
+const KEY="sb_publishable_oQlSIfPZL5EVfKVpFhgTYg_hJN1wKoC";
+const $=id=>document.getElementById(id);
+let client=null,channel=null,room="",deviceId="",myName="",joined=false,scanned=false,dropShown=false,scanStarting=false;
+let peers=[];
+function setStatus(msg,type=""){const e=$("status");e.textContent=msg;e.className="status"+(type?" "+type:"")}
+function net(msg,on=false){$("netText").textContent=msg;$("dot").classList.toggle("on",on)}
+function randomCode(){const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";const b=new Uint8Array(6);crypto.getRandomValues(b);return Array.from(b,x=>a[x%a.length]).join("")}
+function getId(){try{let x=localStorage.getItem("st_nfc_drop_id");if(!x){x=crypto.randomUUID();localStorage.setItem("st_nfc_drop_id",x)}return x}catch{return crypto.randomUUID()}}
+function rowsFromPresence(){if(!channel)return[];const state=channel.presenceState();return Object.values(state).flat().filter(x=>x&&x.device_id).reduce((arr,x)=>{const prev=arr.find(y=>y.device_id===x.device_id);if(!prev)arr.push(x);else if(x.scanned)prev.scanned=true;return arr},[]).sort((a,b)=>String(a.device_id).localeCompare(String(b.device_id))).slice(0,2)}
+function render(){peers=rowsFromPresence();for(let i=0;i<2;i++){const p=peers[i];$("n"+i).textContent=p?(p.display_name||"Mobil"):"Čeká na mobil";$("s"+i).textContent=!p?"○ Čekám na připojení":p.scanned?"✓ NFC načteno":"◌ Čekám na NFC";$("d"+i).classList.toggle("active",!!(p&&p.scanned))}
+const connected=peers.length,done=peers.filter(p=>p.scanned).length;$("progressText").textContent="Připojení "+connected+"/2 · NFC skeny "+done+"/2";$("bar").style.width=((connected/2)*50+(done/2)*50)+"%";
+if(connected<2){$("stageTitle").textContent="Čekám na druhý mobil";$("stageHelp").textContent="Po připojení druhého telefonu naskenujte oba NFC štítky."}
+else if(done<2){$("stageTitle").textContent=done?"První sken hotov":"Oba mobily připojeny";$("stageHelp").textContent=done?"Čekám, až druhý mobil naskenuje NFC.":"Teď naskenujte NFC štítek na obou telefonech."}
+else if(!dropShown){dropShown=true;$("stage").classList.add("done");$("stageTitle").textContent="DROP DOKONČEN!";$("stageHelp").textContent="Oba NFC skeny jsou potvrzeny.";setStatus("Oba mobily naskenovaly NFC. Drop dokončen!","ok");showDrop()}}
+async function track(){if(!channel||!joined)return;const result=await channel.track({device_id:deviceId,display_name:myName,scanned,online:true,updated_at:new Date().toISOString()});if(result!=="ok")throw new Error("Supabase Presence neuložil stav: "+result);render()}
+async function startNfc(){
+ if(scanStarting||scanned)return;scanStarting=true;
+ if(!("NDEFReader"in window)){setStatus("Tento prohlížeč nepodporuje Web NFC. Použij podporovaný Android, Chrome a HTTPS.","error");$("stageTitle").textContent="NFC není dostupné";scanStarting=false;return}
+ try{
+  const reader=new NDEFReader();
+  reader.onreading=async()=>{if(scanned)return;scanned=true;try{await track();setStatus("NFC načteno. Čekám na sken druhého mobilu.","ok")}catch(e){scanned=false;setStatus("NFC se načetlo, ale synchronizace selhala: "+e.message,"error")}};
+  reader.onreadingerror=()=>setStatus("Štítek nešel přečíst. Zkus přiložit zadní stranu telefonu znovu.","error");
+  await reader.scan();$("stageTitle").textContent="Přilož NFC štítek";$("stageHelp").textContent="Skenování běží. Nech NFC štítek u zadní strany telefonu.";setStatus("NFC skenování aktivní. Přilož telefon ke štítku.","ok")
+ }catch(e){setStatus("NFC se nepodařilo spustit: "+e.message+". Zkontroluj NFC, HTTPS a oprávnění.","error");$("stageTitle").textContent="NFC se nespustilo"}
+ finally{scanStarting=false}
+}
+async function join(){
+ if(!client)throw new Error("Supabase knihovna není načtená. Obnov stránku.");
+ myName=$("name").value.trim();if(!myName)throw new Error("Zadej své jméno.");
+ const entered=$("roomInput").value.trim().toUpperCase();room=entered||randomCode();
+ if(!/^[A-Z0-9]{6}$/.test(room))throw new Error("Kód místnosti musí mít přesně 6 písmen nebo číslic.");
+ deviceId=getId();
+ channel=client.channel("sirtros-nfc-drop-"+room,{config:{presence:{key:deviceId}}});
+ channel.on("presence",{event:"sync"},render);
+ channel.on("presence",{event:"join"},render);
+ channel.on("presence",{event:"leave"},render);
+ await new Promise((resolve,reject)=>{
+   let settled=false;
+   const timer=setTimeout(()=>{if(!settled){settled=true;reject(new Error("Připojení k Supabase vypršelo. Zkontroluj internet a Realtime."))}},12000);
+   channel.subscribe(async state=>{
+     if(state==="SUBSCRIBED"&&!settled){settled=true;clearTimeout(timer);joined=true;try{await track();resolve()}catch(e){joined=false;reject(e)}}
+     else if((state==="CHANNEL_ERROR"||state==="TIMED_OUT"||state==="CLOSED")&&!settled){settled=true;clearTimeout(timer);reject(new Error("Supabase Realtime: "+state))}
+   })
+ });
+ joined=true;$("code").textContent=room;$("roomBox").classList.add("show");$("joinBtn").disabled=true;$("joinBtn").textContent="✓ Připojeno";$("name").readOnly=true;$("roomInput").readOnly=true;
+ net("Připojeno",true);setStatus("Připojeno do místnosti "+room+". Naskenuj NFC štítek.","ok");render()
+}
+function showDrop(){
+ $("dropName0").textContent=peers[0]?.display_name||"Mobil 1";$("dropName1").textContent=peers[1]?.display_name||"Mobil 2";
+ $("overlay").classList.add("show");
+ for(let i=0;i<36;i++){const s=document.createElement("i");s.className="spark";const a=2*Math.PI*i/36,d=80+Math.random()*Math.min(innerWidth,innerHeight)*.45;s.style.setProperty("--x",Math.cos(a)*d+"px");s.style.setProperty("--y",Math.sin(a)*d+"px");s.style.animationDelay=Math.random()*.2+"s";$("overlay").append(s);setTimeout(()=>s.remove(),1400)}
+}
+$("form").addEventListener("submit",async e=>{
+ e.preventDefault();if(joined)return;$("joinBtn").disabled=true;$("joinBtn").textContent="Připojuji…";
+ // Web NFC scan is requested directly in the click/submit gesture.
+ const nfcPromise=startNfc();
+ try{await join();await nfcPromise}catch(err){setStatus("Nepodařilo se připojit: "+err.message,"error");net("Chyba");$("joinBtn").disabled=false;$("joinBtn").textContent="Zkusit znovu →";if(channel){try{await client.removeChannel(channel)}catch{}channel=null}}
+});
+$("copyBtn").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(room);$("copyBtn").textContent="✓ Zkopírováno";setTimeout(()=>$("copyBtn").textContent="⧉ Kopírovat kód",1400)}catch{setStatus("Kód místnosti: "+room+". Označ a zkopíruj ho ručně.","ok")}});
+$("closeBtn").addEventListener("click",()=>$("overlay").classList.remove("show"));
+if(window.supabase?.createClient){client=window.supabase.createClient(URL,KEY,{realtime:{params:{eventsPerSecond:10}}});net("Online",true)}else{net("Bez spojení");setStatus("Nepodařilo se načíst Supabase. Zkontroluj internet nebo CDN.","error");$("joinBtn").disabled=true}
+window.addEventListener("pagehide",()=>{if(client&&channel)void client.removeChannel(channel)});
 })();
 </script>
 </body>
