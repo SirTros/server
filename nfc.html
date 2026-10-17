@@ -2,375 +2,924 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080b13">
-<title>SirTros NFC Drop</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090b12">
+  <title>SirTros NFC Drop</title>
 
-<style>
-:root{
-  color-scheme:dark;
-  --bg:#080b13;--panel:#111827;--text:#f4f7ff;
-  --muted:#93a0b8;--blue:#6484ff;--cyan:#6beaff;
-  --border:rgba(255,255,255,.09);
-}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
-body{
-  min-height:100dvh;background:
-  radial-gradient(ellipse at 50% 0%,#172858 0%,transparent 48%),
-  radial-gradient(ellipse at 100% 100%,#10223a 0%,transparent 38%),var(--bg);
-  color:var(--text);overflow:hidden
-}
-button,input{font:inherit}
-button{cursor:pointer}
-.app{
-  min-height:100dvh;display:flex;align-items:center;justify-content:center;
-  padding:max(22px,env(safe-area-inset-top)) 20px max(22px,env(safe-area-inset-bottom))
-}
-.wrap{width:min(100%,460px);animation:appear .55s ease both}
-.brand{display:flex;justify-content:center;align-items:center;gap:10px;
-  margin-bottom:25px;font-size:12px;font-weight:850;letter-spacing:2.4px;color:#d1dcff}
-.logo{
-  width:35px;height:35px;display:grid;place-items:center;border-radius:12px;
-  background:linear-gradient(145deg,#4269ed,#18284d);font-size:20px;
-  box-shadow:0 0 28px #456bff38
-}
-.panel{
-  padding:clamp(22px,6vw,32px);border:1px solid var(--border);
-  border-radius:28px;background:linear-gradient(150deg,#171f30f5,#0c111df7);
-  box-shadow:0 25px 90px #0007
-}
-h1{font-size:clamp(34px,9vw,46px);line-height:1.03;letter-spacing:-2px;text-align:center;margin:0}
-h2{font-size:clamp(29px,7vw,40px);letter-spacing:-1.5px;text-align:center;margin:20px 0 9px}
-.subtitle{max-width:320px;margin:14px auto 26px;text-align:center;
-  color:var(--muted);font-size:14px;line-height:1.7}
-label{display:block;margin:0 0 9px 3px;font-size:12px;font-weight:800;
-  color:#d9e1f4;letter-spacing:.7px;text-transform:uppercase}
-input{
-  width:100%;height:54px;padding:0 16px;border-radius:15px;
-  border:1px solid #ffffff1b;background:#080d18;color:white;outline:none
-}
-input:focus{border-color:var(--blue);box-shadow:0 0 0 4px #6484ff20}
-.primary{
-  width:100%;height:55px;margin-top:14px;border:0;border-radius:16px;
-  color:white;font-weight:850;background:linear-gradient(100deg,#4568f4,#7286ff,#368bff);
-  box-shadow:0 10px 28px #4569f536;transition:transform .2s
-}
-.primary:active{transform:scale(.98)}
-.primary:disabled{opacity:.6;cursor:wait}
-.status{display:flex;justify-content:center;align-items:center;gap:8px;
-  color:var(--muted);font-size:12px;margin-top:19px}
-.dot{width:7px;height:7px;flex:none;border-radius:50%;background:#8995a9}
-.dot.live{background:#5de7a1;box-shadow:0 0 12px #5de7a1}
-.note{margin:17px 0 0;text-align:center;color:#71809a;font-size:11px;line-height:1.65}
-.error{margin-top:15px;color:#ff9eae;font-size:12px;line-height:1.6;text-align:center}
-.hidden{display:none!important}
-.live-pill{
-  display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:50px;
-  background:#54e6a10d;border:1px solid #54e6a129;color:#8af0bb;
-  font-size:10px;font-weight:850;letter-spacing:1.2px
-}
-.center{text-align:center}
-.desc{max-width:330px;margin:0 auto;color:var(--muted);font-size:14px;line-height:1.7}
-.orb{position:relative;width:220px;height:220px;margin:25px auto;display:grid;place-items:center}
-.ring{position:absolute;inset:0;border:1px solid #7395ff63;border-radius:50%;
-  animation:pulse 2.8s ease-out infinite}
-.ring:nth-child(2){animation-delay:.9s}
-.ring:nth-child(3){animation-delay:1.8s}
-.core{
-  width:112px;height:112px;display:grid;place-items:center;border-radius:34px;
-  border:1px solid #89a6ff80;background:linear-gradient(145deg,#2b478f,#111a32);
-  box-shadow:0 0 55px #5279ff35;font-size:45px;transform:rotate(-7deg)
-}
-.waiting{
-  display:flex;align-items:center;gap:12px;padding:15px;
-  border:1px solid var(--border);border-radius:18px;background:#121a2b
-}
-.avatar{
-  width:43px;height:43px;display:grid;place-items:center;flex:none;
-  border-radius:14px;background:#24345b;color:#c6d5ff;font-weight:900
-}
-.person{min-width:0;flex:1;text-align:left}
-.person-name{font-size:14px;font-weight:850;overflow-wrap:anywhere}
-.person-status{margin-top:4px;color:var(--muted);font-size:11px}
-.badge{color:#a2b0c9;font-size:10px;font-weight:850}
-.hint{margin:16px auto 0;text-align:center;color:#73819a;font-size:11px;line-height:1.7}
-.people{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px}
-.person-card{
-  min-width:0;padding:22px 10px;border-radius:23px;
-  border:1px solid #7997ff42;background:linear-gradient(145deg,#1d2d50,#101727);
-  animation:pop .65s cubic-bezier(.2,.9,.3,1.2) both
-}
-.person-card:nth-child(2){animation-delay:.15s}
-.phone{
-  width:61px;height:61px;display:grid;place-items:center;margin:0 auto 14px;
-  border:1px solid #8aa5ff4d;border-radius:20px;background:#22365f;
-  color:#d0ddff;font-size:29px
-}
-.name{font-size:clamp(14px,4vw,19px);font-weight:900;overflow-wrap:anywhere}
-.label{margin-top:5px;color:#9cb0e6;font-size:10px;letter-spacing:1px;font-weight:800}
-.success{
-  width:48px;height:48px;display:grid;place-items:center;margin:24px auto 0;
-  border-radius:50%;border:1px solid #5de7a150;background:#5de7a115;
-  color:#79f0b4;font-size:23px;animation:pop .5s .2s both
-}
-@keyframes pulse{0%{transform:scale(.48);opacity:0}20%{opacity:.7}100%{transform:scale(1.18);opacity:0}}
-@keyframes appear{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pop{from{opacity:0;transform:scale(.75) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
-@media(max-height:670px){.brand{margin-bottom:13px}.orb{width:160px;height:160px;margin:15px auto}.core{width:85px;height:85px;font-size:36px}.panel{padding:22px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important}}
-</style>
-</head>
-<body>
-<main class="app">
-  <div class="wrap">
-    <div class="brand"><div class="logo">↗</div><span>SIRTROS NFC DROP</span></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <section id="setup" class="panel">
-      <h1>Dotkni se.<br>Propoj se.</h1>
-      <p class="subtitle">Vyber si jméno a připrav telefon na NFC propojení.</p>
-      <label for="nameInput">Tvoje jméno</label>
-      <input id="nameInput" maxlength="24" autocomplete="nickname" placeholder="Např. SirTros">
-      <button id="startButton" class="primary">Spustit aplikaci ↗</button>
-      <div class="status"><span class="dot"></span><span id="setupStatus">Připraveno ke spuštění</span></div>
-      <div id="setupError" class="error hidden"></div>
-      <p class="note">NFC vyžaduje podporovaný prohlížeč a HTTPS. Nech stránku otevřenou.</p>
-    </section>
-
-    <section id="scanScreen" class="center hidden">
-      <div class="live-pill"><span class="dot live"></span><span id="connectionLabel">PŘIPOJUJI…</span></div>
-      <h2>Připraveno na dotyk</h2>
-      <p class="desc">Načti libovolný podporovaný NFC štítek. Druhý telefon může načíst jiný.</p>
-      <div class="orb">
-        <div class="ring"></div><div class="ring"></div><div class="ring"></div>
-        <div class="core">⌁</div>
-      </div>
-      <div class="waiting">
-        <div class="avatar">ME</div>
-        <div class="person">
-          <div id="myName" class="person-name">Tvůj telefon</div>
-          <div id="myStatus" class="person-status">Připravuji NFC…</div>
-        </div>
-        <div id="myBadge" class="badge">ČEKÁM</div>
-      </div>
-      <p id="scanHint" class="hint">Animace se spustí, až oba telefony načtou NFC.</p>
-      <div id="scanError" class="error hidden"></div>
-    </section>
-
-    <section id="dropScreen" class="center hidden">
-      <div class="live-pill"><span class="dot live"></span>PROPOJENÍ DOKONČENO</div>
-      <h2>Je to spojení!</h2>
-      <p class="subtitle">Oba telefony načetly NFC.</p>
-      <div class="people">
-        <div class="person-card"><div class="phone">▯</div><div id="person1" class="name">Mobil 1</div><div class="label">MOBIL 1</div></div>
-        <div class="person-card"><div class="phone">▯</div><div id="person2" class="name">Mobil 2</div><div class="label">MOBIL 2</div></div>
-      </div>
-      <div class="success">✓</div>
-    </section>
-  </div>
-</main>
-
-<script>
-"use strict";
-
-/* SirTros Games — veřejná URL a publishable klíč */
-const SUPABASE_URL = "https://hyesvlmxxbcalvdxztjb.supabase.co";
-const SUPABASE_KEY = "sb_publishable_oQlSIfPZL5EVfKVpFhgTYg_hJN1wKoC";
-
-/*
- * Oba telefony musí používat stejný kanál.
- * Veřejný kanál není zabezpečené soukromé párování.
- */
-const ROOM = "sirtros-nfc-drop-room-1";
-
-const $ = id => document.getElementById(id);
-const clientId = crypto.randomUUID();
-
-let client, channel, myNameValue = "";
-let myNfcRead = false, finished = false, nfcReader = null;
-let remotePerson = null;
-
-function showError(id, message) {
-  const el = $(id);
-  el.textContent = message;
-  el.classList.remove("hidden");
-}
-function hideError(id) {
-  $(id).textContent = "";
-  $(id).classList.add("hidden");
-}
-function showScreen(id) {
-  ["setup","scanScreen","dropScreen"].forEach(name => $(name).classList.add("hidden"));
-  $(id).classList.remove("hidden");
-}
-function cleanName(value) {
-  return String(value || "").trim().replace(/\s+/g," ").slice(0,24);
-}
-function enterFullscreen() {
-  if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-    document.documentElement.requestFullscreen().catch(() => {
-      // Některé mobilní prohlížeče fullscreen nepovolí.
-    });
-  }
-}
-function syncRemote() {
-  if (!channel || finished) return;
-
-  const states = channel.presenceState();
-  const others = Object.values(states).flat().filter(p => p && p.id !== clientId);
-  const remote = others.find(p => p.nfcRead === true);
-
-  if (remote) {
-    remotePerson = cleanName(remote.name) || "Druhý mobil";
-    $("scanHint").textContent = "Druhý telefon načetl NFC.";
-    if (myNfcRead) finishDrop();
-    else {
-      $("myStatus").textContent = "Druhý telefon už načetl NFC";
-      $("myBadge").textContent = "PŘIPRAVEN";
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090b12;
+      --panel: #121622;
+      --panel2: #191f2e;
+      --border: #2a3245;
+      --text: #f5f7ff;
+      --muted: #929db3;
+      --blue: #7c8cff;
+      --cyan: #50e4db;
+      --green: #69e7a4;
+      --red: #ff778b;
     }
-  }
-}
-async function updatePresence() {
-  if (!channel) return;
-  try {
-    await channel.track({
-      id: clientId,
-      name: myNameValue,
-      nfcRead: myNfcRead,
-      updatedAt: Date.now()
-    });
-    syncRemote();
-  } catch (error) {
-    console.error("Presence update:", error);
-    showError("scanError","Nepodařilo se synchronizovat stav se Supabase.");
-  }
-}
-function finishDrop() {
-  if (finished || !myNfcRead || !remotePerson) return;
-  finished = true;
 
-  $("person1").textContent = myNameValue;
-  $("person2").textContent = remotePerson;
-  showScreen("dropScreen");
-  document.title = myNameValue + " × " + remotePerson + " | NFC Drop";
-}
-function beginNfcScan() {
-  hideError("scanError");
+    * { box-sizing: border-box; }
 
-  if (!("NDEFReader" in window)) {
-    $("myStatus").textContent = "NFC není podporováno";
-    $("myBadge").textContent = "NEDOSTUPNÉ";
-    showError("scanError","Web NFC není dostupné. Zkus Android Chrome a HTTPS.");
-    return;
-  }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      padding: 24px;
+      background:
+        radial-gradient(ellipse at 10% 0%, #252b54 0, transparent 38%),
+        radial-gradient(ellipse at 100% 100%, #103d46 0, transparent 34%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
 
-  try {
-    nfcReader = new NDEFReader();
+    button, input { font: inherit; }
+    button { cursor: pointer; }
 
-    nfcReader.onreading = async () => {
-      if (myNfcRead || finished) return;
+    .app {
+      width: min(100%, 780px);
+      margin: 0 auto;
+    }
 
-      myNfcRead = true;
-      $("myStatus").textContent = "NFC načteno ✓";
-      $("myBadge").textContent = "NAČTENO";
-      $("scanHint").textContent = "Čekám na NFC druhého telefonu…";
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
 
-      // Synchronizujeme pouze stav čtení, nikoli obsah NFC štítku.
-      await updatePresence();
-      syncRemote();
-    };
+    .logo {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 17px;
+      background: linear-gradient(135deg, #7c8cff, #50e4db);
+      color: #081018;
+      font-size: 25px;
+      font-weight: 900;
+      box-shadow: 0 8px 30px #596cff35;
+    }
 
-    nfcReader.onreadingerror = () => {
-      showError("scanError","Štítek se nepodařilo přečíst. Zkus ho přiložit znovu.");
-    };
+    h1 {
+      margin: 0;
+      font-size: clamp(23px, 5vw, 32px);
+      letter-spacing: -1px;
+    }
 
-    /*
-     * scan() se zavolá přímo v reakci na klepnutí na Spustit,
-     * aby měl prohlížeč co nejlepší šanci povolit Web NFC.
-     */
-    const scanPromise = nfcReader.scan();
-    scanPromise.then(() => {
-      $("myStatus").textContent = "Čekám na NFC štítek…";
-    }).catch(error => {
-      console.error("Web NFC:",error);
-      $("myStatus").textContent = "NFC skenování se nespustilo";
-      $("myBadge").textContent = "CHYBA";
+    .subtitle {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 14px;
+    }
 
-      let message = "NFC skenování se nepodařilo spustit.";
-      if (error.name === "NotAllowedError") {
-        message = "Prohlížeč NFC nepovolil. Zkontroluj oprávnění a zkus to znovu.";
-      } else if (error.name === "SecurityError") {
-        message = "NFC vyžaduje zabezpečené HTTPS připojení.";
-      } else if (error.name === "NotSupportedError") {
-        message = "Toto zařízení nebo prohlížeč NFC skenování nepodporuje.";
+    .panel {
+      padding: clamp(19px, 4vw, 30px);
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      background: linear-gradient(145deg, #151a29f5, #10141ef5);
+      box-shadow: 0 18px 60px #00000022;
+    }
+
+    h2 {
+      margin: 0 0 9px;
+      font-size: 20px;
+      letter-spacing: -.4px;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 7px 0 18px;
+      font-size: 14px;
+    }
+
+    label {
+      display: block;
+      margin: 17px 0 8px;
+      color: #dce2f2;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      min-height: 51px;
+      padding: 13px 15px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      outline: none;
+      background: #0b0f18;
+      color: var(--text);
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px #7c8cff20;
+    }
+
+    .button {
+      width: 100%;
+      min-height: 51px;
+      margin-top: 18px;
+      padding: 13px 17px;
+      border: 0;
+      border-radius: 15px;
+      color: #0a1019;
+      background: linear-gradient(100deg, #9ba6ff, #66e9df);
+      font-weight: 800;
+      transition: transform .18s, filter .18s;
+    }
+
+    .button:hover { filter: brightness(1.08); }
+    .button:active { transform: scale(.985); }
+
+    .button.secondary {
+      color: var(--text);
+      background: var(--panel2);
+      border: 1px solid var(--border);
+    }
+
+    .button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .room-code {
+      display: none;
+      padding: 20px;
+      margin-top: 18px;
+      border: 1px solid #7c8cff55;
+      border-radius: 18px;
+      background: #7c8cff0c;
+      text-align: center;
+    }
+
+    .room-code.visible { display: block; }
+
+    .code {
+      margin: 8px 0;
+      color: var(--cyan);
+      font-size: clamp(28px, 8vw, 42px);
+      font-weight: 900;
+      letter-spacing: 7px;
+      overflow-wrap: anywhere;
+    }
+
+    .small-button {
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--text);
+      border-radius: 11px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .status {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #0c1019;
+      margin-bottom: 18px;
+    }
+
+    .status-dot {
+      flex: 0 0 auto;
+      width: 10px;
+      height: 10px;
+      margin-top: 5px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 15px #7c8cff65;
+    }
+
+    .status-dot.good {
+      background: var(--green);
+      box-shadow: 0 0 15px #69e7a465;
+    }
+
+    .status-dot.bad {
+      background: var(--red);
+      box-shadow: 0 0 15px #ff778b65;
+    }
+
+    .status-title {
+      font-weight: 750;
+      font-size: 14px;
+    }
+
+    .status-detail {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .devices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .device {
+      min-width: 0;
+      padding: 18px 13px;
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      background: #0c1019;
+      transition: border-color .25s, background .25s;
+    }
+
+    .device.scanned {
+      border-color: #69e7a477;
+      background: #69e7a40b;
+    }
+
+    .phone-icon {
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel2);
+      font-size: 21px;
+    }
+
+    .device-name {
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .device-label {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .device-state {
+      margin-top: 15px;
+      font-size: 12px;
+      font-weight: 750;
+      color: var(--muted);
+    }
+
+    .device.scanned .device-state { color: var(--green); }
+
+    .nfc-animation {
+      display: grid;
+      place-items: center;
+      min-height: 190px;
+      margin: 18px 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: radial-gradient(circle, #20294a 0, #101522 60%);
+    }
+
+    .nfc-symbol {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 90px;
+      height: 90px;
+      border: 1px solid #7c8cff66;
+      border-radius: 28px;
+      color: var(--cyan);
+      font-size: 36px;
+      animation: float 2.3s ease-in-out infinite;
+    }
+
+    .nfc-symbol::before,
+    .nfc-symbol::after {
+      content: "";
+      position: absolute;
+      inset: -12px;
+      border: 1px solid #7c8cff55;
+      border-radius: 35px;
+      animation: pulse 2.3s ease-out infinite;
+    }
+
+    .nfc-symbol::after { animation-delay: 1.15s; }
+
+    @keyframes pulse {
+      0% { transform: scale(.8); opacity: .8; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+
+    @keyframes float {
+      50% { transform: translateY(-5px); }
+    }
+
+    .success {
+      display: none;
+      padding: 20px;
+      margin-top: 18px;
+      text-align: center;
+      border: 1px solid #69e7a477;
+      border-radius: 18px;
+      background: #69e7a40c;
+      animation: appear .4s ease both;
+    }
+
+    .success.visible { display: block; }
+
+    .success-title {
+      color: var(--green);
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .footer {
+      padding: 8px 4px 25px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 480px) {
+      body { padding: 17px 13px; }
+      header { margin-bottom: 20px; }
+      .devices { gap: 9px; }
+      .device { padding: 14px 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
       }
-      showError("scanError",message);
-    });
-  } catch (error) {
-    console.error(error);
-    showError("scanError","NFC skenování se nepodařilo připravit.");
-  }
-}
+    }
+  </style>
+</head>
 
-function startApp() {
-  hideError("setupError");
-  hideError("scanError");
+<body>
+  <main class="app">
+    <header>
+      <div class="logo">ST</div>
+      <div>
+        <h1>SirTros NFC Drop</h1>
+        <div class="subtitle">Přilož. Propoj. Sdílej okamžik.</div>
+      </div>
+    </header>
 
-  myNameValue = cleanName($("nameInput").value);
-  if (!myNameValue) {
-    showError("setupError","Nejdřív zadej své jméno.");
-    $("nameInput").focus();
-    return;
-  }
-  if (!window.supabase || !window.supabase.createClient) {
-    showError("setupError","Supabase knihovna se nenačetla. Zkontroluj internet.");
-    return;
-  }
+    <section class="panel" id="setupPanel">
+      <h2>Začni propojením telefonů</h2>
+      <p>
+        První telefon vytvoří místnost. Na druhém telefonu zadej stejný
+        kód. Potom oba telefony načtou kompatibilní NFC tag.
+      </p>
 
-  $("startButton").disabled = true;
-  $("setupStatus").textContent = "Připojuji se…";
-  $("myName").textContent = myNameValue;
-  showScreen("scanScreen");
+      <form id="startForm">
+        <label for="displayName">Tvoje jméno</label>
+        <input
+          id="displayName"
+          maxlength="40"
+          autocomplete="nickname"
+          placeholder="Např. SirTros"
+          required
+        >
 
-  // Obojí zahájíme ještě v rámci kliknutí uživatele.
-  enterFullscreen();
-  beginNfcScan();
+        <label for="roomCode">Kód místnosti</label>
+        <input
+          id="roomCode"
+          maxlength="10"
+          autocomplete="off"
+          autocapitalize="characters"
+          placeholder="Prázdné = vytvořit novou"
+        >
 
-  try {
-    client = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+        <button class="button" id="startButton" type="submit">
+          Vytvořit / připojit a spustit
+        </button>
+      </form>
 
-    channel = client.channel(ROOM,{
-      config:{presence:{key:clientId}}
-    });
+      <div class="room-code" id="roomCodeBox">
+        <div class="subtitle">KÓD PRO DRUHÝ TELEFON</div>
+        <div class="code" id="roomCodeDisplay">--------</div>
+        <button class="small-button" id="copyCodeButton" type="button">
+          Kopírovat kód
+        </button>
+        <p style="margin-bottom:0">
+          Otevři stejnou aplikaci na druhém telefonu a zadej tento kód.
+        </p>
+      </div>
+    </section>
 
-    channel.on("presence",{event:"sync"},syncRemote);
-    channel.on("presence",{event:"join"},syncRemote);
-    channel.on("presence",{event:"leave"},syncRemote);
+    <section class="panel hidden" id="sessionPanel">
+      <div class="status">
+        <span class="status-dot" id="connectionDot"></span>
+        <div>
+          <div class="status-title" id="connectionTitle">Připojování…</div>
+          <div class="status-detail" id="connectionDetail">
+            Navazuji spojení se Supabase.
+          </div>
+        </div>
+      </div>
 
-    channel.subscribe(async status => {
-      if (status === "SUBSCRIBED") {
-        $("connectionLabel").textContent = "PŘIPOJENO K SUPABASE";
+      <h2>Oba telefony</h2>
+      <p>Jakmile oba načtou NFC, synchronizace je dokončena.</p>
+
+      <div class="devices">
+        <div class="device" id="deviceCard1">
+          <div class="phone-icon">▯</div>
+          <div class="device-name" id="deviceName1">Mobil 1</div>
+          <div class="device-label">První zařízení</div>
+          <div class="device-state" id="deviceState1">Čeká na připojení</div>
+        </div>
+
+        <div class="device" id="deviceCard2">
+          <div class="phone-icon">▯</div>
+          <div class="device-name" id="deviceName2">Mobil 2</div>
+          <div class="device-label">Druhé zařízení</div>
+          <div class="device-state" id="deviceState2">Čeká na připojení</div>
+        </div>
+      </div>
+
+      <div class="nfc-animation">
+        <div class="nfc-symbol">⌁</div>
+      </div>
+
+      <button class="button" id="nfcButton" type="button">
+        Aktivovat NFC čtečku
+      </button>
+
+      <div class="success" id="successBox">
+        <div class="success-title">Propojení dokončeno!</div>
+        <p style="margin-bottom:0">
+          Oba telefony načetly NFC. SirTros NFC Drop je synchronizovaný.
+        </p>
+      </div>
+
+      <button class="button secondary" id="fullscreenButton" type="button">
+        Zapnout celou obrazovku
+      </button>
+    </section>
+
+    <div class="footer">
+      SirTros NFC Drop · Supabase Realtime nahrazeno bezpečným RPC pollingem<br>
+      Pro NFC je potřeba podporovaný Android, kompatibilní tag a HTTPS.
+    </div>
+  </main>
+
+  <script>
+    "use strict";
+
+    // SirTros Games — veřejná klientská konfigurace Supabase.
+    // Nikdy sem nevkládej service_role ani secret key.
+    const SUPABASE_URL =
+      "https://hyesvlmxxbcalvdxztjb.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_oQlSIfPZL5EVfKVpFhgTYg_hJN1wKoC";
+
+    const supabase = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY,
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false
+        },
+        global: {
+          headers: { "X-Client-Info": "sirtros-nfc-drop" }
+        }
+      }
+    );
+
+    const $ = (id) => document.getElementById(id);
+
+    let sessionCode = "";
+    let displayName = "";
+    let deviceId = "";
+    let joined = false;
+    let reader = null;
+    let scanStarted = false;
+    let pendingScan = false;
+    let alreadyMarkedScanned = false;
+    let pollTimer = null;
+    let heartbeatTimer = null;
+    let polling = false;
+
+    function getDeviceId() {
+      try {
+        let id = localStorage.getItem("sirtros_nfc_device_id");
+
+        if (!id) {
+          id = crypto.randomUUID();
+          localStorage.setItem("sirtros_nfc_device_id", id);
+        }
+
+        return id;
+      } catch {
+        return crypto.randomUUID();
+      }
+    }
+
+    function randomRoomCode() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      const bytes = crypto.getRandomValues(new Uint8Array(8));
+
+      return Array.from(bytes, (byte) => chars[byte % chars.length]).join("");
+    }
+
+    function setConnection(title, detail, state = "normal") {
+      $("connectionTitle").textContent = title;
+      $("connectionDetail").textContent = detail;
+
+      const dot = $("connectionDot");
+      dot.className = "status-dot";
+
+      if (state === "good") dot.classList.add("good");
+      if (state === "bad") dot.classList.add("bad");
+    }
+
+    function showNfcError(message) {
+      setConnection("NFC se nepodařilo spustit", message, "bad");
+      $("nfcButton").disabled = false;
+      $("nfcButton").textContent = "Zkusit NFC znovu";
+    }
+
+    function showNfcStatus(message) {
+      setConnection("NFC čtečka", message, "normal");
+    }
+
+    async function requestFullscreen() {
+      try {
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch {
+        // Některé prohlížeče fullscreen nepovolí.
+      }
+    }
+
+    async function markNfcScanned() {
+      if (!joined) {
+        pendingScan = true;
+        return;
+      }
+
+      if (alreadyMarkedScanned) return;
+      alreadyMarkedScanned = true;
+
+      const { error } = await supabase.rpc("nfc_drop_mark_scanned", {
+        p_session_code: sessionCode,
+        p_device_id: deviceId
+      });
+
+      if (error) {
+        alreadyMarkedScanned = false;
+        showNfcError(
+          "NFC bylo načteno, ale Supabase změnu neuložil: " +
+          error.message
+        );
+        return;
+      }
+
+      setConnection(
+        "NFC načteno",
+        "Čekám, až NFC načte i druhý telefon.",
+        "good"
+      );
+
+      await refreshSession();
+    }
+
+    async function startNfc() {
+      if (scanStarted) {
+        showNfcStatus("Čtečka už běží. Přilož telefon k NFC tagu.");
+        return;
+      }
+
+      if (!window.isSecureContext) {
+        showNfcError(
+          "Tato stránka není v zabezpečeném kontextu. " +
+          "Otevři ji přes HTTPS, ne jako soubor file://."
+        );
+        return;
+      }
+
+      if (!("NDEFReader" in window)) {
+        showNfcError(
+          "Tento prohlížeč nepodporuje Web NFC. " +
+          "Použij Chrome na telefonu s Androidem, zapni NFC v nastavení " +
+          "telefonu a otevři aplikaci přes HTTPS. Na běžném PC Chrome " +
+          "Web NFC není dostupné."
+        );
+        return;
+      }
+
+      try {
+        reader = new NDEFReader();
+
+        reader.addEventListener("reading", () => {
+          void markNfcScanned();
+        });
+
+        reader.addEventListener("readingerror", () => {
+          showNfcError(
+            "Tag se nepodařilo přečíst. Zkus jiný kompatibilní NFC tag NDEF."
+          );
+        });
+
+        // Důležité: scan() se volá přímo po klepnutí uživatele.
+        // Prohlížeč může jinak oprávnění odmítnout.
+        const scanPromise = reader.scan();
+
+        scanStarted = true;
+        $("nfcButton").disabled = true;
+        $("nfcButton").textContent = "NFC čtečka je aktivní";
+
+        await scanPromise;
+
+        showNfcStatus("Připraveno. Přilož telefon k NFC tagu.");
+      } catch (error) {
+        scanStarted = false;
+
+        const errors = {
+          NotAllowedError:
+            "Přístup k NFC byl zamítnut. Povol přístup a zkus to znovu.",
+          NotSupportedError:
+            "Toto zařízení nebo NFC operace nejsou podporované.",
+          NotReadableError:
+            "NFC čtečka není dostupná. Zkontroluj nastavení NFC telefonu.",
+          AbortError:
+            "Čtení NFC bylo přerušeno. Zkus ho spustit znovu."
+        };
+
+        showNfcError(
+          (errors[error?.name] ||
+            "NFC se nepodařilo spustit: " +
+            (error?.message || "neznámá chyba")) +
+          " [" + (error?.name || "UnknownError") + "]"
+        );
+      }
+    }
+
+    async function refreshSession() {
+      if (!joined || polling) return;
+      polling = true;
+
+      try {
+        const { data, error } = await supabase.rpc(
+          "nfc_drop_get_session",
+          { p_session_code: sessionCode }
+        );
+
+        if (error) {
+          setConnection(
+            "Chyba Supabase",
+            error.message,
+            "bad"
+          );
+          return;
+        }
+
+        const devices = Array.isArray(data) ? data.slice() : [];
+
+        // Obě zařízení používají stejné pořadí, aby jejich označení
+        // Mobil 1 / Mobil 2 bylo konzistentní na obou telefonech.
+        devices.sort((a, b) =>
+          String(a.device_id).localeCompare(String(b.device_id))
+        );
+
+        const mine = devices.find((d) => d.device_id === deviceId);
+        const other = devices.find((d) => d.device_id !== deviceId);
+
+        const ordered = [mine, other].filter(Boolean);
+
+        renderDevice(1, ordered[0] || null);
+        renderDevice(2, ordered[1] || null);
+
+        if (devices.length >= 2 && devices.every((d) => d.nfc_scanned)) {
+          $("successBox").classList.add("visible");
+          setConnection(
+            "Oba telefony jsou synchronizované",
+            "Obě zařízení načetla NFC.",
+            "good"
+          );
+        } else {
+          $("successBox").classList.remove("visible");
+
+          if (!other) {
+            setConnection(
+              "Místnost je připravená",
+              "Pošli kód druhému telefonu a počkej, až se připojí.",
+              "good"
+            );
+          } else if (!mine?.nfc_scanned) {
+            setConnection(
+              "Čekám na NFC",
+              "Přilož tento telefon ke kompatibilnímu NFC tagu."
+            );
+          } else {
+            setConnection(
+              "Čekám na druhý telefon",
+              "Tvoje NFC už je načtené. Druhý telefon musí udělat totéž.",
+              "good"
+            );
+          }
+        }
+      } catch (error) {
+        setConnection(
+          "Chyba spojení",
+          error?.message || "Nepodařilo se načíst místnost.",
+          "bad"
+        );
+      } finally {
+        polling = false;
+      }
+    }
+
+    function renderDevice(number, device) {
+      const card = $("deviceCard" + number);
+      const name = $("deviceName" + number);
+      const state = $("deviceState" + number);
+
+      if (!device) {
+        card.classList.remove("scanned");
+        name.textContent = "Čeká na telefon";
+        state.textContent = "Zatím nepřipojeno";
+        return;
+      }
+
+      name.textContent = device.display_name || "Telefon";
+      state.textContent = device.nfc_scanned
+        ? "✓ NFC načteno"
+        : "Čeká na NFC";
+
+      card.classList.toggle("scanned", Boolean(device.nfc_scanned));
+    }
+
+    async function joinRoom() {
+      const { error } = await supabase.rpc("nfc_drop_join", {
+        p_session_code: sessionCode,
+        p_device_id: deviceId,
+        p_display_name: displayName
+      });
+
+      if (error) {
+        throw new Error("Supabase: " + error.message);
+      }
+
+      joined = true;
+
+      $("setupPanel").classList.add("hidden");
+      $("sessionPanel").classList.remove("hidden");
+      $("roomCodeBox").classList.add("visible");
+      $("roomCodeDisplay").textContent = sessionCode;
+
+      setConnection(
+        "Připojeno k místnosti",
+        "Sdílej kód s druhým telefonem.",
+        "good"
+      );
+
+      if (pendingScan) {
+        pendingScan = false;
+        await markNfcScanned();
+      }
+
+      await refreshSession();
+
+      if (pollTimer) clearInterval(pollTimer);
+      if (heartbeatTimer) clearInterval(heartbeatTimer);
+
+      pollTimer = setInterval(() => {
+        void refreshSession();
+      }, 1500);
+
+      heartbeatTimer = setInterval(async () => {
+        if (!joined) return;
+
+        const { error: heartbeatError } = await supabase.rpc(
+          "nfc_drop_heartbeat",
+          {
+            p_session_code: sessionCode,
+            p_device_id: deviceId
+          }
+        );
+
+        if (heartbeatError) {
+          setConnection(
+            "Problém se spojením",
+            heartbeatError.message,
+            "bad"
+          );
+        }
+      }, 15000);
+    }
+
+    async function startApp(event) {
+      event.preventDefault();
+
+      if (!window.supabase) {
+        setConnection(
+          "Nepodařilo se načíst knihovnu",
+          "Zkontroluj internetové připojení a obnov stránku.",
+          "bad"
+        );
+        return;
+      }
+
+      displayName = $("displayName").value.trim().slice(0, 40);
+
+      if (!displayName) {
+        $("displayName").focus();
+        return;
+      }
+
+      const typedCode = $("roomCode").value.trim().toUpperCase();
+      sessionCode = typedCode || randomRoomCode();
+
+      if (!/^[A-Z0-9]{6,10}$/.test(sessionCode)) {
+        setConnection(
+          "Neplatný kód",
+          "Kód musí mít 6 až 10 písmen nebo číslic.",
+          "bad"
+        );
+        return;
+      }
+
+      deviceId = getDeviceId();
+
+      $("startButton").disabled = true;
+      $("startButton").textContent = "Připojuji…";
+
+      // Tyto požadavky začínají přímo po klepnutí uživatele.
+      // NFC scan tak může zachovat potřebný uživatelský kontext.
+      void requestFullscreen();
+      void startNfc();
+
+      try {
+        await joinRoom();
+      } catch (error) {
+        joined = false;
         $("startButton").disabled = false;
-        await updatePresence();
-      } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-        $("connectionLabel").textContent = "CHYBA PŘIPOJENÍ";
-        showError("scanError","Supabase Realtime se nepřipojil. Zkontroluj internet a nastavení projektu.");
-        $("startButton").disabled = false;
+        $("startButton").textContent = "Zkusit znovu";
+
+        setConnection(
+          "Nepodařilo se připojit",
+          error?.message || "Zkontroluj připojení a nastavení Supabase.",
+          "bad"
+        );
+
+        $("setupPanel").classList.remove("hidden");
+        $("sessionPanel").classList.add("hidden");
+      }
+    }
+
+    $("startForm").addEventListener("submit", (event) => {
+      void startApp(event);
+    });
+
+    $("nfcButton").addEventListener("click", () => {
+      void startNfc();
+    });
+
+    $("fullscreenButton").addEventListener("click", () => {
+      void requestFullscreen();
+    });
+
+    $("copyCodeButton").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(sessionCode);
+        $("copyCodeButton").textContent = "Kód zkopírován ✓";
+      } catch {
+        $("copyCodeButton").textContent =
+          "Kód opiš: " + sessionCode;
       }
     });
-  } catch (error) {
-    console.error(error);
-    showError("scanError","Nepodařilo se inicializovat Supabase.");
-    $("startButton").disabled = false;
-  }
-}
 
-$("startButton").addEventListener("click",startApp);
-$("nameInput").addEventListener("keydown",event => {
-  if (event.key === "Enter") startApp();
-});
-</script>
+    window.addEventListener("beforeunload", () => {
+      if (pollTimer) clearInterval(pollTimer);
+      if (heartbeatTimer) clearInterval(heartbeatTimer);
+    });
+  </script>
 </body>
 </html>
