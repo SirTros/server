@@ -1,1158 +1,2793 @@
 <!DOCTYPE html>
 <html lang="cs">
-
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SirTros-city Bank ATM</title>
 
-<title>Pokladna OBCHOD</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0..1,0..200" rel="stylesheet">
 
 <style>
-
 *{
-box-sizing:border-box;
-font-family:Arial,Segoe UI;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+    font-family:Segoe UI,Arial,sans-serif;
 }
 
-
-body{
-
-margin:0;
-background:#000;
-color:white;
-overflow:auto;
-
+html,body{
+    width:100%;
+    height:100%;
+    margin:0;
+    overflow:hidden;
+    background:#000;
+    color:#fff;
 }
-
-
-
-#fullscreenIntro,
-#loginScreen,
-#app{
-
-display:none;
-width:100%;
-min-height:100vh;
-
-flex-direction:column;
-align-items:center;
-justify-content:center;
-
-}
-
-
-
-#fullscreenIntro{
-
-display:flex;
-
-}
-
-
-
-
-#fullscreenButton{
-
-padding:15px 30px;
-
-font-size:20px;
-
-font-weight:bold;
-
-background:cyan;
-
-color:black;
-
-border:0;
-
-border-radius:10px;
-
-}
-
-
-
-
-
-#loadingScreen{
-
-display:none;
-
-position:fixed;
-
-inset:0;
-
-background:black;
-
-z-index:999;
-
-flex-direction:column;
-
-align-items:center;
-
-justify-content:center;
-
-font-size:25px;
-
-}
-
-
-
-
-.loaderBar{
-
-width:300px;
-
-height:12px;
-
-border:2px solid white;
-
-border-radius:10px;
-
-overflow:hidden;
-
-}
-
-
-
-.loaderFill{
-
-height:100%;
-
-width:0%;
-
-background:cyan;
-
-}
-
-
-
-@keyframes load{
-
-from{
-
-width:0%;
-
-}
-
-to{
-
-width:100%;
-
-}
-
-}
-
-
-
-
-
-h1{
-
-color:cyan;
-
-}
-
-
-
-
-
-input{
-
-background:#111;
-
-color:white;
-
-border:2px solid cyan;
-
-border-radius:8px;
-
-padding:15px;
-
-font-size:20px;
-
-text-align:center;
-
-}
-
-
-
-
 
 button{
-
-cursor:pointer;
-
-font-weight:bold;
-
-border:0;
-
-border-radius:8px;
-
+    font-family:inherit;
+    border:0;
+    cursor:pointer;
+    color:#fff;
 }
 
-
-
-
-
-#loginButton,
-.pro-button{
-
-background:cyan;
-
-color:black;
-
-padding:12px 25px;
-
-margin:10px;
-
+.material-symbols-outlined{
+    font-family:'Material Symbols Outlined';
+    font-weight:normal;
+    font-style:normal;
+    font-size:25px;
+    line-height:1;
+    letter-spacing:normal;
+    text-transform:none;
+    display:inline-block;
+    white-space:nowrap;
+    word-wrap:normal;
+    direction:ltr;
+    -webkit-font-feature-settings:'liga';
+    -webkit-font-smoothing:antialiased;
 }
 
-
-
-
-
-#app{
-
-display:none;
-
-justify-content:flex-start;
-
-padding:20px;
-
-position:relative;
-
+#atm{
+    width:100vw;
+    height:100vh;
+    background:
+        radial-gradient(circle at 50% 35%,#17364b 0%,#0a1824 30%,#03080d 70%,#000 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
-
-
-
-.lock-button{
-
-position:absolute;
-
-top:15px;
-
-right:15px;
-
-background:white;
-
-color:black;
-
-padding:10px;
-
+.machine{
+    width:calc(100vw - 12px);
+    height:calc(100vh - 12px);
+    padding:10px;
+    border-radius:28px;
+    border:1px solid #29475b;
+    background:linear-gradient(145deg,#121e28,#04090d);
+    box-shadow:
+        inset 0 0 100px #000,
+        0 0 50px rgba(0,190,255,.08);
+    display:flex;
+    flex-direction:column;
 }
 
-
-
-
-#kodScanner{
-
-width:300px;
-
-margin:20px;
-
+.header{
+    height:62px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    padding:0 20px;
+    border:1px solid #28475d;
+    border-radius:18px;
+    background:#07111a;
+    box-shadow:0 8px 25px #000;
 }
 
-
-
-
-
-#zboziList{
-
-list-style:none;
-
-padding:0;
-
-width:95%;
-
-max-width:700px;
-
+.logo{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    color:#00c8ff;
+    font-size:20px;
+    font-weight:700;
 }
 
-
-
-
-
-.addedItem{
-
-background:#111;
-
-border-left:4px solid cyan;
-
-padding:12px;
-
-margin:8px;
-
-border-radius:8px;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
+.logo .material-symbols-outlined{
+    font-size:31px;
 }
 
-
-
-
-.removeBtn{
-
-background:red;
-
-color:white;
-
-padding:8px;
-
+.screen{
+    position:relative;
+    flex:1;
+    min-height:0;
+    margin-top:10px;
+    overflow:hidden;
+    border:2px solid #173b50;
+    border-radius:21px;
+    background:
+        radial-gradient(circle at 50% 10%,#102b40,#07141e 45%,#020609);
+    box-shadow:inset 0 0 90px #000;
 }
 
-
-
-
-
-#celkovaCena{
-
-color:cyan;
-
+.page{
+    position:absolute;
+    inset:0;
+    padding:25px;
+    overflow:auto;
+    opacity:0;
+    visibility:hidden;
+    transform:scale(.97) translateY(15px);
+    transition:
+        opacity .35s ease,
+        transform .35s ease,
+        visibility .35s;
 }
 
-
-
-
-
-#paymentWindow{
-
-display:none;
-
-position:fixed;
-
-top:50%;
-
-left:50%;
-
-transform:translate(-50%,-50%);
-
-background:#111;
-
-border:2px solid cyan;
-
-padding:25px;
-
-border-radius:10px;
-
-z-index:2000;
-
+.page.active{
+    opacity:1;
+    visibility:visible;
+    transform:scale(1) translateY(0);
+    z-index:5;
 }
 
-
-
-
-
-#zaplatitMessage{
-
-display:none;
-
-position:fixed;
-
-top:50%;
-
-left:50%;
-
-transform:translate(-50%,-50%);
-
-background:lime;
-
-color:black;
-
-padding:30px;
-
-font-size:30px;
-
-border-radius:15px;
-
-z-index:3000;
-
+.center{
+    width:min(850px,100%);
+    margin:auto;
+    text-align:center;
 }
 
+/* START */
 
+.start{
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
 
+.atmIcon{
+    font-size:110px!important;
+    color:#00c8ff;
+    filter:drop-shadow(0 0 25px rgba(0,200,255,.4));
+    animation:atmPulse 3s ease-in-out infinite;
+}
+
+@keyframes atmPulse{
+    0%,100%{
+        transform:translateY(0) scale(1);
+        filter:drop-shadow(0 0 20px rgba(0,200,255,.3));
+    }
+    50%{
+        transform:translateY(-8px) scale(1.035);
+        filter:drop-shadow(0 0 35px rgba(0,200,255,.55));
+    }
+}
+
+.startTitle{
+    margin-top:15px;
+    font-size:clamp(35px,5vw,60px);
+    font-weight:700;
+    line-height:1.05;
+}
+
+.startTitle span{
+    color:#00c8ff;
+}
+
+.startSub{
+    margin-top:14px;
+    color:#8098a8;
+    font-size:14px;
+}
+
+.startButton{
+    position:relative;
+    overflow:hidden;
+    width:min(500px,100%);
+    margin-top:30px;
+    padding:19px;
+    border-radius:16px;
+    border:1px solid #39c8ef;
+    background:linear-gradient(135deg,#006cff,#00c8ff);
+    font-size:16px;
+    font-weight:700;
+    box-shadow:0 0 30px rgba(0,190,255,.2);
+    transition:.2s;
+}
+
+.startButton:hover{
+    transform:translateY(-3px);
+    box-shadow:0 0 45px rgba(0,190,255,.35);
+}
+
+.startButton:active{
+    transform:scale(.97);
+}
+
+.startButton::after{
+    content:"";
+    position:absolute;
+    width:45%;
+    height:150%;
+    top:-25%;
+    left:-70%;
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.3),
+        transparent
+    );
+    transform:skewX(-20deg);
+    animation:shine 3.5s infinite;
+}
+
+@keyframes shine{
+    0%,45%{left:-70%}
+    70%,100%{left:140%}
+}
+
+/* LOGIN */
+
+.login{
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.loginBox{
+    width:min(850px,100%);
+    text-align:center;
+}
+
+.keyIcon{
+    display:inline-block;
+    color:#00c8ff;
+    font-size:75px!important;
+    filter:drop-shadow(0 0 18px rgba(0,200,255,.35));
+    animation:keyShake .75s ease-in-out infinite;
+}
+
+@keyframes keyShake{
+    0%,100%{
+        transform:rotate(0);
+    }
+    20%{
+        transform:rotate(-5deg);
+    }
+    40%{
+        transform:rotate(4deg);
+    }
+    60%{
+        transform:rotate(-3deg);
+    }
+    80%{
+        transform:rotate(2deg);
+    }
+}
+
+h1{
+    margin:10px 0;
+    color:#00c8ff;
+    font-size:34px;
+}
+
+.sub{
+    color:#8097a7;
+}
+
+.nameDisplay{
+    width:min(520px,100%);
+    margin:18px auto 12px;
+    min-height:60px;
+    padding:15px 20px;
+    border-radius:16px;
+    border:1px solid #294b61;
+    background:#02080d;
+    color:#fff;
+    font-size:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:inset 0 0 25px #000;
+}
+
+.placeholder{
+    color:#435968;
+    font-size:14px;
+}
+
+.pinDisplay{
+    width:250px;
+    min-height:55px;
+    margin:12px auto 15px;
+    padding:13px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:9px;
+    border-radius:15px;
+    border:1px solid #294b61;
+    background:#02080d;
+    box-shadow:inset 0 0 25px #000;
+}
+
+.dot{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:#00c8ff;
+    box-shadow:0 0 12px #00c8ff;
+    animation:dotIn .15s ease;
+}
+
+@keyframes dotIn{
+    from{
+        transform:scale(.2);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+/* KEYBOARD */
+
+.keyboard{
+    width:min(650px,100%);
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(10,1fr);
+    gap:7px;
+}
+
+.key{
+    min-height:53px;
+    border:1px solid #28485d;
+    border-radius:11px;
+    background:linear-gradient(145deg,#102432,#07121a);
+    font-size:16px;
+    font-weight:600;
+    transition:
+        transform .1s,
+        background .15s,
+        border-color .15s;
+    box-shadow:0 5px 13px #000;
+}
+
+.key:hover{
+    border-color:#00c8ff;
+    background:#0d2637;
+}
+
+.key:active{
+    transform:scale(.91);
+    background:#006cff;
+}
+
+.key.action{
+    color:#00c8ff;
+}
+
+.key.delete{
+    color:#ff6878;
+}
+
+.key.ok{
+    color:#00ff91;
+}
+
+.key.space{
+    grid-column:span 6;
+}
+
+.key.backspace{
+    grid-column:span 2;
+}
+
+.key.enter{
+    grid-column:span 2;
+}
+
+.numberKeyboard{
+    width:min(350px,100%);
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:9px;
+}
+
+.numberKeyboard .key{
+    min-height:61px;
+    font-size:22px;
+}
+
+/* HOME */
+
+.home{
+    width:min(1000px,100%);
+    margin:auto;
+}
+
+.welcome{
+    text-align:center;
+}
+
+.welcome h1{
+    font-size:39px;
+}
+
+.balance{
+    margin:20px 0;
+    padding:27px;
+    border-radius:22px;
+    border:1px solid #25536b;
+    background:linear-gradient(145deg,#0d2638,#040b11);
+    text-align:center;
+    box-shadow:inset 0 0 40px #000;
+}
+
+.balanceLabel{
+    color:#8199a9;
+    font-size:11px;
+    letter-spacing:3px;
+}
+
+.balanceValue{
+    margin-top:8px;
+    color:#00ff91;
+    font-size:clamp(40px,6vw,62px);
+    font-weight:700;
+    text-shadow:0 0 25px rgba(0,255,145,.2);
+}
+
+.menuGrid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+}
+
+.menu{
+    min-height:110px;
+    padding:20px;
+    border-radius:19px;
+    border:1px solid #24485f;
+    background:linear-gradient(145deg,#0d202f,#050c12);
+    text-align:left;
+    transition:.2s;
+}
+
+.menu:hover{
+    transform:translateY(-4px);
+    border-color:#00c8ff;
+    box-shadow:0 10px 30px rgba(0,190,255,.08);
+}
+
+.menuIcon{
+    color:#00c8ff;
+    font-size:31px!important;
+}
+
+.menuTitle{
+    display:block;
+    margin-top:9px;
+    font-weight:700;
+    font-size:17px;
+}
+
+.menuDesc{
+    display:block;
+    margin-top:4px;
+    color:#708797;
+    font-size:12px;
+}
+
+.menu.danger{
+    border-color:#4c2730;
+}
+
+.menu.danger .menuIcon{
+    color:#ff6073;
+}
+
+/* CONTENT */
+
+.content{
+    width:min(850px,100%);
+    margin:auto;
+}
+
+.back{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:11px 16px;
+    margin-bottom:14px;
+    border-radius:12px;
+    border:1px solid #29475d;
+    background:#081520;
+    font-weight:700;
+}
+
+.back:hover{
+    border-color:#00c8ff;
+}
+
+.card{
+    padding:22px;
+    margin-bottom:14px;
+    border-radius:20px;
+    border:1px solid #21455c;
+    background:linear-gradient(145deg,#0c1e2d,#050c12);
+}
+
+.textDisplay{
+    width:100%;
+    padding:17px;
+    border-radius:15px;
+    border:1px solid #29485e;
+    background:#02080d;
+    color:#fff;
+    font-size:17px;
+    text-align:center;
+    margin-bottom:12px;
+}
+
+.amountDisplay{
+    margin-top:12px;
+}
+
+.amountDisplay span{
+    color:#00ff91;
+    font-size:35px;
+    font-weight:700;
+}
+
+.primary{
+    width:100%;
+    padding:17px;
+    border-radius:15px;
+    background:linear-gradient(135deg,#006cff,#00c8ff);
+    font-size:16px;
+    font-weight:700;
+    transition:.2s;
+}
+
+.primary:hover{
+    transform:translateY(-2px);
+    filter:brightness(1.08);
+}
+
+.secondary{
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    border-radius:14px;
+    border:1px solid #29475d;
+    background:#081520;
+    font-weight:700;
+}
+
+.confirm{
+    display:none;
+    margin-top:16px;
+    animation:appear .3s ease;
+}
+
+@keyframes appear{
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+.transferInfo{
+    padding:18px;
+    border-radius:15px;
+    background:#02080d;
+    line-height:1.8;
+}
+
+.transferAmount{
+    color:#00ff91;
+    font-size:30px;
+    font-weight:700;
+}
+
+/* HISTORY */
+
+.historyList{
+    max-height:calc(100vh - 220px);
+    overflow:auto;
+}
+
+.historyItem{
+    padding:17px;
+    margin-bottom:10px;
+    border-radius:15px;
+    background:#071521;
+    border:1px solid #1e3b4e;
+    animation:historyIn .3s ease;
+}
+
+@keyframes historyIn{
+    from{
+        opacity:0;
+        transform:translateX(-10px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+.historyItem.out{
+    border-left:4px solid #00c8ff;
+}
+
+.historyItem.in{
+    border-left:4px solid #00ff91;
+}
+
+.historyDate{
+    color:#718999;
+    margin-top:7px;
+    font-size:12px;
+}
+
+/* ACCOUNT */
+
+.accountRow{
+    display:flex;
+    justify-content:space-between;
+    padding:17px 3px;
+    border-bottom:1px solid #1d3443;
+}
+
+.accountRow:last-child{
+    border-bottom:0;
+}
+
+.accountLabel{
+    color:#7891a1;
+}
+
+.accountValue{
+    text-align:right;
+    font-weight:700;
+}
+
+.green{
+    color:#00ff91;
+}
+
+/* SUCCESS */
+
+.success{
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.successIcon{
+    color:#00ff91;
+    font-size:90px!important;
+    animation:successPop .55s ease;
+}
+
+@keyframes successPop{
+    0%{
+        opacity:0;
+        transform:scale(.2) rotate(-15deg);
+    }
+    70%{
+        transform:scale(1.1) rotate(4deg);
+    }
+    100%{
+        opacity:1;
+        transform:scale(1) rotate(0);
+    }
+}
+
+.successTitle{
+    color:#00ff91;
+    font-size:38px;
+}
+
+/* LOGOUT */
+
+.logout{
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.logoutIcon{
+    color:#00c8ff;
+    font-size:85px!important;
+}
+
+/* WARNING */
+
+.warning{
+    flex-shrink:0;
+    margin-top:7px;
+    padding:9px 14px;
+    border-radius:10px;
+    border:1px solid #34312a;
+    background:#0c0c0a;
+    color:#77746b;
+    text-align:center;
+    font-size:10px;
+}
+
+.warning b{
+    color:#aaa699;
+}
+
+/* TOAST */
+
+.toastContainer{
+    position:fixed;
+    top:20px;
+    right:20px;
+    width:min(360px,calc(100vw - 40px));
+    z-index:1000;
+}
+
+.toast{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:15px;
+    margin-bottom:10px;
+    border-radius:15px;
+    border:1px solid #28718c;
+    background:#0a1925;
+    box-shadow:0 15px 40px #000;
+    animation:toastIn .3s ease;
+}
+
+@keyframes toastIn{
+    from{
+        opacity:0;
+        transform:translateX(30px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    .machine{
+        width:100vw;
+        height:100vh;
+        padding:6px;
+        border-radius:18px;
+    }
+
+    .header{
+        height:52px;
+        border-radius:14px;
+        padding:0 13px;
+    }
+
+    .logo{
+        font-size:15px;
+    }
+
+    .logo .material-symbols-outlined{
+        font-size:24px;
+    }
+
+    .screen{
+        margin-top:7px;
+        border-radius:16px;
+    }
+
+    .page{
+        padding:16px 12px;
+    }
+
+    .atmIcon{
+        font-size:75px!important;
+    }
+
+    .startTitle{
+        font-size:31px;
+    }
+
+    .startSub{
+        font-size:12px;
+    }
+
+    .menuGrid{
+        grid-template-columns:1fr;
+    }
+
+    .menu{
+        min-height:82px;
+        padding:15px;
+    }
+
+    .keyboard{
+        grid-template-columns:repeat(5,1fr);
+    }
+
+    .key{
+        min-height:48px;
+        font-size:14px;
+    }
+
+    .key.space{
+        grid-column:span 3;
+    }
+
+    .key.backspace{
+        grid-column:span 1;
+    }
+
+    .key.enter{
+        grid-column:span 1;
+    }
+
+    .numberKeyboard .key{
+        min-height:55px;
+    }
+}
+
+@media(max-height:650px){
+
+    .header{
+        height:47px;
+    }
+
+    .page{
+        padding:11px;
+    }
+
+    .atmIcon{
+        font-size:52px!important;
+    }
+
+    .startTitle{
+        font-size:27px;
+    }
+
+    .startButton{
+        margin-top:15px;
+        padding:14px;
+    }
+
+    .keyIcon{
+        font-size:55px!important;
+    }
+
+    .nameDisplay{
+        min-height:47px;
+        margin:8px auto;
+    }
+
+    .pinDisplay{
+        min-height:44px;
+        margin:7px auto;
+    }
+
+    .keyboard{
+        gap:5px;
+    }
+
+    .key{
+        min-height:42px;
+    }
+
+    .numberKeyboard .key{
+        min-height:45px;
+    }
+
+    .balance{
+        margin:9px 0;
+        padding:15px;
+    }
+
+    .menu{
+        min-height:60px;
+        padding:10px;
+    }
+}
 </style>
-
 </head>
-
 
 <body>
 
+<div id="atm">
 
+<div class="machine">
 
-<div id="fullscreenIntro">
-
-<h2>Kioskový systém</h2>
-
-<button id="fullscreenButton" onclick="requestFullscreenAndLoad()">
-
-AKTIVOVAT POKLADNU
-
-</button>
-
+<div class="header">
+    <div class="logo">
+        <span class="material-symbols-outlined">account_balance</span>
+        <span>SirTros-city Bank</span>
+    </div>
 </div>
 
 
+<div class="screen">
 
 
-<div id="loadingScreen">
+<!-- START -->
 
-Načítání...
+<div id="startPage" class="page active">
 
-<div class="loaderBar">
+<div class="start">
 
-<div class="loaderFill"></div>
+<div class="center">
 
-</div>
-
-</div>
-
-
-
-
-
-<div id="loginScreen">
-
-<h1>Zadejte PIN</h1>
-
-
-<input 
-id="loginInput"
-type="password"
-placeholder="PIN">
-
-
-
-<button id="loginButton" onclick="login()">
-
-VSTOUPIT
-
-</button>
-
-
-</div>
-
-
-
-
-
-
-
-<div id="app">
-
-
-<button class="lock-button" onclick="logout()">
-
-🔒 ZAMKNOUT
-
-</button>
-
-
-
-
-<h1>🛒 POKLADNA</h1>
-
-
-
-
-<input
-
-id="kodScanner"
-
-placeholder="Zadej KÓD + ENTER"
-
-onkeydown="naskenovatKod(event)"
-
->
-
-
-
-
-<ul id="zboziList">
-
-</ul>
-
-
-
-
-<h2 id="celkovaCena">
-
-CELKEM: 0 Kč
-
-</h2>
-
-
-
-
-
-<button class="pro-button"
-
-onclick="openPaymentWindow()">
-
-💳 ZAPLATIT
-
-</button>
-
-
-
-<button class="pro-button"
-
-style="background:red;color:white"
-
-onclick="vymazatKosik()">
-
-🗑 VYMAZAT KOŠÍK
-
-</button>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div id="paymentWindow">
-
-
-<h2>
-
-Celkem:
-
-<span id="cashTotalDisplay">
-
-0 Kč
-
+<span class="material-symbols-outlined atmIcon">
+local_atm
 </span>
 
-</h2>
+<div class="startTitle">
+Vítejte v<br>
+<span>SirTros-city Bank</span>
+</div>
+
+<div class="startSub">
+Pro pokračování se dotkněte obrazovky.
+</div>
+
+<button
+class="startButton"
+onclick="startATM()">
+
+<span class="material-symbols-outlined"
+style="vertical-align:middle;margin-right:7px">
+touch_app
+</span>
+
+DOTKNĚTE SE PRO START
+
+</button>
+
+</div>
+
+</div>
+
+</div>
 
 
+<!-- LOGIN -->
 
-<button class="pro-button"
+<div id="loginPage" class="page">
 
-onclick="finishPayment()">
+<div class="login">
 
-POTVRDIT PLATBU
+<div class="loginBox">
+
+<span class="material-symbols-outlined keyIcon">
+key
+</span>
+
+<h1>Přihlášení klienta</h1>
+
+<p class="sub">
+Nejdříve zadejte své jméno.
+</p>
+
+
+<div id="nameDisplay"
+class="nameDisplay">
+
+<span class="placeholder">
+Jméno klienta
+</span>
+
+</div>
+
+
+<div id="loginKeyboard"
+class="keyboard">
+
+<button class="key" onclick="nameKey('Q')">Q</button>
+<button class="key" onclick="nameKey('W')">W</button>
+<button class="key" onclick="nameKey('E')">E</button>
+<button class="key" onclick="nameKey('R')">R</button>
+<button class="key" onclick="nameKey('T')">T</button>
+<button class="key" onclick="nameKey('Y')">Y</button>
+<button class="key" onclick="nameKey('U')">U</button>
+<button class="key" onclick="nameKey('I')">I</button>
+<button class="key" onclick="nameKey('O')">O</button>
+<button class="key" onclick="nameKey('P')">P</button>
+
+<button class="key" onclick="nameKey('A')">A</button>
+<button class="key" onclick="nameKey('S')">S</button>
+<button class="key" onclick="nameKey('D')">D</button>
+<button class="key" onclick="nameKey('F')">F</button>
+<button class="key" onclick="nameKey('G')">G</button>
+<button class="key" onclick="nameKey('H')">H</button>
+<button class="key" onclick="nameKey('J')">J</button>
+<button class="key" onclick="nameKey('K')">K</button>
+<button class="key" onclick="nameKey('L')">L</button>
+<button class="key" onclick="nameKey('M')">M</button>
+
+<button class="key" onclick="nameKey('Z')">Z</button>
+<button class="key" onclick="nameKey('X')">X</button>
+<button class="key" onclick="nameKey('C')">C</button>
+<button class="key" onclick="nameKey('V')">V</button>
+<button class="key" onclick="nameKey('B')">B</button>
+<button class="key" onclick="nameKey('N')">N</button>
+
+<button
+class="key space"
+onclick="nameKey(' ')">
+SPACE
+</button>
+
+<button
+class="key backspace delete"
+onclick="nameBackspace()">
+
+<span class="material-symbols-outlined">
+backspace
+</span>
+
+</button>
+
+<button
+class="key enter ok"
+onclick="showPinKeyboard()">
+
+<span class="material-symbols-outlined">
+arrow_forward
+</span>
+
+</button>
+
+</div>
+
+
+<!-- PIN -->
+
+<div id="pinArea" style="display:none">
+
+<p class="sub">
+Nyní zadejte PIN.
+</p>
+
+<div
+id="pinDisplay"
+class="pinDisplay">
+
+<span class="placeholder">
+PIN
+</span>
+
+</div>
+
+<div class="numberKeyboard">
+
+<button class="key" onclick="pinKey('1')">1</button>
+<button class="key" onclick="pinKey('2')">2</button>
+<button class="key" onclick="pinKey('3')">3</button>
+
+<button class="key" onclick="pinKey('4')">4</button>
+<button class="key" onclick="pinKey('5')">5</button>
+<button class="key" onclick="pinKey('6')">6</button>
+
+<button class="key" onclick="pinKey('7')">7</button>
+<button class="key" onclick="pinKey('8')">8</button>
+<button class="key" onclick="pinKey('9')">9</button>
+
+<button
+class="key delete"
+onclick="pinBackspace()">
+
+<span class="material-symbols-outlined">
+backspace
+</span>
+
+</button>
+
+<button class="key" onclick="pinKey('0')">0</button>
+
+<button
+class="key ok"
+onclick="login()">
+
+<span class="material-symbols-outlined">
+check
+</span>
+
+</button>
+
+</div>
+
+<button
+class="secondary"
+onclick="backToName()">
+
+<span class="material-symbols-outlined"
+style="vertical-align:middle">
+arrow_back
+</span>
+
+ ZPĚT NA JMÉNO
+
+</button>
+
+</div>
+
+
+<div
+id="loginMessage"
+style="min-height:24px;margin-top:10px;color:#ff6878">
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- HOME -->
+
+<div id="homePage" class="page">
+
+<div class="home">
+
+<div class="welcome">
+
+<h1>
+Vítejte 👋
+</h1>
+
+<div
+id="welcomeName"
+class="sub">
+-
+</div>
+
+</div>
+
+
+<div class="balance">
+
+<div class="balanceLabel">
+AKTUÁLNÍ ZŮSTATEK
+</div>
+
+<div
+id="homeBalance"
+class="balanceValue">
+0 Kč
+</div>
+
+</div>
+
+
+<div class="menuGrid">
+
+<button
+class="menu"
+onclick="showPage('transferPage')">
+
+<span class="material-symbols-outlined menuIcon">
+payments
+</span>
+
+<span class="menuTitle">
+Převod peněz
+</span>
+
+<span class="menuDesc">
+Poslat peníze jinému klientovi
+</span>
 
 </button>
 
 
+<button
+class="menu"
+onclick="
+showPage('historyPage');
+loadHistory();
+">
 
-<button class="pro-button"
+<span class="material-symbols-outlined menuIcon">
+history
+</span>
 
-onclick="closePaymentWindow()">
+<span class="menuTitle">
+Historie
+</span>
+
+<span class="menuDesc">
+Pohyby na účtu
+</span>
+
+</button>
+
+
+<button
+class="menu"
+onclick="showPage('accountPage')">
+
+<span class="material-symbols-outlined menuIcon">
+account_circle
+</span>
+
+<span class="menuTitle">
+Můj účet
+</span>
+
+<span class="menuDesc">
+Informace o účtu
+</span>
+
+</button>
+
+
+<button
+class="menu danger"
+onclick="logout()">
+
+<span class="material-symbols-outlined menuIcon">
+logout
+</span>
+
+<span class="menuTitle">
+Ukončit
+</span>
+
+<span class="menuDesc">
+Bezpečně ukončit relaci
+</span>
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- TRANSFER -->
+
+<div id="transferPage" class="page">
+
+<div class="content">
+
+<button
+class="back"
+onclick="showPage('homePage')">
+
+<span class="material-symbols-outlined">
+arrow_back
+</span>
 
 ZPĚT
 
 </button>
 
+<div class="card">
+
+<h1>
+<span class="material-symbols-outlined"
+style="vertical-align:middle;font-size:34px">
+payments
+</span>
+
+Převod peněz
+</h1>
+
+<p class="sub">
+Komu chcete poslat peníze?
+</p>
+
+
+<div
+id="receiverDisplay"
+class="textDisplay">
+Jméno příjemce
+</div>
+
+
+<div
+id="receiverKeyboard"
+class="keyboard">
+
+<button class="key" onclick="receiverKey('Q')">Q</button>
+<button class="key" onclick="receiverKey('W')">W</button>
+<button class="key" onclick="receiverKey('E')">E</button>
+<button class="key" onclick="receiverKey('R')">R</button>
+<button class="key" onclick="receiverKey('T')">T</button>
+<button class="key" onclick="receiverKey('Y')">Y</button>
+<button class="key" onclick="receiverKey('U')">U</button>
+<button class="key" onclick="receiverKey('I')">I</button>
+<button class="key" onclick="receiverKey('O')">O</button>
+<button class="key" onclick="receiverKey('P')">P</button>
+
+<button class="key" onclick="receiverKey('A')">A</button>
+<button class="key" onclick="receiverKey('S')">S</button>
+<button class="key" onclick="receiverKey('D')">D</button>
+<button class="key" onclick="receiverKey('F')">F</button>
+<button class="key" onclick="receiverKey('G')">G</button>
+<button class="key" onclick="receiverKey('H')">H</button>
+<button class="key" onclick="receiverKey('J')">J</button>
+<button class="key" onclick="receiverKey('K')">K</button>
+<button class="key" onclick="receiverKey('L')">L</button>
+<button class="key" onclick="receiverKey('M')">M</button>
+
+<button class="key" onclick="receiverKey('Z')">Z</button>
+<button class="key" onclick="receiverKey('X')">X</button>
+<button class="key" onclick="receiverKey('C')">C</button>
+<button class="key" onclick="receiverKey('V')">V</button>
+<button class="key" onclick="receiverKey('B')">B</button>
+<button class="key" onclick="receiverKey('N')">N</button>
+
+<button
+class="key space"
+onclick="receiverKey(' ')">
+SPACE
+</button>
+
+<button
+class="key backspace delete"
+onclick="receiverBackspace()">
+
+<span class="material-symbols-outlined">
+backspace
+</span>
+
+</button>
+
+<button
+class="key enter ok"
+onclick="prepareTransfer()">
+
+<span class="material-symbols-outlined">
+arrow_forward
+</span>
+
+</button>
 
 </div>
 
 
+<div
+id="amountCard"
+style="display:none;margin-top:15px">
 
+<div
+id="amountDisplay"
+class="textDisplay">
+Částka
+</div>
 
+<div class="numberKeyboard">
 
+<button class="key" onclick="amountKey('1')">1</button>
+<button class="key" onclick="amountKey('2')">2</button>
+<button class="key" onclick="amountKey('3')">3</button>
 
-<div id="zaplatitMessage">
+<button class="key" onclick="amountKey('4')">4</button>
+<button class="key" onclick="amountKey('5')">5</button>
+<button class="key" onclick="amountKey('6')">6</button>
 
-ZAPLACENO ✔
+<button class="key" onclick="amountKey('7')">7</button>
+<button class="key" onclick="amountKey('8')">8</button>
+<button class="key" onclick="amountKey('9')">9</button>
+
+<button
+class="key delete"
+onclick="amountBackspace()">
+
+<span class="material-symbols-outlined">
+backspace
+</span>
+
+</button>
+
+<button class="key" onclick="amountKey('0')">0</button>
+
+<button
+class="key ok"
+onclick="prepareTransfer()">
+
+<span class="material-symbols-outlined">
+check
+</span>
+
+</button>
+
+</div>
 
 </div>
 
 
+<div
+id="transferMessage"
+style="min-height:24px;margin-top:10px;color:#ff6878">
+</div>
 
 
+<div
+id="transferConfirm"
+class="confirm">
+
+<h2>
+<span class="material-symbols-outlined"
+style="vertical-align:middle">
+lock
+</span>
+
+Potvrzení platby
+</h2>
+
+<div
+id="transferInfo"
+class="transferInfo">
+</div>
+
+<p class="sub">
+Potvrďte převod PINem.
+</p>
+
+
+<div
+id="transferPinDisplay"
+class="pinDisplay">
+
+<span class="placeholder">
+PIN
+</span>
+
+</div>
+
+
+<div class="numberKeyboard">
+
+<button class="key" onclick="transferPinKey('1')">1</button>
+<button class="key" onclick="transferPinKey('2')">2</button>
+<button class="key" onclick="transferPinKey('3')">3</button>
+
+<button class="key" onclick="transferPinKey('4')">4</button>
+<button class="key" onclick="transferPinKey('5')">5</button>
+<button class="key" onclick="transferPinKey('6')">6</button>
+
+<button class="key" onclick="transferPinKey('7')">7</button>
+<button class="key" onclick="transferPinKey('8')">8</button>
+<button class="key" onclick="transferPinKey('9')">9</button>
+
+<button class="key delete" onclick="transferPinBackspace()">
+<span class="material-symbols-outlined">backspace</span>
+</button>
+
+<button class="key" onclick="transferPinKey('0')">0</button>
+
+<button class="key ok" onclick="finishTransfer()">
+<span class="material-symbols-outlined">check</span>
+</button>
+
+</div>
+
+<button
+class="secondary"
+onclick="cancelTransfer()">
+ZRUŠIT
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- HISTORY -->
+
+<div id="historyPage" class="page">
+
+<div class="content">
+
+<button
+class="back"
+onclick="showPage('homePage')">
+
+<span class="material-symbols-outlined">
+arrow_back
+</span>
+
+ZPĚT
+
+</button>
+
+<h1>
+<span class="material-symbols-outlined"
+style="vertical-align:middle;font-size:34px">
+history
+</span>
+
+Historie účtu
+</h1>
+
+<p class="sub">
+Přehled pohybů na účtu
+</p>
+
+<div
+id="historyList"
+class="historyList">
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ACCOUNT -->
+
+<div id="accountPage" class="page">
+
+<div class="content">
+
+<button
+class="back"
+onclick="showPage('homePage')">
+
+<span class="material-symbols-outlined">
+arrow_back
+</span>
+
+ZPĚT
+
+</button>
+
+<h1>
+<span class="material-symbols-outlined"
+style="vertical-align:middle;font-size:34px">
+account_circle
+</span>
+
+Můj účet
+</h1>
+
+<div class="card">
+
+<div class="accountRow">
+<span class="accountLabel">Jméno</span>
+<span id="accountName" class="accountValue">-</span>
+</div>
+
+<div class="accountRow">
+<span class="accountLabel">Účet</span>
+<span id="accountNumber" class="accountValue">-</span>
+</div>
+
+<div class="accountRow">
+<span class="accountLabel">Zůstatek</span>
+<span id="accountBalance" class="accountValue green">0 Kč</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- SUCCESS -->
+
+<div id="successPage" class="page">
+
+<div class="success">
+
+<div class="center">
+
+<span class="material-symbols-outlined successIcon">
+check_circle
+</span>
+
+<h1 class="successTitle">
+Převod dokončen
+</h1>
+
+<p id="successInfo" class="sub"></p>
+
+<button
+class="primary"
+onclick="showPage('homePage')">
+
+<span class="material-symbols-outlined"
+style="vertical-align:middle">
+home
+</span>
+
+ZPĚT DO MENU
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- LOGOUT -->
+
+<div id="logoutPage" class="page">
+
+<div class="logout">
+
+<div class="center">
+
+<span class="material-symbols-outlined logoutIcon">
+logout
+</span>
+
+<h1>
+Relace ukončena
+</h1>
+
+<p class="sub">
+Děkujeme za použití bankomatu.
+</p>
+
+<button
+class="primary"
+onclick="returnToLogin()">
+
+<span class="material-symbols-outlined"
+style="vertical-align:middle">
+login
+</span>
+
+NOVÉ PŘIHLÁŠENÍ
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<div class="warning">
+<span class="material-symbols-outlined"
+style="font-size:13px;vertical-align:middle">
+warning
+</span>
+
+<b>SIMULACE</b> · Tento bankomat je pouze součástí projektu.
+Peníze zobrazené zde nejsou skutečné a nemají žádnou reálnou hodnotu.
+
+</div>
+
+</div>
+
+</div>
+
+
+<div id="toastContainer" class="toastContainer"></div>
 
 
 <script>
 
-
-
-const produktyData=[
-
-
-{kod:1,nazev:"Clever pitná voda jemně perlivá 0,5l",cena:9.90},
-
-{kod:2,nazev:"Vincentka 250ml",cena:24.90},
-
-{kod:3,nazev:"Vlhčené ubrousky antibakteriální",cena:34.90},
-
-{kod:4,nazev:"Nástavec na mop",cena:169.90},
-
-{kod:5,nazev:"Toaletní papír 1ks",cena:8.90},
-
-{kod:6,nazev:"Balíček kapesníků 3 vrstvý 10ks",cena:29.90},
-
-{kod:7,nazev:"Krabice kapesníků",cena:34.90},
-
-{kod:8,nazev:"Rohlík Vita 4ks",cena:22.90},
-
-{kod:9,nazev:"Houska 4ks",cena:19.90},
-
-{kod:10,nazev:"Kubík Water Pomeranč Perlivý",cena:19.90},
-
-{kod:11,nazev:"Dupetky Rajče a Bylinky 70g",cena:24.90},
-
-{kod:12,nazev:"Okurka s obalem 1ks",cena:24.90},
-
-{kod:13,nazev:"Okurka nakládačka",cena:8.90},
-
-{kod:14,nazev:"Banán",cena:7.90},
-
-{kod:15,nazev:"Jablko",cena:8.90},
-
-{kod:16,nazev:"Orbit máta",cena:29.90},
-
-{kod:17,nazev:"Mentos rainbow",cena:21.90},
-
-{kod:18,nazev:"Birell světlý nealkoholický",cena:19.90},
-
-{kod:19,nazev:"Tatra plnotučné mléko",cena:29.90},
-
-{kod:20,nazev:"Křehké plátky různé příchutě",cena:34.90},
-
-{kod:21,nazev:"Mrkvový džus 100% šťáva Ovocňák",cena:39.90},
-
-{kod:22,nazev:"Nescafé crema 100g",cena:149.90}
-
-
-
-];
-
-
-let celkem=0;
-
-
-
-function naskenovatKod(event){
-
-
-if(event.key==="Enter"){
-
-
-let kod=document
-.getElementById("kodScanner")
-.value
-.trim();
-
-
-
-let produkt=produktyData.find(p=>
-
-String(p.kod)===kod
-
+const supabaseClient = supabase.createClient(
+    "https://knpkaoddloxtzdtzwjle.supabase.co",
+    "sb_publishable_6_Qh3KpwhahrywU2o2irDg_ffK-MP3z"
 );
 
 
+let currentClient=null;
 
-if(produkt){
+let loginName="";
 
-pridatProdukt(produkt);
+let loginPin="";
+
+let receiverName="";
+
+let transferAmount=0;
+
+let amountText="";
+
+let transferPin="";
+
+let transferReceiver=null;
 
 
-}else{
+/* =========================
+   NAVIGACE
+========================= */
 
+function showPage(id){
 
-alert("❌ Kód neexistuje");
+    document
+        .querySelectorAll(".page")
+        .forEach(p=>{
+            p.classList.remove("active");
+        });
 
+    const page=document.getElementById(id);
+
+    if(page){
+        page.classList.add("active");
+    }
 
 }
 
 
+/* =========================
+   START
+========================= */
 
-document
-.getElementById("kodScanner")
-.value="";
+function startATM(){
 
+    loginName="";
+    loginPin="";
+
+    updateNameDisplay();
+    updatePinDisplay();
+
+    document
+        .getElementById("pinArea")
+        .style.display="none";
+
+    document
+        .getElementById("loginKeyboard")
+        .style.display="grid";
+
+    document
+        .getElementById("loginMessage")
+        .textContent="";
+
+    showPage("loginPage");
 
 }
 
 
+/* =========================
+   JMENO
+========================= */
+
+function nameKey(char){
+
+    if(loginName.length>=30){
+        return;
+    }
+
+    loginName+=char;
+
+    updateNameDisplay();
+
 }
 
 
-function pridatProdukt(produkt){
+function nameBackspace(){
+
+    loginName=
+        loginName.slice(0,-1);
+
+    updateNameDisplay();
+
+}
 
 
-    let existuje = [...document.querySelectorAll(".addedItem")]
-    .find(item => item.dataset.kod == produkt.kod);
+function updateNameDisplay(){
+
+    const box=
+        document.getElementById("nameDisplay");
+
+    if(!loginName){
+
+        box.innerHTML=
+            '<span class="placeholder">Jméno klienta</span>';
+
+        return;
+
+    }
+
+    box.textContent=loginName;
+
+}
 
 
+/* =========================
+   PIN
+========================= */
 
-    if(existuje){
+function showPinKeyboard(){
 
+    if(!loginName.trim()){
 
-        let pocet = Number(existuje.dataset.pocet) + 1;
+        document
+            .getElementById("loginMessage")
+            .textContent="❌ Nejdříve zadejte jméno.";
 
+        return;
 
-        existuje.dataset.pocet = pocet;
+    }
 
+    document
+        .getElementById("loginKeyboard")
+        .style.display="none";
 
+    document
+        .getElementById("pinArea")
+        .style.display="block";
 
-        existuje.querySelector(".kusy").innerText =
-        pocet + " ks";
+    loginPin="";
 
+    updatePinDisplay();
 
-
-        existuje.querySelector(".cena").innerText =
-        (pocet * produkt.cena).toFixed(2) + " Kč";
-
-
-
-    }else{
-
-
-        let li=document.createElement("li");
-
-
-        li.className="addedItem";
-
-
-        li.dataset.kod=produkt.kod;
+}
 
 
-        li.dataset.pocet=1;
+function backToName(){
+
+    document
+        .getElementById("pinArea")
+        .style.display="none";
+
+    document
+        .getElementById("loginKeyboard")
+        .style.display="grid";
+
+}
 
 
+function pinKey(number){
 
-        li.innerHTML=`
+    if(loginPin.length>=8){
+        return;
+    }
 
-        <span>
+    loginPin+=number;
 
-        ${produkt.kod} - ${produkt.nazev}
+    updatePinDisplay();
 
-        </span>
-
-
-
-        <span>
+}
 
 
-        <b class="kusy">
+function pinBackspace(){
 
-        1 ks
+    loginPin=
+        loginPin.slice(0,-1);
 
-        </b>
+    updatePinDisplay();
 
+}
+
+
+function updatePinDisplay(){
+
+    const box=
+        document.getElementById("pinDisplay");
+
+    if(!loginPin){
+
+        box.innerHTML=
+            '<span class="placeholder">PIN</span>';
+
+        return;
+
+    }
+
+    box.innerHTML=
+        Array(loginPin.length)
+        .fill('<span class="dot"></span>')
+        .join("");
+
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+async function login(){
+
+    const message=
+        document.getElementById("loginMessage");
+
+    if(!loginName.trim() || !loginPin){
+
+        message.textContent=
+            "❌ Vyplňte jméno a PIN.";
+
+        return;
+
+    }
+
+    message.textContent=
+        "⏳ Ověřování...";
+
+
+    const {data,error}=
+        await supabaseClient
+        .from("clients")
+        .select("*")
+        .ilike("name",loginName.trim())
+        .eq("pin",loginPin)
+        .maybeSingle();
+
+
+    if(error || !data){
+
+        message.textContent=
+            "❌ Nesprávné jméno nebo PIN.";
+
+        loginPin="";
+
+        updatePinDisplay();
+
+        return;
+
+    }
+
+
+    currentClient=data;
+
+    loginName="";
+    loginPin="";
+
+    updateAccount();
+
+    toast("Přihlášení úspěšné");
+
+    showPage("homePage");
+
+}
+
+
+/* =========================
+   ÚČET
+========================= */
+
+function formatMoney(value){
+
+    return Number(value||0)
+        .toLocaleString("cs-CZ")+" Kč";
+
+}
+
+
+function updateAccount(){
+
+    if(!currentClient){
+        return;
+    }
+
+    const balance=
+        formatMoney(currentClient.money);
+
+
+    document
+        .getElementById("welcomeName")
+        .textContent=
+        currentClient.name;
+
+
+    document
+        .getElementById("homeBalance")
+        .textContent=
+        balance;
+
+
+    document
+        .getElementById("accountName")
+        .textContent=
+        currentClient.name;
+
+
+    document
+        .getElementById("accountNumber")
+        .textContent=
+        currentClient.account ||
+        "STCB-"+currentClient.id;
+
+
+    document
+        .getElementById("accountBalance")
+        .textContent=
+        balance;
+
+}
+
+
+/* =========================
+   PŘÍJEMCE
+========================= */
+
+function receiverKey(char){
+
+    if(receiverName.length>=30){
+        return;
+    }
+
+    receiverName+=char;
+
+    updateReceiverDisplay();
+
+}
+
+
+function receiverBackspace(){
+
+    receiverName=
+        receiverName.slice(0,-1);
+
+    updateReceiverDisplay();
+
+}
+
+
+function updateReceiverDisplay(){
+
+    document
+        .getElementById("receiverDisplay")
+        .textContent=
+        receiverName || "Jméno příjemce";
+
+}
+
+
+/* =========================
+   ČÁSTKA
+========================= */
+
+function amountKey(number){
+
+    if(amountText.length>=9){
+        return;
+    }
+
+    amountText+=number;
+
+    document
+        .getElementById("amountDisplay")
+        .textContent=
+        Number(amountText)
+        .toLocaleString("cs-CZ")+" Kč";
+
+}
+
+
+function amountBackspace(){
+
+    amountText=
+        amountText.slice(0,-1);
+
+    document
+        .getElementById("amountDisplay")
+        .textContent=
+        amountText
+        ? Number(amountText).toLocaleString("cs-CZ")+" Kč"
+        : "Částka";
+
+}
+
+
+/* =========================
+   PŘÍPRAVA PŘEVODU
+========================= */
+
+async function prepareTransfer(){
+
+    const message=
+        document.getElementById("transferMessage");
+
+
+    if(!receiverName.trim()){
+
+        message.textContent=
+            "❌ Zadejte jméno příjemce.";
+
+        return;
+
+    }
+
+
+    if(!amountText){
+
+        document
+            .getElementById("amountCard")
+            .style.display="block";
+
+        message.textContent=
+            "💰 Zadejte částku.";
+
+        return;
+
+    }
+
+
+    transferAmount=
+        Number(amountText);
+
+
+    if(transferAmount<=0){
+
+        message.textContent=
+            "❌ Neplatná částka.";
+
+        return;
+
+    }
+
+
+    if(transferAmount >
+        Number(currentClient.money||0)){
+
+        message.textContent=
+            "❌ Nemáte dostatek peněz.";
+
+        return;
+
+    }
+
+
+    const {data,error}=
+        await supabaseClient
+        .from("clients")
+        .select("*")
+        .ilike("name",receiverName.trim())
+        .maybeSingle();
+
+
+    if(error || !data){
+
+        message.textContent=
+            "❌ Příjemce neexistuje.";
+
+        return;
+
+    }
+
+
+    if(data.id===currentClient.id){
+
+        message.textContent=
+            "❌ Nemůžete poslat peníze sami sobě.";
+
+        return;
+
+    }
+
+
+    transferReceiver=data;
+
+    transferPin="";
+
+    document
+        .getElementById("transferInfo")
+        .innerHTML=`
+
+        👤 Příjemce:
+        <b>${escapeHTML(data.name)}</b>
+
+        <br><br>
+
+        💰 Částka:
+
+        <div class="transferAmount">
+        ${formatMoney(transferAmount)}
+        </div>
 
         <br>
 
-
-        <b class="cena">
-
-        ${produkt.cena.toFixed(2)} Kč
-
+        💳 Zůstatek po převodu:
+        <b>
+        ${formatMoney(
+            Number(currentClient.money)-
+            transferAmount
+        )}
         </b>
+    `;
 
 
-
-        <br>
-
-
-        <button
-
-        class="removeBtn"
-
-        onclick="odebratProdukt(this,${produkt.kod})">
-
-        SMAZAT
-
-        </button>
+    document
+        .getElementById("transferConfirm")
+        .style.display="block";
 
 
+    updateTransferPinDisplay();
 
-        </span>
+}
 
+
+/* =========================
+   TRANSFER PIN
+========================= */
+
+function transferPinKey(number){
+
+    if(transferPin.length>=8){
+        return;
+    }
+
+    transferPin+=number;
+
+    updateTransferPinDisplay();
+
+}
+
+
+function transferPinBackspace(){
+
+    transferPin=
+        transferPin.slice(0,-1);
+
+    updateTransferPinDisplay();
+
+}
+
+
+function updateTransferPinDisplay(){
+
+    const box=
+        document.getElementById("transferPinDisplay");
+
+    if(!transferPin){
+
+        box.innerHTML=
+            '<span class="placeholder">PIN</span>';
+
+        return;
+
+    }
+
+    box.innerHTML=
+        Array(transferPin.length)
+        .fill('<span class="dot"></span>')
+        .join("");
+
+}
+
+
+/* =========================
+   DOKONČENÍ PŘEVODU
+========================= */
+
+async function finishTransfer(){
+
+    if(!currentClient ||
+       !transferReceiver){
+
+        return;
+
+    }
+
+
+    if(transferPin!==String(currentClient.pin)){
+
+        toast("Špatný PIN");
+
+        transferPin="";
+
+        updateTransferPinDisplay();
+
+        return;
+
+    }
+
+
+    const {data:sender,error:senderError}=
+        await supabaseClient
+        .from("clients")
+        .select("*")
+        .eq("id",currentClient.id)
+        .maybeSingle();
+
+
+    if(senderError || !sender){
+
+        toast("Účet se nepodařilo načíst.");
+
+        return;
+
+    }
+
+
+    const {data:receiver,error:receiverError}=
+        await supabaseClient
+        .from("clients")
+        .select("*")
+        .eq("id",transferReceiver.id)
+        .maybeSingle();
+
+
+    if(receiverError || !receiver){
+
+        toast("Příjemce se nepodařilo načíst.");
+
+        return;
+
+    }
+
+
+    const senderMoney=
+        Number(sender.money||0);
+
+    const receiverMoney=
+        Number(receiver.money||0);
+
+
+    if(senderMoney<transferAmount){
+
+        toast("Nedostatek peněz.");
+
+        return;
+
+    }
+
+
+    const date=
+        new Date()
+        .toLocaleString("cs-CZ");
+
+
+    const senderHistory=
+        Array.isArray(sender.history)
+        ? [...sender.history]
+        : [];
+
+
+    const receiverHistory=
+        Array.isArray(receiver.history)
+        ? [...receiver.history]
+        : [];
+
+
+    senderHistory.push({
+
+        text:
+            "Odesláno "+
+            formatMoney(transferAmount)+
+            " uživateli "+
+            receiver.name,
+
+        date:date
+
+    });
+
+
+    receiverHistory.push({
+
+        text:
+            "Přijato "+
+            formatMoney(transferAmount)+
+            " od "+
+            sender.name,
+
+        date:date
+
+    });
+
+
+    const newSenderMoney=
+        senderMoney-transferAmount;
+
+
+    const newReceiverMoney=
+        receiverMoney+transferAmount;
+
+
+    const {error:updateSenderError}=
+        await supabaseClient
+        .from("clients")
+        .update({
+
+            money:newSenderMoney,
+
+            history:senderHistory
+
+        })
+        .eq("id",sender.id);
+
+
+    if(updateSenderError){
+
+        console.error(updateSenderError);
+
+        toast("Převod se nepodařilo dokončit.");
+
+        return;
+
+    }
+
+
+    const {error:updateReceiverError}=
+        await supabaseClient
+        .from("clients")
+        .update({
+
+            money:newReceiverMoney,
+
+            history:receiverHistory
+
+        })
+        .eq("id",receiver.id);
+
+
+    if(updateReceiverError){
+
+        console.error(updateReceiverError);
+
+        toast("Příjemce se nepodařilo aktualizovat.");
+
+        return;
+
+    }
+
+
+    await supabaseClient
+        .from("transfers")
+        .insert({
+
+            sender:sender.name,
+
+            receiver:receiver.name,
+
+            amount:transferAmount,
+
+            date:date
+
+        });
+
+
+    currentClient={
+        ...sender,
+        money:newSenderMoney,
+        history:senderHistory
+    };
+
+
+    updateAccount();
+
+
+    document
+        .getElementById("successInfo")
+        .innerHTML=`
+
+        Peníze byly odeslány klientovi
+        <b>${escapeHTML(receiver.name)}</b>.
+
+        <br><br>
+
+        Částka:
+        <b>${formatMoney(transferAmount)}</b>
+
+        <br><br>
+
+        Nový zůstatek:
+        <b>${formatMoney(newSenderMoney)}</b>
+
+    `;
+
+
+    toast("Převod dokončen");
+
+
+    receiverName="";
+    amountText="";
+    transferPin="";
+    transferReceiver=null;
+    transferAmount=0;
+
+
+    updateReceiverDisplay();
+
+
+    document
+        .getElementById("amountCard")
+        .style.display="none";
+
+
+    document
+        .getElementById("transferConfirm")
+        .style.display="none";
+
+
+    showPage("successPage");
+
+}
+
+
+/* =========================
+   CANCEL
+========================= */
+
+function cancelTransfer(){
+
+    transferPin="";
+
+    transferReceiver=null;
+
+    transferAmount=0;
+
+    updateTransferPinDisplay();
+
+    document
+        .getElementById("transferConfirm")
+        .style.display="none";
+
+}
+
+
+/* =========================
+   HISTORIE
+========================= */
+
+async function loadHistory(){
+
+    if(!currentClient){
+        return;
+    }
+
+
+    const box=
+        document.getElementById("historyList");
+
+
+    box.innerHTML=
+        "Načítám historii...";
+
+
+    const {data,error}=
+        await supabaseClient
+        .from("clients")
+        .select("history")
+        .eq("id",currentClient.id)
+        .maybeSingle();
+
+
+    if(error){
+
+        box.innerHTML=
+            "Historii se nepodařilo načíst.";
+
+        return;
+
+    }
+
+
+    const history=
+        Array.isArray(data?.history)
+        ? data.history
+        : [];
+
+
+    currentClient.history=history;
+
+
+    if(!history.length){
+
+        box.innerHTML=
+            `<div class="card">
+            <span class="material-symbols-outlined"
+            style="color:#607785">
+            receipt_long
+            </span>
+            <br><br>
+            Na účtu zatím nejsou žádné pohyby.
+            </div>`;
+
+        return;
+
+    }
+
+
+    box.innerHTML="";
+
+
+    history
+    .slice()
+    .reverse()
+    .forEach(item=>{
+
+        const div=
+            document.createElement("div");
+
+
+        const text=
+            String(item.text||"");
+
+
+        const outgoing=
+            text.includes("Odesláno");
+
+
+        div.className=
+            "historyItem "+
+            (outgoing?"out":"in");
+
+
+        div.innerHTML=`
+
+            <div>
+                <span class="material-symbols-outlined"
+                style="vertical-align:middle;font-size:19px">
+                ${outgoing?"north_east":"south_west"}
+                </span>
+
+                ${escapeHTML(text)}
+            </div>
+
+            <div class="historyDate">
+                ${escapeHTML(item.date)}
+            </div>
 
         `;
 
 
+        box.appendChild(div);
 
-        document
-        .getElementById("zboziList")
-        .prepend(li);
+    });
+
+}
 
 
+/* =========================
+   AUTO REFRESH
+========================= */
 
+setInterval(async()=>{
+
+    if(!currentClient){
+        return;
     }
 
 
-
-    celkem += produkt.cena;
-
-
-    aktualizovat();
-
-
-}
+    const {data,error}=
+        await supabaseClient
+        .from("clients")
+        .select("*")
+        .eq("id",currentClient.id)
+        .maybeSingle();
 
 
+    if(!error && data){
 
+        currentClient=data;
 
-
-
-
-function odebratProdukt(tlacitko,kod){
-
-
-
-    let item = tlacitko.parentElement.parentElement;
-
-
-
-    let produkt = produktyData.find(p =>
-
-    p.kod == kod
-
-    );
-
-
-
-    let pocet = Number(item.dataset.pocet);
-
-
-
-
-
-    if(pocet > 1){
-
-
-        pocet--;
-
-
-        item.dataset.pocet=pocet;
-
-
-
-        item.querySelector(".kusy").innerText =
-        pocet + " ks";
-
-
-
-        item.querySelector(".cena").innerText =
-        (pocet * produkt.cena).toFixed(2)+" Kč";
-
-
-
-        celkem -= produkt.cena;
-
-
-
-    }else{
-
-
-        item.remove();
-
-
-        celkem -= produkt.cena;
-
+        updateAccount();
 
     }
 
+},5000);
 
 
-    aktualizovat();
-
-
-}
-
-
-
-
-
-
-
-function vymazatKosik(){
-
-
-
-    document
-    .getElementById("zboziList")
-    .innerHTML="";
-
-
-
-    celkem=0;
-
-
-
-    aktualizovat();
-
-
-
-}
-
-
-
-
-
-
-
-function aktualizovat(){
-
-
-
-    document
-    .getElementById("celkovaCena")
-    .innerText =
-
-    "CELKEM: " + celkem.toFixed(2) + " Kč";
-
-
-
-
-    document
-    .getElementById("cashTotalDisplay")
-    .innerText =
-
-    celkem.toFixed(2) + " Kč";
-
-
-
-}
-
-
-// FULLSCREEN + LOADING
-
-async function requestFullscreenAndLoad(){
-
-
-    if(document.documentElement.requestFullscreen){
-
-        await document.documentElement.requestFullscreen();
-
-    }
-
-
-
-    document.getElementById("fullscreenIntro")
-    .style.display="none";
-
-
-
-    document.getElementById("loadingScreen")
-    .style.display="flex";
-
-
-
-    document.querySelector(".loaderFill")
-    .style.animation="load 1s forwards";
-
-
-
-    setTimeout(()=>{
-
-
-        document.getElementById("loadingScreen")
-        .style.display="none";
-
-
-
-        document.getElementById("loginScreen")
-        .style.display="flex";
-
-
-
-    },1000);
-
-
-}
-
-
-
-
-
-
-
-// LOGIN PIN
-
-function login(){
-
-
-    let pin=document
-    .getElementById("loginInput")
-    .value;
-
-
-
-    if(pin==="153500"){
-
-
-        document.getElementById("loginScreen")
-        .style.display="none";
-
-
-
-        document.getElementById("app")
-        .style.display="flex";
-
-
-
-        document
-        .getElementById("kodScanner")
-        .focus();
-
-
-
-    }else{
-
-
-        alert("❌ Špatný PIN");
-
-
-    }
-
-
-
-    document
-    .getElementById("loginInput")
-    .value="";
-
-
-}
-
-
-
-
-
-
-
-
-// PLATBA
-
-
-function openPaymentWindow(){
-
-
-    if(celkem>0){
-
-
-        document
-        .getElementById("paymentWindow")
-        .style.display="block";
-
-
-    }else{
-
-
-        alert("Košík je prázdný");
-
-
-    }
-
-
-}
-
-
-
-
-
-
-function closePaymentWindow(){
-
-
-    document
-    .getElementById("paymentWindow")
-    .style.display="none";
-
-
-}
-
-
-
-
-
-
-function finishPayment(){
-
-
-
-    closePaymentWindow();
-
-
-
-    document
-    .getElementById("zaplatitMessage")
-    .style.display="block";
-
-
-
-
-    setTimeout(()=>{
-
-
-
-        document
-        .getElementById("zaplatitMessage")
-        .style.display="none";
-
-
-
-        vymazatKosik();
-
-
-
-    },2000);
-
-
-
-}
-
-
-
-
-
-
-
-// ZAMKNOUT
-
+/* =========================
+   LOGOUT
+========================= */
 
 function logout(){
 
+    currentClient=null;
 
+    transferPin="";
 
-    document
-    .getElementById("app")
-    .style.display="none";
+    transferReceiver=null;
 
-
-
-    document
-    .getElementById("fullscreenIntro")
-    .style.display="flex";
-
-
-
-    if(document.fullscreenElement){
-
-
-        document.exitFullscreen();
-
-
-    }
-
+    showPage("logoutPage");
 
 }
 
 
+function returnToLogin(){
+
+    loginName="";
+    loginPin="";
+    receiverName="";
+    amountText="";
+    transferPin="";
+
+    document
+        .getElementById("nameDisplay")
+        .innerHTML=
+        '<span class="placeholder">Jméno klienta</span>';
 
 
+    document
+        .getElementById("loginMessage")
+        .textContent="";
 
+
+    document
+        .getElementById("loginKeyboard")
+        .style.display="grid";
+
+
+    document
+        .getElementById("pinArea")
+        .style.display="none";
+
+
+    showPage("loginPage");
+
+}
+
+
+/* =========================
+   SECURITY / HTML
+========================= */
+
+function escapeHTML(value){
+
+    return String(value??"")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+function toast(text){
+
+    const container=
+        document.getElementById("toastContainer");
+
+
+    const toastElement=
+        document.createElement("div");
+
+
+    toastElement.className="toast";
+
+
+    toastElement.innerHTML=`
+
+        <span class="material-symbols-outlined">
+        info
+        </span>
+
+        <span>
+        ${escapeHTML(text)}
+        </span>
+
+    `;
+
+
+    container.appendChild(toastElement);
+
+
+    setTimeout(()=>{
+        toastElement.remove();
+    },3000);
+
+}
 
 </script>
 
-
 </body>
-
 </html>
