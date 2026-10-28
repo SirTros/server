@@ -3,165 +3,55 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080b12">
 <title>SirTros Face AI</title>
-
 <style>
-:root {
-  color-scheme: dark;
-  --bg: #080b12;
-  --panel: #111725;
-  --line: #252f42;
-  --green: #62f5bd;
-  --blue: #69a7ff;
-  --text: #f4f6ff;
-  --muted: #8d99ad;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-header {
-  padding: 20px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.brand { display: flex; align-items: center; gap: 11px; }
-.logo {
-  width: 44px; height: 44px;
-  border-radius: 15px;
-  display: grid; place-items: center;
-  color: #06120e;
-  background: linear-gradient(135deg, var(--green), #64a7ff);
-  font-size: 23px; font-weight: 900;
-}
-h1 { font-size: 18px; margin: 0; letter-spacing: -.5px; }
-.sub { color: var(--muted); font-size: 12px; margin-top: 3px; }
-.pill {
-  font-size: 11px; color: var(--green);
-  border: 1px solid var(--line);
-  border-radius: 30px; padding: 8px 10px;
-  white-space: nowrap;
-}
-main { max-width: 700px; margin: auto; padding: 0 13px 25px; }
-.camera {
-  position: relative; overflow: hidden;
-  background: #020407;
-  border: 1px solid var(--line);
-  border-radius: 23px;
-  aspect-ratio: 3 / 4;
-  max-height: 65vh;
-  margin: auto;
-}
-video, canvas {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-canvas { pointer-events: none; }
-.placeholder {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column;
-  justify-content: center; align-items: center;
-  text-align: center; padding: 25px; gap: 12px;
-  color: var(--muted);
-}
-.camera-icon { font-size: 52px; }
-.placeholder strong { color: var(--text); }
-.placeholder p { font-size: 13px; line-height: 1.7; margin: 0; }
-.overlay-top {
-  position: absolute; top: 12px; left: 12px; right: 12px;
-  display: flex; justify-content: space-between; gap: 8px;
-  pointer-events: none;
-}
-.tag {
-  background: #080b12dc;
-  border: 1px solid #ffffff20;
-  padding: 8px 10px; border-radius: 10px;
-  font-size: 11px; backdrop-filter: blur(10px);
-}
-.dot {
-  display: inline-block; width: 7px; height: 7px;
-  background: var(--green); border-radius: 50%;
-  margin-right: 6px;
-}
-.controls { display: flex; gap: 9px; margin: 13px 0; }
-button {
-  flex: 1; min-height: 48px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 12px;
-  color: var(--text); background: var(--panel);
-  font: inherit; font-weight: 650; font-size: 13px;
-}
-button.primary {
-  background: var(--green); color: #07130e; border: none;
-}
-button:disabled { opacity: .4; }
-.card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 19px;
-  padding: 16px; margin-top: 12px;
-}
-.heading {
-  display: flex; align-items: center;
-  justify-content: space-between; gap: 10px;
-}
-h2 { font-size: 14px; margin: 0; }
-.muted { font-size: 11px; color: var(--muted); }
-.status {
-  background: #080d16; color: var(--muted);
-  font-size: 12px; line-height: 1.7;
-  padding: 12px; border-radius: 12px; margin-top: 13px;
-}
-.stat-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 10px; margin-top: 13px;
-}
-.stat {
-  background: #080d16; padding: 14px;
-  border-radius: 13px;
-}
-.stat-label { color: var(--muted); font-size: 11px; }
-.stat-value { font-size: 24px; font-weight: 750; margin-top: 5px; }
-.green { color: var(--green); }
-.blue { color: var(--blue); }
-.person {
-  display: flex; align-items: center; gap: 12px;
-  padding: 13px 0; border-bottom: 1px solid var(--line);
-}
-.person:last-child { border: 0; padding-bottom: 0; }
-.person-icon {
-  width: 42px; height: 42px; display: grid; place-items: center;
-  background: #1b2a3c; border-radius: 13px; font-size: 20px;
-}
-.person-info { flex: 1; }
-.person-title { font-weight: 700; font-size: 13px; }
-.person-desc { color: var(--muted); font-size: 11px; margin-top: 4px; }
-footer {
-  text-align: center; color: #657187;
-  font-size: 10px; line-height: 1.8; padding: 22px 5px;
-}
-@media (min-width: 600px) {
-  .camera { aspect-ratio: 16 / 10; max-height: 65vh; }
-}
+:root{color-scheme:dark;--bg:#080b12;--panel:#111725;--line:#273247;--green:#62f5bd;--blue:#68a5ff;--muted:#95a1b5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#f4f6ff;font-family:system-ui,-apple-system,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:19px 15px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--green),var(--blue));color:#07120e;font-size:23px;font-weight:900}
+h1{font-size:17px;margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}
+.pill{font-size:10px;border:1px solid var(--line);border-radius:20px;padding:8px;color:var(--green);white-space:nowrap}
+main{max-width:700px;margin:auto;padding:0 13px 25px}
+.camera{position:relative;overflow:hidden;background:#020408;border:1px solid var(--line);border-radius:23px;aspect-ratio:3/4;max-height:62vh}
+video,.overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.overlay{pointer-events:none}
+.placeholder{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;text-align:center;padding:25px;color:var(--muted)}
+.placeholder .symbol{font-size:53px;color:var(--green)}
+.placeholder strong{color:#fff}
+.placeholder p{font-size:12px;line-height:1.7;margin:0}
+.top{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
+.tag{font-size:10px;padding:8px 10px;border-radius:10px;background:#080b12df;border:1px solid #ffffff20;backdrop-filter:blur(8px)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px}
+.controls{display:flex;gap:9px;margin:13px 0}
+button{flex:1;min-height:47px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:#fff;font:600 13px system-ui;padding:12px}
+button.primary{background:var(--green);color:#06120e;border:0}
+button:disabled{opacity:.4}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:15px;margin-top:12px}
+.heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h2{font-size:13px;margin:0}.muted{font-size:10px;color:var(--muted)}
+.status{margin-top:12px;padding:12px;background:#080d16;border-radius:12px;font-size:12px;line-height:1.7;color:var(--muted);overflow-wrap:anywhere}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.stat{background:#080d16;padding:13px;border-radius:12px}
+.stat-label{font-size:10px;color:var(--muted)}
+.stat-value{font-size:23px;font-weight:750;margin-top:5px}
+.green{color:var(--green)}.blue{color:var(--blue)}
+.result{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}
+.result:last-child{border-bottom:0}
+.faceicon{width:40px;height:40px;border-radius:12px;background:#1a293b;display:grid;place-items:center;font-size:19px}
+.result-info{flex:1;min-width:0}.result-title{font-size:12px;font-weight:700}.result-desc{font-size:10px;color:var(--muted);margin-top:4px}
+footer{text-align:center;padding:20px 5px;color:#718097;font-size:10px;line-height:1.8}
+@media(min-width:600px){.camera{aspect-ratio:16/10;max-height:65vh}}
 </style>
 </head>
 <body>
 <header>
   <div class="brand">
     <div class="logo">S</div>
-    <div>
-      <h1>SirTros Face AI</h1>
-      <div class="sub">Inteligentní detekce obličeje</div>
-    </div>
+    <div><h1>SirTros Face AI</h1><div class="sub">Live Face Scanner</div></div>
   </div>
   <div class="pill" id="modelState">NAČÍTÁNÍ AI</div>
 </header>
@@ -169,332 +59,364 @@ footer {
 <main>
   <div class="camera">
     <video id="video" autoplay muted playsinline></video>
-    <canvas id="canvas"></canvas>
-
-    <div class="placeholder" id="placeholder">
-      <div class="camera-icon">◎</div>
-      <strong>Kamera je připravena</strong>
-      <p>Spusť kameru a namiř ji na obličej. AI ho označí zaměřovacím kroužkem.</p>
+    <canvas id="overlay" class="overlay"></canvas>
+    <div id="placeholder" class="placeholder">
+      <div class="symbol">◎</div>
+      <strong>Čekám na spuštění skeneru</strong>
+      <p>AI bude průběžně analyzovat obraz kamery a zaměřovat nalezené obličeje.</p>
     </div>
-
-    <div class="overlay-top">
+    <div class="top">
       <div class="tag"><span class="dot"></span><span id="live">PŘIPRAVENO</span></div>
-      <div class="tag" id="faceCount">0 obličejů</div>
+      <div class="tag" id="countTag">0 obličejů</div>
     </div>
   </div>
 
   <div class="controls">
-    <button class="primary" id="start" disabled>▶ Spustit kameru</button>
+    <button id="start" class="primary" disabled>▶ Spustit skenování</button>
     <button id="stop" disabled>■ Zastavit</button>
   </div>
 
   <div class="card">
-    <div class="heading">
-      <h2>📡 Analýza kamery</h2>
-      <span class="muted" id="fps">Čekám na spuštění</span>
-    </div>
-    <div class="status" id="status">
-      Načítám neuronovou síť pro detekci obličejů...
-    </div>
-    <div class="stat-grid">
-      <div class="stat">
-        <div class="stat-label">Nalezené obličeje</div>
-        <div class="stat-value green" id="total">0</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Jistota detekce</div>
-        <div class="stat-value blue" id="confidence">—</div>
-      </div>
+    <div class="heading"><h2>📡 Živá analýza</h2><span class="muted" id="scanState">Připraveno</span></div>
+    <div id="status" class="status">Načítám neuronovou síť. První spuštění vyžaduje internet.</div>
+    <div class="grid">
+      <div class="stat"><div class="stat-label">Obličeje v aktuálním snímku</div><div id="total" class="stat-value green">0</div></div>
+      <div class="stat"><div class="stat-label">Jistota nejlepší detekce</div><div id="confidence" class="stat-value blue">—</div></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="heading">
-      <h2>👤 Rozpoznané obličeje</h2>
-      <span class="muted">Živě</span>
-    </div>
-    <div id="results">
-      <div class="person">
-        <div class="person-icon">👁️</div>
-        <div class="person-info">
-          <div class="person-title">Zatím žádný obličej</div>
-          <div class="person-desc">Výsledky se objeví po spuštění kamery.</div>
-        </div>
-      </div>
-    </div>
+    <div class="heading"><h2>👤 Výsledky skenování</h2><span class="muted">Aktualizace živě</span></div>
+    <div id="results"><div class="result"><div class="faceicon">◎</div><div class="result-info"><div class="result-title">Skener čeká</div><div class="result-desc">Zatím nebyl analyzován žádný snímek.</div></div></div></div>
   </div>
-
   <footer>
-    SirTros Face AI · Zpracování probíhá lokálně v prohlížeči.<br>
-    Pro načtení modelu je potřeba internet.<br>
-    Detekce obličeje není rozpoznávání identity.
+    SirTros Face AI · Analýza probíhá v prohlížeči.<br>
+    Obraz se nikam neodesílá. Procento znamená jistotu detekce,<br>
+    nikoli podobnost s konkrétní osobou.
   </footer>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.1.0/dist/blazeface.min.js"></script>
-
 <script>
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+(() => {
+  'use strict';
 
-const startBtn = document.getElementById('start');
-const stopBtn = document.getElementById('stop');
-const statusEl = document.getElementById('status');
+  const $ = id => document.getElementById(id);
+  const video = $('video');
+  const canvas = $('overlay');
+  const ctx = canvas.getContext('2d');
 
-let model = null;
-let stream = null;
-let running = false;
-let detecting = false;
-let lastFrame = 0;
-let frames = 0;
-let fpsTime = performance.now();
+  let model = null;
+  let stream = null;
+  let running = false;
+  let busy = false;
+  let animationId = 0;
+  let lastDetection = 0;
+  let frameTimes = [];
+  let lastFps = 0;
+  let facing = 'user';
 
-async function init() {
-  try {
-    statusEl.textContent = 'Připravuji AI model...';
-    await tf.ready();
-    model = await blazeface.load();
-
-    document.getElementById('modelState').textContent = 'AI PŘIPRAVENA';
-    statusEl.textContent = 'Model je načten. Povol kameru tlačítkem Spustit kameru.';
-    startBtn.disabled = false;
-  } catch (e) {
-    document.getElementById('modelState').textContent = 'CHYBA';
-    statusEl.textContent = 'Model se nepodařilo načíst. Zkontroluj internet a obnov stránku. ' + e.message;
-  }
-}
-
-function drawTarget(x, y, w, h, score, landmarks) {
-  const cx = x + w / 2;
-  const cy = y + h / 2;
-  const radius = Math.max(22, Math.min(w, h) * 0.65);
-
-  ctx.save();
-
-  // Zaměřovací kruh
-  ctx.strokeStyle = '#62f5bd';
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Čtyři rohové značky
-  const size = Math.max(9, radius * 0.25);
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(cx-radius, cy-size); ctx.lineTo(cx-radius, cy-radius); ctx.lineTo(cx-size, cy-radius);
-  ctx.moveTo(cx+radius-size, cy-radius); ctx.lineTo(cx+radius, cy-radius); ctx.lineTo(cx+radius, cy-size);
-  ctx.moveTo(cx-radius, cy+size); ctx.lineTo(cx-radius, cy+radius); ctx.lineTo(cx-size, cy+radius);
-  ctx.moveTo(cx+radius-size, cy+radius); ctx.lineTo(cx+radius, cy+radius); ctx.lineTo(cx+radius, cy+radius-size);
-  ctx.stroke();
-
-  // Střed zaměření
-  ctx.fillStyle = '#62f5bd';
-  ctx.beginPath();
-  ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Přibližná poloha očí a nosu
-  if (landmarks && landmarks.length >= 2) {
-    ctx.fillStyle = '#69a7ff';
-    landmarks.forEach(p => {
-      ctx.beginPath();
-      ctx.arc(p[0], p[1], 4, 0, Math.PI * 2);
-      ctx.fill();
-    });
+  function message(text) {
+    $('status').textContent = text;
   }
 
-  // Štítek nad kruhem
-  const label = 'OBLIČEJ ' + Math.round(score * 100) + '%';
-  ctx.font = 'bold 12px system-ui';
-  const width = ctx.measureText(label).width + 18;
-  const labelY = Math.max(3, cy - radius - 28);
-  ctx.fillStyle = '#62f5bd';
-  ctx.beginPath();
-  ctx.roundRect(cx - width / 2, labelY, width, 23, 7);
-  ctx.fill();
-  ctx.fillStyle = '#06120e';
-  ctx.fillText(label, cx - width / 2 + 9, labelY + 15);
-
-  ctx.restore();
-}
-
-async function startCamera() {
-  if (!model) return;
-
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        facingMode: { ideal: 'user' },
-        width: { ideal: 640 },
-        height: { ideal: 480 }
-      }
-    });
-
-    video.srcObject = stream;
-    await video.play();
-
-    running = true;
-    document.getElementById('placeholder').style.display = 'none';
-    document.getElementById('live').textContent = 'ŽIVĚ';
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
-    statusEl.textContent = 'Kamera běží. Hledám obličeje...';
-    requestAnimationFrame(loop);
-  } catch (e) {
-    statusEl.textContent = 'Nelze spustit kameru. Povol její použití v prohlížeči a použij HTTPS. ' + e.message;
-  }
-}
-
-function stopCamera() {
-  running = false;
-  if (stream) stream.getTracks().forEach(t => t.stop());
-  stream = null;
-  video.srcObject = null;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  document.getElementById('placeholder').style.display = 'flex';
-  document.getElementById('live').textContent = 'ZASTAVENO';
-  document.getElementById('fps').textContent = 'Kamera zastavena';
-  document.getElementById('total').textContent = '0';
-  document.getElementById('confidence').textContent = '—';
-  document.getElementById('faceCount').textContent = '0 obličejů';
-  resultsEmpty();
-  statusEl.textContent = 'Kamera je vypnutá.';
-  startBtn.disabled = !model;
-  stopBtn.disabled = true;
-}
-
-function resultsEmpty() {
-  const row = document.createElement('div');
-  row.className = 'person';
-  const icon = document.createElement('div');
-  icon.className = 'person-icon';
-  icon.textContent = '👁️';
-  const info = document.createElement('div');
-  info.className = 'person-info';
-  const title = document.createElement('div');
-  title.className = 'person-title';
-  title.textContent = 'Zatím žádný obličej';
-  const desc = document.createElement('div');
-  desc.className = 'person-desc';
-  desc.textContent = 'Zkus lepší osvětlení nebo se přibliž ke kameře.';
-  info.append(title, desc);
-  row.append(icon, info);
-  document.getElementById('results').replaceChildren(row);
-}
-
-async function loop(now) {
-  if (!running) return;
-
-  if (detecting || now - lastFrame < 120) {
-    requestAnimationFrame(loop);
-    return;
+  function setModelState(text) {
+    $('modelState').textContent = text;
   }
 
-  detecting = true;
-  lastFrame = now;
+  async function loadModel() {
+    try {
+      setModelState('NAČÍTÁM AI');
+      message('Načítám TensorFlow.js a model pro detekci obličejů…');
 
-  try {
-    if (video.readyState >= 2) {
-      const vw = video.videoWidth;
-      const vh = video.videoHeight;
-
-      if (canvas.width !== vw || canvas.height !== vh) {
-        canvas.width = vw;
-        canvas.height = vh;
+      if (!window.tf || !window.blazeface) {
+        throw new Error('Knihovny AI se nenačetly. Zkontroluj internet nebo blokování CDN.');
       }
 
-      const faces = await model.estimateFaces(video, false);
-      ctx.clearRect(0, 0, vw, vh);
-
-      const found = [];
-      for (const face of faces) {
-        const a = face.topLeft;
-        const b = face.bottomRight;
-        const x = Math.max(0, a[0]);
-        const y = Math.max(0, a[1]);
-        const w = Math.min(vw - x, b[0] - a[0]);
-        const h = Math.min(vh - y, b[1] - a[1]);
-        if (w <= 0 || h <= 0) continue;
-
-        const score = face.probability ? face.probability[0] : 0.9;
-        const landmarks = face.landmarks || [];
-
-        drawTarget(x, y, w, h, score, landmarks);
-        found.push({ score });
+      await tf.ready();
+      try {
+        await tf.setBackend('webgl');
+        await tf.ready();
+      } catch (_) {
+        // TensorFlow může použít jiný dostupný backend.
       }
 
-      document.getElementById('total').textContent = found.length;
-      document.getElementById('faceCount').textContent =
-        found.length + (found.length === 1 ? ' obličej' : ' obličejů');
+      model = await blazeface.load({
+        maxFaces: 10,
+        scoreThreshold: 0.65
+      });
 
-      document.getElementById('confidence').textContent = found.length
-        ? Math.round(Math.max(...found.map(f => f.score)) * 100) + '%'
-        : '—';
+      setModelState('AI PŘIPRAVENA');
+      $('start').disabled = false;
+      message('Model je připraven. Spusť skenování a povol přístup ke kameře.');
+    } catch (error) {
+      setModelState('CHYBA MODELU');
+      message('AI se nepodařilo načíst: ' + error.message +
+        ' Otevři stránku přes HTTPS a obnov ji s připojením k internetu.');
+    }
+  }
 
-      const results = document.getElementById('results');
-      if (!found.length) {
-        resultsEmpty();
-        statusEl.textContent = 'Kamera běží, ale žádný obličej zatím nebyl nalezen.';
-      } else {
-        results.replaceChildren();
+  function resizeCanvas() {
+    if (!video.videoWidth || !video.videoHeight) return;
+    if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+    }
+  }
 
-        found.forEach((face, i) => {
-          const row = document.createElement('div');
-          row.className = 'person';
+  function drawFace(face, index) {
+    const a = face.topLeft;
+    const b = face.bottomRight;
+    const x = Math.max(0, Number(a[0]));
+    const y = Math.max(0, Number(a[1]));
+    const right = Math.min(canvas.width, Number(b[0]));
+    const bottom = Math.min(canvas.height, Number(b[1]));
+    const w = right - x;
+    const h = bottom - y;
 
-          const icon = document.createElement('div');
-          icon.className = 'person-icon';
-          icon.textContent = '👤';
+    if (![x,y,w,h].every(Number.isFinite) || w <= 0 || h <= 0) return null;
 
-          const info = document.createElement('div');
-          info.className = 'person-info';
+    const score = face.probability && Number.isFinite(face.probability[0])
+      ? face.probability[0] : 0.8;
 
-          const title = document.createElement('div');
-          title.className = 'person-title';
-          title.textContent = 'Obličej #' + (i + 1);
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const radius = Math.max(20, Math.min(w, h) * 0.63);
 
-          const desc = document.createElement('div');
-          desc.className = 'person-desc';
-          desc.textContent = 'Obličej nalezen v obrazu kamery';
+    ctx.save();
+    ctx.strokeStyle = '#62f5bd';
+    ctx.lineWidth = Math.max(2, canvas.width / 320);
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.stroke();
 
-          info.append(title, desc);
+    // Zaměřovací značky kolem kruhu.
+    const arm = Math.max(8, radius * 0.23);
+    ctx.beginPath();
+    ctx.moveTo(cx-radius,cy-arm); ctx.lineTo(cx-radius,cy-radius); ctx.lineTo(cx-arm,cy-radius);
+    ctx.moveTo(cx+radius-arm,cy-radius); ctx.lineTo(cx+radius,cy-radius); ctx.lineTo(cx+radius,cy-arm);
+    ctx.moveTo(cx-radius,cy+arm); ctx.lineTo(cx-radius,cy+radius); ctx.lineTo(cx-arm,cy+radius);
+    ctx.moveTo(cx+radius-arm,cy+radius); ctx.lineTo(cx+radius,cy+radius); ctx.lineTo(cx+radius,cy+radius-arm);
+    ctx.stroke();
 
-          const score = document.createElement('div');
-          score.className = 'green';
-          score.style.fontSize = '13px';
-          score.textContent = Math.round(face.score * 100) + '%';
+    // Střed zaměření.
+    ctx.fillStyle = '#62f5bd';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
+    ctx.fill();
 
-          row.append(icon, info, score);
-          results.append(row);
-        });
-
-        statusEl.textContent = 'Nalezeno ' + found.length + ' obličejů. Kroužky označují jejich polohu.';
-      }
-
-      frames++;
-      const time = performance.now();
-      if (time - fpsTime >= 1000) {
-        document.getElementById('fps').textContent = frames + ' snímků/s';
-        frames = 0;
-        fpsTime = time;
+    // Body modelu: přibližná poloha očí a dalších částí obličeje.
+    if (Array.isArray(face.landmarks)) {
+      ctx.fillStyle = '#69a7ff';
+      for (const point of face.landmarks) {
+        const px = Number(point[0]);
+        const py = Number(point[1]);
+        if (!Number.isFinite(px) || !Number.isFinite(py)) continue;
+        ctx.beginPath();
+        ctx.arc(px, py, Math.max(2.5, canvas.width / 450), 0, Math.PI * 2);
+        ctx.fill();
       }
     }
-  } catch (e) {
-    statusEl.textContent = 'Chyba při detekci: ' + e.message;
-  } finally {
-    detecting = false;
-    if (running) requestAnimationFrame(loop);
-  }
-}
 
-startBtn.addEventListener('click', startCamera);
-stopBtn.addEventListener('click', stopCamera);
-init();
+    const label = 'OBLIČEJ ' + Math.round(score * 100) + '%';
+    ctx.font = 'bold 12px system-ui';
+    const labelWidth = ctx.measureText(label).width + 16;
+    const labelX = Math.max(2, Math.min(canvas.width - labelWidth - 2, cx - labelWidth / 2));
+    const labelY = Math.max(2, cy - radius - 26);
+
+    ctx.fillStyle = '#62f5bd';
+    ctx.beginPath();
+    ctx.roundRect(labelX, labelY, labelWidth, 22, 6);
+    ctx.fill();
+    ctx.fillStyle = '#06120e';
+    ctx.fillText(label, labelX + 8, labelY + 15);
+    ctx.restore();
+
+    return {score, x, y, w, h, index};
+  }
+
+  function showResults(faces) {
+    $('total').textContent = String(faces.length);
+    $('countTag').textContent = faces.length +
+      (faces.length === 1 ? ' obličej' : faces.length >= 2 && faces.length <= 4 ? ' obličeje' : ' obličejů');
+    $('confidence').textContent = faces.length
+      ? Math.round(Math.max(...faces.map(f => f.score)) * 100) + '%'
+      : '—';
+
+    const list = $('results');
+    list.replaceChildren();
+
+    if (!faces.length) {
+      const row = document.createElement('div');
+      row.className = 'result';
+      const icon = document.createElement('div');
+      icon.className = 'faceicon';
+      icon.textContent = '⌕';
+      const info = document.createElement('div');
+      info.className = 'result-info';
+      const title = document.createElement('div');
+      title.className = 'result-title';
+      title.textContent = 'Žádný obličej nenalezen';
+      const desc = document.createElement('div');
+      desc.className = 'result-desc';
+      desc.textContent = 'Skenování pokračuje. Zkus lepší osvětlení.';
+      info.append(title, desc);
+      row.append(icon, info);
+      list.append(row);
+      return;
+    }
+
+    faces.forEach((face, i) => {
+      const row = document.createElement('div');
+      row.className = 'result';
+      const icon = document.createElement('div');
+      icon.className = 'faceicon';
+      icon.textContent = '👤';
+      const info = document.createElement('div');
+      info.className = 'result-info';
+      const title = document.createElement('div');
+      title.className = 'result-title';
+      title.textContent = 'Obličej #' + (i + 1);
+      const desc = document.createElement('div');
+      desc.className = 'result-desc';
+      desc.textContent = 'Pozice: ' + Math.round(face.x) + ', ' + Math.round(face.y);
+      info.append(title, desc);
+      const score = document.createElement('div');
+      score.className = 'green';
+      score.style.fontSize = '12px';
+      score.textContent = Math.round(face.score * 100) + '%';
+      row.append(icon, info, score);
+      list.append(row);
+    });
+  }
+
+  async function scanLoop() {
+    if (!running || busy) return;
+    busy = true;
+
+    try {
+      if (video.readyState < 2 || !video.videoWidth) {
+        return;
+      }
+
+      resizeCanvas();
+
+      // Zpomalíme analýzu, aby telefon stíhal model počítat.
+      const now = performance.now();
+      if (now - lastDetection < 180) return;
+      lastDetection = now;
+
+      const predictions = await model.estimateFaces(video, false);
+      if (!running) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const faces = [];
+
+      predictions.forEach((prediction, i) => {
+        const face = drawFace(prediction, i);
+        if (face && face.score >= 0.55) faces.push(face);
+      });
+
+      showResults(faces);
+      $('scanState').textContent = 'SKENUJI';
+      $('live').textContent = 'ŽIVÉ SKENOVÁNÍ';
+      message(faces.length
+        ? 'Skenování aktivní. V tomto snímku nalezeno ' + faces.length + ' obličejů.'
+        : 'Skenování aktivní. Zatím žádný obličej s dostatečnou jistotou.');
+
+      frameTimes.push(performance.now());
+      frameTimes = frameTimes.filter(t => performance.now() - t < 2000);
+      if (performance.now() - lastFps > 1000) {
+        $('scanState').textContent = 'AKTIVNÍ · ' + frameTimes.length / 2 + ' sn./s';
+        lastFps = performance.now();
+      }
+    } catch (error) {
+      if (running) {
+        message('Chyba při skenování: ' + error.message);
+        $('scanState').textContent = 'CHYBA SKENOVÁNÍ';
+      }
+    } finally {
+      busy = false;
+      if (running) animationId = requestAnimationFrame(scanLoop);
+    }
+  }
+
+  async function startCamera() {
+    if (!model || running) return;
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      message('Tento prohlížeč nepovoluje kameru. Otevři web přes HTTPS v Chromu.');
+      return;
+    }
+
+    $('start').disabled = true;
+    message('Žádám o přístup ke kameře…');
+
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          facingMode: {ideal: facing},
+          width: {ideal: 640},
+          height: {ideal: 480}
+        }
+      });
+
+      video.srcObject = stream;
+      await new Promise((resolve, reject) => {
+        if (video.readyState >= 2) return resolve();
+        video.onloadedmetadata = () => resolve();
+        video.onerror = () => reject(new Error('Nepodařilo se načíst obraz kamery.'));
+      });
+      await video.play();
+
+      running = true;
+      $('placeholder').style.display = 'none';
+      $('stop').disabled = false;
+      $('live').textContent = 'ŽIVĚ';
+      $('scanState').textContent = 'SPUŠTĚNO';
+      message('Kamera spuštěna. Právě spouštím první analýzu.');
+      animationId = requestAnimationFrame(scanLoop);
+    } catch (error) {
+      if (stream) stream.getTracks().forEach(track => track.stop());
+      stream = null;
+      video.srcObject = null;
+      $('start').disabled = false;
+      message('Kameru se nepodařilo spustit: ' + error.message +
+        '. Povol kameru v Chromu a použij web HTTPS.');
+    }
+  }
+
+  function stopCamera() {
+    running = false;
+    cancelAnimationFrame(animationId);
+    if (stream) stream.getTracks().forEach(track => track.stop());
+    stream = null;
+    video.srcObject = null;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    $('placeholder').style.display = 'flex';
+    $('live').textContent = 'ZASTAVENO';
+    $('scanState').textContent = 'Připraveno';
+    $('start').disabled = !model;
+    $('stop').disabled = true;
+    $('total').textContent = '0';
+    $('confidence').textContent = '—';
+    $('countTag').textContent = '0 obličejů';
+    message('Kamera je vypnutá. Můžeš skenování kdykoli znovu spustit.');
+    showResults([]);
+  }
+
+  $('start').addEventListener('click', startCamera);
+  $('stop').addEventListener('click', stopCamera);
+  window.addEventListener('pagehide', () => {
+    running = false;
+    if (stream) stream.getTracks().forEach(track => track.stop());
+  });
+
+  loadModel();
+})();
 </script>
 </body>
 </html>
